@@ -1,0 +1,5627 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Досьє коханої людини</title>
+<!--
+  📝 ІНСТРУКЦІЯ З ФОРМАТУВАННЯ ТЕКСТУ:
+  
+  При редагуванні полів ви можете використовувати спеціальний синтаксис для форматування:
+  
+  **жирний текст** або __жирний текст__ → жирний текст (синій колір)
+  *курсив* або _курсив_ → курсив
+  ~~закреслений~~ → закреслений текст
+  [текст посилання](https://example.com) → клікабельне посилання
+  
+  🎨 ШВИДКЕ ФОРМАТУВАННЯ:
+  1. Виділіть текст в полі input або textarea
+  2. З'явиться контекстне меню з кнопками форматування
+  3. Натисніть потрібну кнопку або використайте гарячі клавіші:
+     • Ctrl+B - жирний
+     • Ctrl+I - курсив
+     • Ctrl+K - посилання
+  
+  Приклад: "Любить **шоколад** і *каву*, але ~~не любить~~ чай. [Улюблений сайт](https://example.com)"
+  
+  Це працює в усіх типах полів: text, textarea, tags, і навіть у вкладених полях!
+-->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<!-- Google API для синхронізації -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://apis.google.com/js/api.js" async defer></script>
+<style>
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --primary: #6366f1;
+  --primary-dark: #4f46e5;
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --border: #e2e8f0;
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  --radius: 0.75rem;
+  --radius-sm: 0.5rem;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 1.5rem;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+/* Заборона виділення UI елементів */
+button,
+.btn,
+.header,
+.sidebar,
+.category-item,
+.field-label,
+.field-meta,
+.badge,
+.chip,
+.modal-header,
+.modal-footer,
+.content-title,
+.content-actions,
+.filters-toggle-btn,
+.filters-dropdown-label,
+.progress-bar-text,
+label,
+.header-title,
+.header-icon,
+.sidebar-title,
+.empty-state-icon,
+.toast,
+i,
+.field-controls {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Дозволяємо виділення контенту */
+input,
+textarea,
+.field-value,
+.nested-subcategory,
+.search-input {
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Header */
+.header {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Header top row */
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.header-main-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+  position: relative;
+}
+
+/* Header Menu Button */
+.header-menu-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.875rem;
+  border: 2px solid var(--border);
+  background: white;
+  color: var(--text);
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.header-menu-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+.header-menu-btn.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+  box-shadow: var(--shadow);
+}
+
+.header-menu-btn i {
+  font-size: 0.875rem;
+}
+
+/* Header Menu Dropdown */
+.header-menu-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  background: white;
+  border: 2px solid var(--primary);
+  border-radius: var(--radius);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  padding: 0.5rem;
+  z-index: 1000;
+  min-width: 200px;
+}
+
+.header-menu-dropdown.active {
+  display: flex;
+  flex-direction: column;
+  animation: dropdownSlide 0.2s ease;
+}
+
+.header-menu-dropdown.closing {
+  display: flex;
+  flex-direction: column;
+  animation: dropdownSlideOut 0.2s ease forwards;
+  pointer-events: none;
+}
+
+.header-menu-dropdown .btn {
+  width: 100%;
+  justify-content: flex-start;
+  text-align: left;
+  border-radius: var(--radius-sm);
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.header-menu-dropdown .btn:hover {
+  background: var(--bg);
+  color: var(--primary);
+}
+
+.header-menu-dropdown .btn i {
+  width: 1.25rem;
+  margin-right: 0.5rem;
+}
+
+.header-menu-dropdown .btn.danger:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger);
+}
+
+/* Header bottom row */
+.header-bottom {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  align-items: center;
+}
+
+.header-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.25rem;
+}
+
+.header-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* Search Bar */
+.header-search {
+  position: relative;
+  min-width: 0;
+}
+
+.search-input-container {
+  position: relative;
+  width: 100%;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.625rem 2.5rem 0.625rem 2.5rem;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  background: white;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.search-input:hover {
+  border-color: #cbd5e1;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+.search-icon {
+  position: absolute;
+  left: 0.875rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  pointer-events: none;
+}
+
+.search-input:focus ~ .search-icon {
+  color: var(--primary);
+}
+
+.search-clear-btn {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  font-size: 1rem;
+}
+
+.search-clear-btn.visible {
+  display: flex;
+}
+
+.search-clear-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--danger);
+}
+
+/* Progress Bar */
+.header-progress {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  white-space: nowrap;
+}
+
+.progress-bar-container {
+  width: 120px;
+  height: 8px;
+  background: var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+  cursor: help;
+  flex-shrink: 0;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+  border-radius: 999px;
+  transition: width 0.3s ease;
+  box-shadow: 0 0 8px rgba(99, 102, 241, 0.4);
+}
+
+.progress-bar-text {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Search Highlight */
+.search-highlight {
+  background: #fef08a;
+  color: #854d0e;
+  font-weight: 600;
+  padding: 0;
+  border-radius: 2px;
+}
+
+/* Search Badge */
+.search-result-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--primary);
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
+/* Fill Filter */
+.fill-filter {
+  display: inline-flex;
+  gap: 0.25rem;
+  background: var(--bg);
+  padding: 0.25rem;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--border);
+}
+
+.fill-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.875rem;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.fill-filter-btn:hover {
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--primary);
+}
+
+.fill-filter-btn.active {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+}
+
+.fill-filter-btn i {
+  font-size: 0.875rem;
+}
+
+/* Importance Filter */
+.importance-filter {
+  display: inline-flex;
+  gap: 0.25rem;
+}
+
+.importance-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.875rem;
+  border: 2px solid var(--border);
+  background: var(--bg);
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.importance-filter-btn:hover {
+  border-color: var(--text-muted);
+  transform: translateY(-1px);
+}
+
+.importance-filter-btn.active.high {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: white;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+.importance-filter-btn.active.medium {
+  background: var(--warning);
+  border-color: var(--warning);
+  color: white;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+}
+
+.importance-filter-btn.active.low {
+  background: var(--success);
+  border-color: var(--success);
+  color: white;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.importance-filter-btn i {
+  font-size: 0.875rem;
+}
+
+/* Main layout */
+.main-grid {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+
+/* Sidebar */
+.sidebar {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-lg);
+  position: sticky;
+  top: 1.5rem;
+  max-height: calc(100vh - 3rem);
+  overflow-y: auto;
+  transition: all 0.3s ease;
+}
+
+/* Кнопка toggle (тільки на мобільних) */
+.sidebar-toggle-btn {
+  display: none;
+  width: 100%;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, #4f46e5, #3730a3);
+  color: white;
+  border: none;
+  padding: 0.875rem 1rem;
+  border-radius: var(--radius);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar-toggle-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.sidebar-toggle-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4);
+  background: linear-gradient(135deg, #5b52e8, #4338ca);
+}
+
+.sidebar-toggle-btn:hover::before {
+  opacity: 1;
+}
+
+.sidebar-toggle-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-toggle-btn .sidebar-toggle-icon {
+  font-size: 1.125rem;
+  opacity: 0.9;
+}
+
+.sidebar-toggle-btn .sidebar-toggle-arrow {
+  margin-left: auto;
+  font-size: 0.875rem;
+  transition: transform 0.3s ease;
+}
+
+.sidebar-toggle-btn.active .sidebar-toggle-arrow {
+  transform: rotate(180deg);
+}
+
+.sidebar-toggle-btn span {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  flex: 1;
+  text-align: left;
+}
+
+.sidebar-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.category-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+/* Кнопка додавання категорії */
+.btn-add-category {
+  width: 100%;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border: none;
+  padding: 0.875rem 1rem;
+  border-radius: var(--radius);
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-add-category::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.btn-add-category:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+  background: linear-gradient(135deg, #14c992, #06a372);
+}
+
+.btn-add-category:hover::before {
+  opacity: 1;
+}
+
+.btn-add-category:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.2);
+}
+
+.btn-add-category i {
+  font-size: 1rem;
+}
+
+.btn-add-category span {
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.category-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+  background: var(--bg);
+}
+
+.category-item:hover {
+  background: rgba(99, 102, 241, 0.1);
+  border-color: var(--primary);
+}
+
+.category-item.active {
+  background: var(--primary);
+  color: white;
+  font-weight: 600;
+}
+
+.category-icon {
+  width: 2rem;
+  height: 2rem;
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--primary);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.category-item.active .category-icon {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.category-label {
+  flex: 1;
+  font-size: 0.9rem;
+}
+
+.category-count {
+  font-size: 0.75rem;
+  background: rgba(0, 0, 0, 0.1);
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.category-item.active .category-count {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Content area */
+.content {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-lg);
+  min-height: 400px;
+  position: relative;
+}
+
+.content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--border);
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.content-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.content-title i {
+  color: var(--primary);
+}
+
+.content-title span {
+  line-height: 1;
+}
+
+.content-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+  position: relative;
+}
+
+/* Filters Toggle */
+.filters-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.875rem;
+  border: 2px solid var(--border);
+  background: white;
+  color: var(--text);
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.filters-toggle-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+.filters-toggle-btn.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+  box-shadow: var(--shadow);
+}
+
+.filters-toggle-btn i {
+  font-size: 0.875rem;
+}
+
+/* Badge з кількістю активних фільтрів */
+.filters-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: var(--danger);
+  color: white;
+  border-radius: 999px;
+  width: 18px;
+  height: 18px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+}
+
+.filters-container {
+  display: none;
+}
+
+.filters-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.5rem;
+  background: white;
+  border: 2px solid var(--primary);
+  border-radius: var(--radius);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  padding: 1.25rem;
+  z-index: 1000;
+  max-width: 328px;
+  width: max-content;
+}
+
+.filters-dropdown.active {
+  display: flex;
+  flex-direction: column;
+  animation: dropdownSlide 0.2s ease;
+}
+
+.filters-dropdown.closing {
+  display: flex;
+  flex-direction: column;
+  animation: dropdownSlideOut 0.2s ease forwards;
+  pointer-events: none;
+}
+
+@keyframes dropdownSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dropdownSlideOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+.filters-dropdown-section {
+  margin-bottom: 1.25rem;
+}
+
+.filters-dropdown-section:last-child {
+  margin-bottom: 0;
+}
+
+.filters-dropdown-label {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filters-dropdown-label i {
+  font-size: 1rem;
+}
+
+/* Стилі для кнопок в dropdown */
+.filters-dropdown .fill-filter,
+.filters-dropdown .importance-filter {
+  display: flex;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+}
+
+.filters-dropdown .fill-filter-btn,
+.filters-dropdown .importance-filter-btn {
+  flex: 1 1 auto;
+  min-width: fit-content;
+  justify-content: center;
+  padding: 0.625rem 0.625rem;
+  font-size: 0.8125rem;
+}
+
+.filters-dropdown .fill-filter-btn span,
+.filters-dropdown .importance-filter-btn span {
+  white-space: nowrap;
+}
+
+/* Fields grid */
+.fields-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.field-card {
+  background: var(--bg);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  transition: all 0.2s;
+}
+
+.field-card:hover {
+  border-color: var(--primary);
+  box-shadow: var(--shadow);
+}
+
+.field-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.field-info {
+  flex: 1;
+}
+
+.field-label {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.field-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.field-controls {
+  display: flex;
+  gap: 0.25rem;
+  position: relative;
+}
+
+/* Кнопка меню (показується тільки на дуже маленьких екранах) */
+.field-controls-menu-btn {
+  display: none !important;
+}
+
+@media (max-width: 500px) {
+  .field-controls-menu-btn {
+    display: flex !important;
+  }
+}
+
+/* Popup меню для кнопок */
+.field-controls-popup {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.5rem;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 0.5rem;
+  z-index: 100;
+  min-width: 150px;
+}
+
+.field-controls-popup.active {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.field-controls-popup .btn {
+  width: 100%;
+  justify-content: flex-start;
+}
+
+.field-value {
+  padding: 0.75rem;
+  background: white;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  min-height: 3rem;
+  display: flex;
+  align-items: center;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  flex-wrap: wrap;
+}
+
+.field-value.empty {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.field-value strong,
+.field-value b {
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.field-value em,
+.field-value i {
+  font-style: italic;
+  color: var(--text);
+}
+
+.field-value u {
+  text-decoration: underline;
+}
+
+.field-value del {
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+
+.field-value a {
+  color: var(--primary);
+  text-decoration: underline;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.field-value a:hover {
+  color: var(--primary-dark);
+  text-decoration: none;
+}
+
+/* Nested fields */
+.nested-container {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.nested-category {
+  background: white;
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  border: 1px solid var(--border);
+}
+
+.nested-category-title {
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.nested-subcategory {
+  margin-top: 0.75rem;
+}
+
+.nested-subcategory:first-child {
+  margin-top: 0;
+}
+
+.nested-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.chips-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chip {
+  background: var(--primary);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.chip em {color:#e2e8f0}
+
+.chip strong,
+.chip b {
+  font-weight: 700;
+  color: white;
+}
+
+.chip em,
+.chip i {
+  font-style: italic;
+}
+
+.chip del {
+  text-decoration: line-through;
+  opacity: 0.8;
+}
+
+.chip a {
+  color: white;
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.chip a:hover {
+  opacity: 0.9;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  border: none;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+.btn-secondary {
+  background: var(--bg);
+  color: var(--text);
+  border: 2px solid var(--border);
+}
+
+.btn-secondary:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.btn-sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8rem;
+}
+
+.btn-icon {
+  padding: 0.5rem;
+  aspect-ratio: 1;
+}
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge i {
+  font-size: 0.875rem;
+}
+
+.badge-high {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger);
+}
+
+.badge-medium {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--warning);
+}
+
+.badge-low {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--success);
+}
+
+/* Modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  transition: opacity 0.2s ease;
+  opacity: 0;
+}
+
+.modal-backdrop.active,
+.modal-backdrop.closing {
+  display: flex;
+}
+
+.modal-backdrop.active {
+  opacity: 1;
+}
+
+.modal {
+  background: var(--card);
+  border-radius: 12px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  transform: scale(0.95);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.modal-large {
+  max-width: 900px;
+}
+
+.modal-small {
+  max-width: 400px;
+}
+
+.modal-backdrop.active .modal {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+.modal-backdrop.closing .modal {
+  transform: scale(0.9) translateY(20px);
+  opacity: 0;
+}
+
+.modal-backdrop.closing {
+  opacity: 0;
+}
+
+.modal-header {
+  padding: 1.25rem 1.5rem;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.03), rgba(99, 102, 241, 0.01));
+  border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.modal-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  display: flex;
+  line-height: 1.3;
+  align-items: center;
+  gap: 0.875rem;
+  color: var(--text);
+  flex: 1;
+}
+
+.modal-title-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  border-radius: 12px;
+  font-size: 1.25rem;
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.modal-title-icon:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
+}
+
+.modal-title span {
+  line-height: 1.3;
+}
+
+.modal-close-btn {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  border: none;
+  color: white;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  box-shadow: 0 3px 10px rgba(99, 102, 241, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+}
+
+.modal-close-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25);
+}
+
+.modal-close-btn i {
+  font-size: 1rem;
+}
+
+.modal-body {
+  padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+  background: var(--card);
+}
+
+.modal-footer {
+  padding: 1.25rem 1.5rem;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+/* Form elements */
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.625rem;
+  font-size: 0.875rem;
+  color: var(--text);
+  letter-spacing: 0.01em;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text);
+  user-select: none;
+}
+
+.checkbox-label input[type="checkbox"] {
+  cursor: pointer;
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  background: white;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.form-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 2.75rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M5 7.5L10 12.5L15 7.5' stroke='%236366f1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.875rem center;
+  background-size: 20px;
+  cursor: pointer;
+  position: relative;
+}
+
+.form-input:hover,
+.form-textarea:hover {
+  border-color: #cbd5e1;
+}
+
+.form-select:hover {
+  border-color: #cbd5e1;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M5 7.5L10 12.5L15 7.5' stroke='%234f46e5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+.form-select:active {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M5 12.5L10 7.5L15 12.5' stroke='%234f46e5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+.form-input:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+  background: white;
+}
+
+.form-select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+  background-color: white;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M5 12.5L10 7.5L15 12.5' stroke='%234f46e5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 120px;
+  line-height: 1.6;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.form-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.form-checkbox input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+  background: white;
+  flex-shrink: 0;
+}
+
+.form-checkbox input[type="checkbox"]:hover {
+  border-color: var(--primary);
+  background: rgba(99, 102, 241, 0.05);
+}
+
+.form-checkbox input[type="checkbox"]:checked {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  border-color: var(--primary);
+}
+
+.form-checkbox input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+  width: 5px;
+  height: 9px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+}
+
+.form-checkbox input[type="checkbox"]:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+.form-checkbox label {
+  cursor: pointer;
+  font-size: 0.9375rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+/* Custom Select Dropdown */
+.custom-select {
+  position: relative;
+  width: 100%;
+}
+
+.custom-select-trigger {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  padding-right: 2.75rem;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  background: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.custom-select-trigger:hover {
+  border-color: #cbd5e1;
+}
+
+.custom-select.active .custom-select-trigger {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+.custom-select-trigger::after {
+  content: '';
+  position: absolute;
+  right: 0.875rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M5 7.5L10 12.5L15 7.5' stroke='%236366f1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  transition: transform 0.2s ease;
+}
+
+.custom-select.active .custom-select-trigger::after {
+  transform: translateY(-50%) rotate(180deg);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M5 7.5L10 12.5L15 7.5' stroke='%234f46e5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+.custom-select-icon {
+  font-size: 1rem;
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.custom-select-text {
+  flex: 1;
+  color: var(--text);
+}
+
+.custom-select-dropdown {
+  position: fixed;
+  background: white;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 10000;
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+  transition: all 0.2s ease;
+}
+
+/* Кастомний scrollbar для dropdown */
+.custom-select-dropdown::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-select-dropdown::-webkit-scrollbar-track {
+  background: var(--bg);
+  border-radius: 0 6px 6px 0;
+}
+
+.custom-select-dropdown::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.custom-select-dropdown::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, var(--primary-dark), #3730a3);
+}
+
+/* Firefox scrollbar */
+.custom-select-dropdown {
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary) var(--bg);
+}
+
+.custom-select.active .custom-select-dropdown,
+.custom-select-dropdown.active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: all;
+}
+
+.custom-select-option {
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border-bottom: 1px solid var(--border);
+}
+
+.custom-select-option:last-child {
+  border-bottom: none;
+}
+
+.custom-select-option:hover {
+  background: rgba(99, 102, 241, 0.05);
+}
+
+.custom-select-option.selected {
+  background: linear-gradient(to right, rgba(99, 102, 241, 0.1), transparent);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.custom-select-option-icon {
+  font-size: 1rem;
+  color: var(--primary);
+  flex-shrink: 0;
+  width: 1.25rem;
+  text-align: center;
+}
+
+.custom-select-option-text {
+  flex: 1;
+}
+
+/* Format Menu */
+.format-menu {
+  position: absolute;
+  background: var(--card);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg);
+  padding: 0.5rem;
+  display: none;
+  z-index: 1500;
+  gap: 0.25rem;
+  flex-direction: row;
+}
+
+.format-menu.active {
+  display: flex;
+}
+
+.format-menu-btn {
+  padding: 0.5rem 0.75rem;
+  border: none;
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.format-menu-btn:hover {
+  background: var(--primary);
+  color: white;
+  transform: translateY(-1px);
+}
+
+.format-menu-btn i {
+  font-size: 0.875rem;
+}
+
+/* Sync Status */
+.sync-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.sync-status.synced {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.sync-status.syncing {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+}
+
+.sync-status.error {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger);
+}
+
+.sync-status.offline {
+  background: var(--bg);
+  color: var(--text-muted);
+}
+
+.sync-status.local {
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--primary);
+}
+
+.sync-status i {
+  font-size: 0.875rem;
+}
+
+/* Instruction Block */
+.instruction-block {
+  background: var(--bg);
+  border-left: 4px solid var(--primary);
+  padding: 1rem;
+  border-radius: var(--radius-sm);
+  margin: 1rem 0;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.instruction-block h4 {
+  color: var(--primary);
+  margin-bottom: 0.75rem;
+  font-size: 0.9375rem;
+}
+
+.instruction-block ol {
+  margin-left: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.instruction-block li {
+  margin-bottom: 0.5rem;
+}
+
+.instruction-block code {
+  background: rgba(99, 102, 241, 0.1);
+  padding: 0.125rem 0.375rem;
+  border-radius: 3px;
+  font-family: monospace;
+  font-size: 0.8125rem;
+}
+
+.instruction-toggle {
+  cursor: pointer;
+  color: var(--primary);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  user-select: none;
+}
+
+.instruction-toggle:hover {
+  color: var(--primary-dark);
+}
+
+.instruction-toggle i {
+  transition: transform 0.2s ease;
+}
+
+.instruction-toggle.expanded i {
+  transform: rotate(180deg);
+}
+
+.instruction-content {
+  display: none;
+}
+
+.instruction-content.show {
+  display: block;
+}
+
+/* Password Input Group */
+.password-input-group {
+  position: relative;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.password-toggle:hover {
+  color: var(--primary);
+}
+
+/* Settings Section */
+.settings-section {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.settings-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.settings-section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.settings-section-title i {
+  color: var(--primary);
+}
+
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.radio-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.radio-option:hover {
+  border-color: var(--primary);
+  background: rgba(99, 102, 241, 0.05);
+}
+
+.radio-option input[type="radio"] {
+  margin-top: 0.25rem;
+  cursor: pointer;
+}
+
+.radio-option-content {
+  flex: 1;
+}
+
+.radio-option-label {
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.25rem;
+  display: block;
+}
+
+.radio-option-desc {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.radio-option input[type="radio"]:checked ~ .radio-option-content .radio-option-label {
+  color: var(--primary);
+}
+
+.sync-settings-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+}
+
+.sync-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.security-notice {
+  background: rgba(16, 185, 129, 0.1);
+  border-left: 4px solid #10b981;
+  padding: 1rem;
+  border-radius: var(--radius-sm);
+  margin-top: 1rem;
+}
+
+.security-notice-title {
+  font-weight: 600;
+  color: #10b981;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.security-notice ul {
+  margin-left: 1.5rem;
+  margin-top: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.sync-stats {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1rem;
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+}
+
+.sync-stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.sync-stat-label {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sync-stat-value {
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* Toast */
+.toast-container {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.toast {
+  background: var(--text);
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 300px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 0;
+  transform: translateX(400px);
+}
+
+.toast.show {
+  animation: slideIn 0.3s ease forwards;
+}
+
+/* Типи toast повідомлень */
+.toast-success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-left: 4px solid #047857;
+}
+
+.toast-error {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  border-left: 4px solid #b91c1c;
+  font-weight: 600;
+}
+
+.toast-warning {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  border-left: 4px solid #b45309;
+  color: #ffffff;
+}
+
+.toast-info {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border-left: 4px solid #1d4ed8;
+}
+
+.toast:hover {
+  transform: scale(1.02);
+  box-shadow: var(--shadow-xl);
+}
+
+.toast i {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.toast.removing {
+  animation: slideOut 0.3s ease forwards;
+}
+
+@keyframes slideOut {
+  to {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-muted);
+}
+
+.empty-state-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.empty-state-text {
+  font-size: 1.125rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Utilities */
+.hidden {
+  display: none !important;
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  /* Показуємо кнопку toggle на планшетах і мобільних */
+  .sidebar-toggle-btn {
+    display: flex;
+  }
+
+  /* Sidebar контент згортається */
+  .sidebar.collapsed .category-nav,
+  .sidebar.collapsed .sidebar-title,
+  .sidebar.collapsed > .btn {
+    display: none;
+  }
+
+  .sidebar.collapsed {
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .sidebar {
+    position: static;
+    max-height: none;
+  }
+
+  .sidebar.collapsed .sidebar-toggle-btn {
+    margin-bottom: 0;
+  }
+  
+  /* Main grid стає одноколонковим */
+  .main-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  /* На мобільних dropdown на всю ширину */
+  .filters-dropdown {
+    right: auto;
+    left: 0;
+    width: calc(100vw - 4rem);
+    max-width: none;
+  }
+  
+  .content-actions {
+    position: relative;
+    width: 100%;
+  }
+  
+  /* Кнопки на повну ширину */
+  .content-actions > .btn,
+  .filters-toggle-btn {
+    flex: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    padding: 1rem;
+  }
+
+  .header {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .header-top {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .header-title {
+    font-size: 1.25rem;
+  }
+  
+  .header-main-actions {
+    width: 100%;
+  }
+  
+  .header-main-actions .btn {
+    flex: 1;
+  }
+  
+  .header-bottom {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .header-progress {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  
+  .progress-bar-container {
+    width: 100%;
+  }
+  
+  .progress-bar-text {
+    text-align: center;
+  }
+  
+  .header-menu-dropdown {
+    right: auto;
+    left: 0;
+    width: calc(100vw - 4rem);
+    max-width: none;
+  }
+  .main-grid {
+    gap: 1rem;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: static;
+    max-height: none;
+  }
+
+  .toast {
+    min-width: unset;
+    width: calc(100vw - 2rem);
+  }
+
+  /* Modal на мобільних */
+  .modal {
+    max-width: calc(100vw - 2rem);
+    border-radius: 12px;
+  }
+
+  .modal-header {
+    padding: 1.25rem;
+  }
+
+  .modal-title {
+    font-size: 1.25rem;
+  }
+
+  .modal-title-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+    font-size: 1rem;
+  }
+
+  .modal-body {
+    padding: 1.25rem;
+  }
+
+  .modal-footer {
+    padding: 1rem 1.25rem;
+    flex-direction: column-reverse;
+  }
+
+  .modal-footer .btn {
+    width: 100%;
+  }
+
+  .content-actions .btn {
+    padding: 0.5rem;
+  }
+  .content, .sidebar {
+    padding: 1rem;
+  }
+
+}
+
+@media (max-width: 500px) {
+
+  .content-title {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 500px) {
+  /* Ховаємо всі кнопки крім меню */
+  .field-controls > .btn:not(.field-controls-menu-btn) {
+    display: none !important;
+  }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <!-- Header -->
+  <header class="header">
+    <!-- Top Row: Title + Main Actions -->
+    <div class="header-top">
+      <div class="header-title">
+        <div class="header-icon">
+          <i class="fas fa-heart"></i>
+        </div>
+        <span>Досьє коханої людини</span>
+      </div>
+      
+      <div class="header-main-actions">
+        <div class="sync-status local" id="syncStatus" title="Режим збереження">
+          <i class="fas fa-laptop"></i>
+          <span>Local режим</span>
+        </div>
+        
+        <button class="btn btn-secondary btn-sm" id="btnSave">
+          <i class="fas fa-save"></i>
+          <span>Зберегти</span>
+        </button>
+        
+        <button class="btn btn-primary btn-sm" id="btnAddField">
+          <i class="fas fa-plus"></i>
+          <span>Додати поле</span>
+        </button>
+        
+        <button class="header-menu-btn" onclick="App.toggleHeaderMenu()" id="headerMenuBtn">
+          <i class="fas fa-ellipsis-h"></i>
+          <span>Більше</span>
+        </button>
+        
+        <div class="header-menu-dropdown" id="headerMenuDropdown">
+          <button class="btn" id="btnSync">
+            <i class="fas fa-sync-alt"></i> Синхронізація
+          </button>
+          <button class="btn" id="btnExport">
+            <i class="fas fa-download"></i> Експорт
+          </button>
+          <button class="btn" id="btnImport">
+            <i class="fas fa-upload"></i> Імпорт
+          </button>
+          <button class="btn danger" id="btnClear">
+            <i class="fas fa-trash-alt"></i> Очистити
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Bottom Row: Search + Progress -->
+    <div class="header-bottom">
+      <div class="header-search" id="headerSearch">
+        <div class="search-input-container">
+          <input 
+            type="text" 
+            class="search-input" 
+            id="searchInput" 
+            placeholder="Пошук по всіх полях..."
+            autocomplete="off"
+          />
+          <i class="fas fa-search search-icon"></i>
+          <button class="search-clear-btn" id="searchClearBtn" title="Очистити пошук">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="header-progress" id="headerProgress">
+        <div class="progress-bar-container" title="Прогрес заповнення">
+          <div class="progress-bar-fill" id="progressBarFill" style="width: 0%"></div>
+        </div>
+        <div class="progress-bar-text" id="progressBarText">Оберіть категорію</div>
+      </div>
+    </div>
+    
+    <input type="file" id="fileInput" accept=".json" class="hidden">
+  </header>
+
+  <!-- Main Grid -->
+  <div class="main-grid">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <button class="sidebar-toggle-btn" id="sidebarToggle">
+        <i class="fas fa-layer-group sidebar-toggle-icon"></i>
+        <span>Категорії</span>
+        <i class="fas fa-chevron-down sidebar-toggle-arrow"></i>
+      </button>
+      <div class="sidebar-title">Категорії</div>
+      <nav class="category-nav" id="categoryNav">
+        <!-- Categories will be rendered here -->
+      </nav>
+      <button class="btn btn-add-category" id="btnAddCategory">
+        <i class="fas fa-folder-plus"></i>
+        <span>Додати категорію</span>
+      </button>
+    </aside>
+
+    <!-- Content -->
+    <main class="content">
+      <div class="content-header">
+        <div class="content-title" id="contentTitle">
+          <i class="fas fa-folder"></i>
+          <span>Оберіть категорію</span>
+        </div>
+        <div class="content-actions" id="contentActions">
+          <!-- Dynamic actions will appear here -->
+        </div>
+      </div>
+      <div id="contentBody">
+        <div class="empty-state">
+          <div class="empty-state-icon">
+            <i class="fas fa-hand-pointer"></i>
+          </div>
+          <div class="empty-state-text">Оберіть категорію зліва</div>
+          <p>Натисніть на категорію, щоб побачити поля</p>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">
+        <i class="fas fa-edit modal-title-icon" id="modalTitleIcon"></i>
+        <span id="modalTitle">Модалка</span>
+      </div>
+      <button class="btn btn-icon btn-secondary btn-sm modal-close-btn" id="modalClose">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body" id="modalBody">
+      <!-- Dynamic content -->
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="modalCancel">
+        <i class="fas fa-times"></i>
+        <span>Скасувати</span>
+      </button>
+      <button class="btn btn-primary" id="modalSave">
+        <i class="fas fa-check"></i>
+        <span>Зберегти</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Format Menu -->
+<div class="format-menu" id="formatMenu">
+  <button class="format-menu-btn" data-format="bold" title="Жирний (Ctrl+B)">
+    <i class="fas fa-bold"></i>
+  </button>
+  <button class="format-menu-btn" data-format="italic" title="Курсив (Ctrl+I)">
+    <i class="fas fa-italic"></i>
+  </button>
+  <button class="format-menu-btn" data-format="strikethrough" title="Закреслений">
+    <i class="fas fa-strikethrough"></i>
+  </button>
+  <button class="format-menu-btn" data-format="link" title="Посилання (Ctrl+K)">
+    <i class="fas fa-link"></i>
+  </button>
+  <button class="format-menu-btn" data-format="chip" title="Chip">
+    <i class="fas fa-tag"></i>
+  </button>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // ============= STATE =============
+  const State = {
+    config: {
+      categories: [],
+      fields: []
+    },
+    values: {},
+    ui: {
+      activeCategory: null,
+      lastActiveCategory: null,
+      searchActive: false,
+      fillFilter: 'all',
+      importanceFilters: [], // масив з 'high', 'medium', 'low'
+      modalData: null
+    },
+    sync: {
+      mode: 'localStorage', // 'localStorage' | 'googleSheets' | 'manual'
+      googleSheets: {
+        enabled: false,
+        clientId: '',
+        spreadsheetId: '',
+        lastSync: null,
+        autoSyncEnabled: false,
+        autoSyncInterval: 5, // хвилини
+        encryptionEnabled: false,
+        encryptionPasswordHash: null // для верифікації
+      },
+      status: 'local', // 'local' | 'synced' | 'syncing' | 'error' | 'offline'
+      statusText: 'Local режим',
+      lastError: null
+    }
+  };
+
+  // ============= DEFAULT CONFIG =============
+  const DefaultConfig = {
+    categories: [
+      {id: 'base', label: 'Базова інформація', icon: 'fa-id-card'},
+      {id: 'character', label: 'Характер', icon: 'fa-brain'},
+      {id: 'preferences', label: 'Вподобання', icon: 'fa-heart'},
+      {id: 'antipreferences', label: 'Антивподобання', icon: 'fa-heart-broken'},
+      {id: 'gifts', label: 'Подарунки', icon: 'fa-gift'},
+      {id: 'psychology', label: 'Психологія', icon: 'fa-user-circle'},
+      {id: 'psych', label: 'Психологічні особливості', icon: 'fa-brain'},
+      {id: 'logistics', label: 'Логістика та побут', icon: 'fa-map-marked-alt'},
+      {id: 'goals', label: 'Цілі та мрії', icon: 'fa-star'},
+      {id: 'custom', label: 'Додаткове', icon: 'fa-plus-circle'},
+      {id: 'communication', label: 'Комунікація', icon: 'fa-comments'},
+      {id: 'finance', label: 'Фінанси', icon: 'fa-wallet'},
+      {id: 'intimacy', label: 'Інтимність', icon: 'fa-heart', isPrivate: true},
+      {id: 'family', label: 'Сім\'я', icon: 'fa-users'},
+      {id: 'career', label: 'Кар\'єра', icon: 'fa-briefcase'},
+      {id: 'culture', label: 'Культура', icon: 'fa-globe'}
+    ],
+    fields: [
+      {id: 'fullName', label: 'ПІБ', type: 'text', category: 'base', importance: 'high', required: true},
+      {id: 'dob', label: 'Дата народження', type: 'date', category: 'base', importance: 'high'},
+      {id: 'character', label: 'Особливості характеру', type: 'textarea', category: 'character', importance: 'high'},
+      {id: 'dreams', label: 'Мрії та бажання', type: 'textarea', category: 'character', importance: 'medium'},
+      {id: 'likes', label: 'Що любить', type: 'nested', category: 'preferences', importance: 'high',
+        nestedCategories: [
+          {id: 'food', label: 'Їжа', subcategories: [
+            {id: 'sweet', label: 'Солодке'},
+            {id: 'drinks', label: 'Напої'}
+          ]},
+          {id: 'activities', label: 'Заняття', subcategories: [
+            {id: 'active', label: 'Активні'},
+            {id: 'calm', label: 'Спокійні'}
+          ]}
+        ]
+      },
+      {id: 'memories', label: 'Пам\'ять і спогади', type: 'textarea', category: 'character', importance: 'high'},
+      {id: 'dislikes', label: 'Що не любить', type: 'nested', category: 'antipreferences', importance: 'high',
+        nestedCategories: [
+          {id: 'food', label: 'Їжа', subcategories: [
+            {id: 'tastes', label: 'Смаки'},
+            {id: 'dishes', label: 'Страви'}
+          ]},
+          {id: 'activities', label: 'Заняття', subcategories: [
+            {id: 'social', label: 'Соціальні'},
+            {id: 'personal', label: 'Особисті'}
+          ]},
+          {id: 'behaviors', label: 'Поведінка', subcategories: [
+            {id: 'communication', label: 'Спілкування'},
+            {id: 'habits', label: 'Звички'}
+          ]}
+        ]
+      },
+      {id: 'anti_triggers', label: 'Тригери та роздратування', type: 'tags', category: 'antipreferences', importance: 'high'},
+      {id: 'anti_topics', label: 'Неприємні теми для розмов', type: 'tags', category: 'antipreferences', importance: 'medium'},
+      {id: 'anti_places', label: 'Місця, які не подобаються', type: 'tags', category: 'antipreferences', importance: 'medium'},
+      {id: 'anti_sounds', label: 'Неприємні звуки/запахи', type: 'tags', category: 'antipreferences', importance: 'low'},
+      {id: 'anti_situations', label: 'Некомфортні ситуації', type: 'textarea', category: 'antipreferences', importance: 'medium'},
+      {id: 'gift_wishlist', label: 'Список бажань', type: 'tags', category: 'gifts', importance: 'high'},
+      {id: 'gift_sizes', label: 'Розміри', type: 'text', category: 'gifts', importance: 'medium'},
+      {id: 'gift_brands', label: 'Улюблені бренди', type: 'tags', category: 'gifts', importance: 'medium'},
+      {id: 'gift_anti', label: 'Антиподарунки', type: 'tags', category: 'gifts', importance: 'medium'},
+      {id: 'gift_history', label: 'Історія подарунків', type: 'textarea', category: 'gifts', importance: 'low'},
+      {id: 'love_language', label: 'Мова кохання', type: 'text', category: 'psychology', importance: 'high'},
+      {id: 'values', label: 'Основні цінності', type: 'tags', category: 'psychology', importance: 'high'},
+      {id: 'psy_conflict_style', label: 'Стиль поведінки в конфліктах', type: 'textarea', category: 'psych', importance: 'high'},
+      {id: 'psy_compliments', label: 'Як любить отримувати компліменти', type: 'textarea', category: 'psych', importance: 'medium'},
+      {id: 'psy_stress_relief', label: 'Способи зняття стресу', type: 'tags', category: 'psych', importance: 'high'},
+      {id: 'log_places', label: 'Улюблені місця', type: 'tags', category: 'logistics', importance: 'medium'},
+      {id: 'log_social_circle', label: 'Соціальне коло', type: 'textarea', category: 'logistics', importance: 'medium'},
+      {id: 'log_schedule_peak', label: 'Пікові години активності', type: 'text', category: 'logistics', importance: 'low'},
+      {id: 'log_media', label: 'Медіа вподобання', type: 'tags', category: 'logistics', importance: 'low'},
+      {id: 'short_goals', label: 'Короткострокові цілі', type: 'tags', category: 'goals', importance: 'high'},
+      {id: 'goal_travel', label: 'Мрії про подорожі', type: 'tags', category: 'goals', importance: 'medium'},
+      {id: 'goal_traditions', label: 'Традиції, які хоче створити', type: 'textarea', category: 'goals', importance: 'medium'},
+      {id: 'goal_cozy_ideal', label: 'Ідеальний затишний вечір', type: 'textarea', category: 'goals', importance: 'low'},
+
+      // ===== Base: контакти та базові деталі =====
+      {id: 'contact_phone', label: 'Телефон', type: 'text', category: 'base', importance: 'high'},
+      {id: 'contact_email', label: 'Email', type: 'text', category: 'base', importance: 'medium'},
+      {id: 'city', label: 'Місто / Локація', type: 'text', category: 'base', importance: 'medium'},
+      {id: 'anniversary', label: 'Річниця / Важлива дата', type: 'date', category: 'base', importance: 'medium'},
+
+      // ===== Character: глибші риси =====
+      {id: 'attachment_style', label: 'Стиль прихильності', type: 'text', category: 'character', importance: 'medium'},
+      {id: 'humor_style', label: 'Почуття гумору', type: 'tags', category: 'character', importance: 'low'},
+      {id: 'personal_boundaries', label: 'Особисті кордони', type: 'textarea', category: 'character', importance: 'high'},
+
+      // ===== Preferences: розширені =====
+      {id: 'cuisines_fav', label: 'Улюблені кухні', type: 'tags', category: 'preferences', importance: 'medium'},
+      {id: 'allergies', label: 'Алергії / Чутливості', type: 'tags', category: 'preferences', importance: 'high'},
+      {id: 'aesthetics', label: 'Естетики / Стилі', type: 'tags', category: 'preferences', importance: 'medium'},
+      {id: 'fav_colors', label: 'Улюблені кольори', type: 'tags', category: 'preferences', importance: 'low'},
+
+      // ===== Anti-preferences: розширені =====
+      {id: 'anti_allergies', label: 'Заборонені через алергії', type: 'tags', category: 'antipreferences', importance: 'high'},
+      {id: 'anti_people_types', label: 'Типи людей, з якими важко', type: 'tags', category: 'antipreferences', importance: 'medium'},
+
+      // ===== Gifts: додаткові ідеї =====
+      {id: 'gift_price_range', label: 'Комфортний бюджет подарунків', type: 'text', category: 'gifts', importance: 'low'},
+      {id: 'gift_stores', label: 'Улюблені магазини / платформи', type: 'tags', category: 'gifts', importance: 'low'},
+
+      // ===== Psych: деталізація підтримки =====
+      {id: 'psy_anxiety_triggers', label: 'Тригери тривоги', type: 'tags', category: 'psych', importance: 'high'},
+      {id: 'psy_motivators', label: 'Що мотивує', type: 'tags', category: 'psych', importance: 'medium'},
+      {id: 'psy_calming_words', label: 'Слова/фрази підтримки', type: 'tags', category: 'psych', importance: 'medium'},
+
+      // ===== Logistics: рутини та організація =====
+      {id: 'log_transport', label: 'Звичний транспорт', type: 'tags', category: 'logistics', importance: 'low'},
+      {id: 'log_work_hours', label: 'Години роботи/навчання', type: 'text', category: 'logistics', importance: 'medium'},
+      {id: 'log_routines', label: 'Щоденні рутини', type: 'textarea', category: 'logistics', importance: 'medium'},
+      {id: 'log_food_schedule', label: 'Харчовий режим', type: 'text', category: 'logistics', importance: 'low'},
+
+      // ===== Goals: довгострокові та цікаві напрямки =====
+      {id: 'long_goals', label: 'Довгострокові цілі', type: 'tags', category: 'goals', importance: 'high'},
+      {id: 'learning_topics', label: 'Що хоче вивчити', type: 'tags', category: 'goals', importance: 'medium'},
+      {id: 'bucket_list', label: 'Bucket list', type: 'tags', category: 'goals', importance: 'medium'},
+
+      // ===== Custom: вільні нотатки =====
+      {id: 'notes_private', label: 'Особисті нотатки', type: 'textarea', category: 'custom', importance: 'low'},
+
+      // ===== Communication: стиль спілкування =====
+      {id: 'comm_style', label: 'Стиль спілкування', type: 'tags', category: 'communication', importance: 'high'},
+      {id: 'comm_frequency', label: 'Частота бажаного контакту', type: 'text', category: 'communication', importance: 'medium'},
+      {id: 'comm_topics_good', label: 'Комфортні теми', type: 'tags', category: 'communication', importance: 'medium'},
+      {id: 'comm_topics_bad', label: 'Складні теми', type: 'tags', category: 'communication', importance: 'high'},
+      {id: 'comm_love_language', label: 'Мова любові в комунікації', type: 'text', category: 'communication', importance: 'high'},
+
+      // ===== Finance: фінансові звички =====
+      {id: 'finance_habits', label: 'Фінансові звички', type: 'textarea', category: 'finance', importance: 'medium'},
+      {id: 'finance_attitude', label: 'Ставлення до грошей', type: 'textarea', category: 'finance', importance: 'medium'},
+      {id: 'finance_goals', label: 'Спільні фінансові цілі', type: 'tags', category: 'finance', importance: 'high'},
+      {id: 'finance_split', label: 'Розподіл витрат', type: 'text', category: 'finance', importance: 'medium'},
+
+      // ===== Intimacy: інтимність (ПРИВАТНА) =====
+      {id: 'intimacy_language', label: 'Мова інтимності', type: 'textarea', category: 'intimacy', importance: 'high'},
+      {id: 'intimacy_boundaries', label: 'Boundaries та комфорт', type: 'textarea', category: 'intimacy', importance: 'high'},
+      {id: 'intimacy_gestures', label: 'Романтичні жести', type: 'tags', category: 'intimacy', importance: 'medium'},
+
+      // ===== Family: сім'я та родинні зв'язки =====
+      {id: 'family_info', label: 'Інформація про родину', type: 'textarea', category: 'family', importance: 'medium'},
+      {id: 'family_important', label: 'Важливі люди', type: 'tags', category: 'family', importance: 'high'},
+      {id: 'family_traditions', label: 'Сімейні традиції', type: 'tags', category: 'family', importance: 'medium'},
+      {id: 'family_attitude', label: 'Ставлення до родини', type: 'textarea', category: 'family', importance: 'medium'},
+
+      // ===== Career: кар'єра та професійні цілі =====
+      {id: 'career_goals', label: 'Професійні цілі', type: 'tags', category: 'career', importance: 'medium'},
+      {id: 'career_schedule', label: 'Робочий графік', type: 'text', category: 'career', importance: 'low'},
+      {id: 'career_dreams', label: 'Кар\'єрні мрії', type: 'textarea', category: 'career', importance: 'medium'},
+      {id: 'career_balance', label: 'Work-life balance', type: 'textarea', category: 'career', importance: 'medium'},
+
+      // ===== Culture: культура та принципи =====
+      {id: 'culture_religion', label: 'Релігійні погляди', type: 'text', category: 'culture', importance: 'medium'},
+      {id: 'culture_politics', label: 'Політичні переконання', type: 'text', category: 'culture', importance: 'low'},
+      {id: 'culture_traditions', label: 'Культурні традиції', type: 'tags', category: 'culture', importance: 'medium'},
+      {id: 'culture_principles', label: 'Життєві принципи', type: 'textarea', category: 'culture', importance: 'high'}
+    ],
+    values: {
+      fullName: 'Іванна Петренко',
+      dob: '1994-07-08',
+      character: 'Тиха, уважна, вразлива, але рішуча.',
+      likes: {
+        food: {
+          sweet: ['шоколад', 'тірамісу'],
+          drinks: ['матча']
+        },
+        activities: {
+          active: ['велоспорт'],
+          calm: ['читання']
+        }
+      }
+    }
+  };
+
+  // ============= GOOGLE SHEETS SYNC =============
+  const GoogleSheetsSync = {
+    // Конфігурація API
+    config: {
+      apiKey: null,
+      clientId: null,
+      spreadsheetId: null,
+      scopes: 'https://www.googleapis.com/auth/spreadsheets',
+      discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4']
+    },
+    
+    // OAuth токен клієнт
+    tokenClient: null,
+    accessToken: null,
+    gapiInitialized: false,
+    gisInitialized: false,
+    
+    // Ініціалізація GAPI
+    async initGapi() {
+      return new Promise((resolve, reject) => {
+        if (this.gapiInitialized) {
+          resolve();
+          return;
+        }
+        
+        if (typeof gapi === 'undefined') {
+          reject(new Error('Google API не завантажено'));
+          return;
+        }
+        
+        gapi.load('client', async () => {
+          try {
+            await gapi.client.init({
+              discoveryDocs: this.config.discoveryDocs,
+            });
+            this.gapiInitialized = true;
+            resolve();
+          } catch (error) {
+            reject(error);
+          }
+        });
+      });
+    },
+    
+    // Ініціалізація GIS (Google Identity Services)
+    initGis(clientId) {
+      return new Promise((resolve, reject) => {
+        if (this.gisInitialized && this.config.clientId === clientId) {
+          resolve();
+          return;
+        }
+        
+        if (typeof google === 'undefined') {
+          reject(new Error('Google Identity Services не завантажено'));
+          return;
+        }
+        
+        this.config.clientId = clientId;
+        
+        this.tokenClient = google.accounts.oauth2.initTokenClient({
+          client_id: clientId,
+          scope: this.config.scopes,
+          callback: '', // Буде встановлено пізніше
+        });
+        
+        this.gisInitialized = true;
+        resolve();
+      });
+    },
+    
+    // OAuth авторизація
+    async authorize() {
+      return new Promise((resolve, reject) => {
+        if (!this.tokenClient) {
+          reject(new Error('Token client не ініціалізовано'));
+          return;
+        }
+        
+        this.tokenClient.callback = async (response) => {
+          if (response.error !== undefined) {
+            reject(response);
+            return;
+          }
+          
+          this.accessToken = response.access_token;
+          // Зберігаємо в sessionStorage (НЕ в localStorage для безпеки)
+          sessionStorage.setItem('gapi_token', response.access_token);
+          resolve(response);
+        };
+        
+        // Перевіряємо чи є токен в sessionStorage
+        const savedToken = sessionStorage.getItem('gapi_token');
+        if (savedToken) {
+          this.accessToken = savedToken;
+          gapi.client.setToken({ access_token: savedToken });
+          resolve({ access_token: savedToken });
+        } else {
+          // Запитуємо новий токен
+          this.tokenClient.requestAccessToken({ prompt: 'consent' });
+        }
+      });
+    },
+    
+    // Перевірка авторизації
+    isAuthorized() {
+      return this.accessToken !== null && gapi.client.getToken() !== null;
+    },
+    
+    // Відкликати доступ
+    revokeAccess() {
+      const token = gapi.client.getToken();
+      if (token !== null) {
+        google.accounts.oauth2.revoke(token.access_token);
+        gapi.client.setToken(null);
+      }
+      this.accessToken = null;
+      sessionStorage.removeItem('gapi_token');
+    },
+    
+    // Створення нової таблиці (ОПТИМІЗОВАНО - 1 лист!)
+    async createSpreadsheet() {
+      if (!this.isAuthorized()) {
+        throw new Error('Не авторизовано');
+      }
+      
+      const date = new Date().toISOString().split('T')[0];
+      const title = `Dosier - ${date}`;
+      
+      try {
+        const response = await gapi.client.sheets.spreadsheets.create({
+          properties: {
+            title: title
+          },
+          sheets: [
+            { 
+              properties: { 
+                title: 'Data', 
+                gridProperties: { frozenRowCount: 1 } 
+              } 
+            }
+          ]
+        });
+        
+        const spreadsheetId = response.result.spreadsheetId;
+        this.config.spreadsheetId = spreadsheetId;
+        
+        // Ініціалізуємо структуру
+        await this.initializeStructure(spreadsheetId);
+        
+        return {
+          spreadsheetId: spreadsheetId,
+          url: `https://docs.google.com/spreadsheets/d/${spreadsheetId}`
+        };
+      } catch (error) {
+        console.error('Помилка створення таблиці:', error);
+        throw error;
+      }
+    },
+    
+    // Ініціалізація структури таблиці (ОПТИМІЗОВАНО - 1 лист!)
+    async initializeStructure(spreadsheetId) {
+      try {
+        // Створюємо headers для Data листа
+        await gapi.client.sheets.spreadsheets.values.update({
+          spreadsheetId: spreadsheetId,
+          range: 'Data!A1:B1',
+          valueInputOption: 'RAW',
+          resource: {
+            values: [['key', 'value']]
+          }
+        });
+      } catch (error) {
+        console.error('Помилка ініціалізації структури:', error);
+        throw error;
+      }
+    },
+    
+    // Завантаження даних у Google Sheets (ОПТИМІЗОВАНО - 1 запит!)
+    async uploadData(config, values, encryptionPassword = null) {
+      if (!this.isAuthorized()) {
+        throw new Error('Не авторизовано');
+      }
+      
+      const spreadsheetId = this.config.spreadsheetId;
+      if (!spreadsheetId) {
+        throw new Error('Spreadsheet ID не встановлено');
+      }
+      
+      try {
+        const timestamp = new Date().toISOString();
+        
+        // Готуємо весь payload в один об'єкт
+        const payload = {
+          config: config,
+          values: values,
+          version: '2.0',
+          lastSync: timestamp
+        };
+        
+        let dataStr = JSON.stringify(payload);
+        let encrypted = false;
+        let salt = '';
+        let iv = '';
+        
+        // Шифрування якщо потрібно
+        if (encryptionPassword) {
+          const encryptedData = await this.encryption.encrypt(dataStr, encryptionPassword);
+          dataStr = encryptedData.encrypted;
+          encrypted = true;
+          salt = encryptedData.salt;
+          iv = encryptedData.iv;
+        }
+        
+        // ВСІ дані в ОДНОМУ запиті!
+        await gapi.client.sheets.spreadsheets.values.batchUpdate({
+          spreadsheetId: spreadsheetId,
+          resource: {
+            valueInputOption: 'RAW',
+            data: [
+              {
+                range: 'Data!A1:B5',
+                values: [
+                  ['key', 'value'],
+                  ['data', dataStr],
+                  ['encrypted', encrypted.toString()],
+                  ['salt', salt],
+                  ['iv', iv]
+                ]
+              }
+            ]
+          }
+        });
+        
+        return { success: true, timestamp };
+      } catch (error) {
+        console.error('Помилка завантаження даних:', error);
+        throw error;
+      }
+    },
+    
+    // Завантаження даних з Google Sheets (ОПТИМІЗОВАНО - 1 запит!)
+    async downloadData(encryptionPassword = null) {
+      if (!this.isAuthorized()) {
+        throw new Error('Не авторизовано');
+      }
+      
+      const spreadsheetId = this.config.spreadsheetId;
+      if (!spreadsheetId) {
+        throw new Error('Spreadsheet ID не встановлено');
+      }
+      
+      try {
+        // Читаємо ВСІ дані ОДНИМ запитом!
+        const response = await gapi.client.sheets.spreadsheets.values.get({
+          spreadsheetId: spreadsheetId,
+          range: 'Data!A1:B5'
+        });
+        
+        const rows = response.result.values || [];
+        
+        // Парсимо дані (пропускаємо header)
+        let dataStr = '';
+        let encrypted = false;
+        let salt = '';
+        let iv = '';
+        
+        for (let i = 1; i < rows.length; i++) {
+          const [key, value] = rows[i];
+          if (key === 'data') dataStr = value || '';
+          if (key === 'encrypted') encrypted = value === 'true';
+          if (key === 'salt') salt = value || '';
+          if (key === 'iv') iv = value || '';
+        }
+        
+        if (!dataStr) {
+          throw new Error('Дані не знайдено');
+        }
+        
+        // Дешифрування якщо потрібно
+        if (encrypted && encryptionPassword) {
+          dataStr = await this.encryption.decrypt(dataStr, encryptionPassword, salt, iv);
+        } else if (encrypted && !encryptionPassword) {
+          throw new Error('Дані зашифровано. Введіть пароль для розшифрування.');
+        }
+        
+        // Парсимо JSON
+        const payload = JSON.parse(dataStr);
+        
+        return {
+          config: payload.config,
+          values: payload.values,
+          metadata: {
+            version: payload.version,
+            lastSync: payload.lastSync,
+            encrypted: encrypted.toString()
+          }
+        };
+      } catch (error) {
+        console.error('Помилка завантаження даних:', error);
+        throw error;
+      }
+    },
+    
+    // Шифрування (AES-GCM)
+    encryption: {
+      // Генерація ключа з пароля
+      async deriveKey(password, salt) {
+        const encoder = new TextEncoder();
+        const passwordBuffer = encoder.encode(password);
+        const saltBuffer = typeof salt === 'string' ? 
+          this.hexToBuffer(salt) : salt;
+        
+        const keyMaterial = await crypto.subtle.importKey(
+          'raw',
+          passwordBuffer,
+          'PBKDF2',
+          false,
+          ['deriveBits', 'deriveKey']
+        );
+        
+        return await crypto.subtle.deriveKey(
+          {
+            name: 'PBKDF2',
+            salt: saltBuffer,
+            iterations: 100000,
+            hash: 'SHA-256'
+          },
+          keyMaterial,
+          { name: 'AES-GCM', length: 256 },
+          false,
+          ['encrypt', 'decrypt']
+        );
+      },
+      
+      // Шифрування
+      async encrypt(data, password) {
+        const encoder = new TextEncoder();
+        const dataBuffer = encoder.encode(data);
+        
+        // Генеруємо salt та IV
+        const salt = crypto.getRandomValues(new Uint8Array(16));
+        const iv = crypto.getRandomValues(new Uint8Array(12));
+        
+        // Отримуємо ключ
+        const key = await this.deriveKey(password, salt);
+        
+        // Шифруємо
+        const encrypted = await crypto.subtle.encrypt(
+          { name: 'AES-GCM', iv: iv },
+          key,
+          dataBuffer
+        );
+        
+        return {
+          encrypted: this.bufferToHex(new Uint8Array(encrypted)),
+          iv: this.bufferToHex(iv),
+          salt: this.bufferToHex(salt)
+        };
+      },
+      
+      // Дешифрування
+      async decrypt(encryptedHex, password, saltHex, ivHex) {
+        const encryptedBuffer = this.hexToBuffer(encryptedHex);
+        const iv = this.hexToBuffer(ivHex);
+        
+        // Отримуємо ключ
+        const key = await this.deriveKey(password, saltHex);
+        
+        // Дешифруємо
+        const decrypted = await crypto.subtle.decrypt(
+          { name: 'AES-GCM', iv: iv },
+          key,
+          encryptedBuffer
+        );
+        
+        const decoder = new TextDecoder();
+        return decoder.decode(decrypted);
+      },
+      
+      // Хеш пароля для верифікації
+      async hashPassword(password) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(password);
+        const hash = await crypto.subtle.digest('SHA-256', data);
+        return this.bufferToHex(new Uint8Array(hash));
+      },
+      
+      // Utilities
+      bufferToHex(buffer) {
+        return Array.from(buffer)
+          .map(b => b.toString(16).padStart(2, '0'))
+          .join('');
+      },
+      
+      hexToBuffer(hex) {
+        const bytes = new Uint8Array(hex.length / 2);
+        for (let i = 0; i < hex.length; i += 2) {
+          bytes[i / 2] = parseInt(hex.substr(i, 2), 16);
+        }
+        return bytes;
+      }
+    }
+  };
+
+  // ============= STORAGE =============
+  const Storage = {
+    key: 'love_dossier_v2',
+    syncKey: 'love_dossier_sync_settings',
+    
+    // Збереження (враховує режим синхронізації) + ОПТИМІЗАЦІЯ
+    async save() {
+      const mode = State.sync.mode;
+      
+      // Завжди зберігаємо в localStorage як backup
+      localStorage.setItem(this.key, JSON.stringify({
+        config: State.config,
+        values: State.values,
+        savedAt: new Date().toISOString()
+      }));
+      
+      // Якщо Google Sheets режим - синхронізуємо
+      if (mode === 'googleSheets' && State.sync.googleSheets.enabled) {
+        try {
+          SyncManager.updateStatus('syncing', 'Синхронізація...');
+          
+          const password = State.sync.googleSheets.encryptionEnabled ? 
+            sessionStorage.getItem('encryption_password') : null;
+          
+          await GoogleSheetsSync.uploadData(State.config, State.values, password);
+          
+          State.sync.googleSheets.lastSync = new Date().toISOString();
+          this.saveSyncSettings();
+          
+          // Скидаємо флаг незбережених змін
+          SyncManager.hasUnsyncedChanges = false;
+          
+          SyncManager.updateStatus('synced', `Синхронізовано ${this.formatTime(new Date())}`);
+          Toast.show('☁️ Дані синхронізовані з Google Sheets');
+        } catch (error) {
+          console.error('Sync error:', error);
+          State.sync.lastError = error.message;
+          SyncManager.updateStatus('error', 'Помилка синхронізації');
+          Toast.show('❌ Помилка синхронізації: ' + error.message, 'error');
+          
+          // Зберігаємо локально якщо синхронізація не вдалась
+          Toast.show('💾 Дані збережено локально', 'warning');
+        }
+      } else {
+        SyncManager.updateStatus('local', 'Local режим');
+      }
+    },
+    
+    // Завантаження (враховує режим синхронізації)
+    async load() {
+      const mode = State.sync.mode;
+      
+      // Якщо Google Sheets режим
+      if (mode === 'googleSheets' && State.sync.googleSheets.enabled) {
+        try {
+          if (!GoogleSheetsSync.isAuthorized()) {
+            throw new Error('Не авторизовано в Google');
+          }
+          
+          const password = State.sync.googleSheets.encryptionEnabled ? 
+            sessionStorage.getItem('encryption_password') : null;
+          
+          const result = await GoogleSheetsSync.downloadData(password);
+          Toast.show('☁️ Дані завантажено з Google Sheets');
+          return result;
+        } catch (error) {
+          console.error('Load from Google Sheets error:', error);
+          Toast.show('⚠️ Завантажую з локального backup', 'warning');
+          // Повертаємось до localStorage
+          return this.loadFromLocalStorage();
+        }
+      }
+      
+      // Стандартне завантаження з localStorage
+      return this.loadFromLocalStorage();
+    },
+    
+    // Завантаження з localStorage
+    loadFromLocalStorage() {
+      try {
+        const data = localStorage.getItem(this.key);
+        if (!data) return null;
+        return JSON.parse(data);
+      } catch (e) {
+        console.error('Error loading data:', e);
+        return null;
+      }
+    },
+    
+    // Збереження налаштувань синхронізації
+    saveSyncSettings() {
+      localStorage.setItem(this.syncKey, JSON.stringify({
+        mode: State.sync.mode,
+        googleSheets: {
+          enabled: State.sync.googleSheets.enabled,
+          clientId: State.sync.googleSheets.clientId,
+          spreadsheetId: State.sync.googleSheets.spreadsheetId,
+          lastSync: State.sync.googleSheets.lastSync,
+          autoSyncEnabled: State.sync.googleSheets.autoSyncEnabled,
+          autoSyncInterval: State.sync.googleSheets.autoSyncInterval,
+          encryptionEnabled: State.sync.googleSheets.encryptionEnabled,
+          encryptionPasswordHash: State.sync.googleSheets.encryptionPasswordHash
+        }
+      }));
+    },
+    
+    // Завантаження налаштувань синхронізації
+    loadSyncSettings() {
+      try {
+        const data = localStorage.getItem(this.syncKey);
+        if (!data) return null;
+        return JSON.parse(data);
+      } catch (e) {
+        console.error('Error loading sync settings:', e);
+        return null;
+      }
+    },
+    
+    // Очистити всі дані
+    clear() {
+      localStorage.removeItem(this.key);
+    },
+    
+    // Експорт в JSON файл
+    exportToFile() {
+      const data = {
+        config: State.config,
+        values: State.values,
+        exportedAt: new Date().toISOString(),
+        version: '2.0'
+      };
+      
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `dossier-${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    },
+    
+    // Форматування часу
+    formatTime(date) {
+      return date.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' });
+    }
+  };
+
+  // ============= SYNC MANAGER =============
+  const SyncManager = {
+    autoSyncInterval: null,
+    hasUnsyncedChanges: false, // Флаг незбережених змін
+    lastSyncData: null, // Останні синхронізовані дані
+    
+    // Позначити що є незбережені зміни
+    markDirty() {
+      this.hasUnsyncedChanges = true;
+    },
+    
+    // Оновлення статусу синхронізації в UI
+    updateStatus(status, text) {
+      State.sync.status = status;
+      State.sync.statusText = text;
+      
+      const statusEl = document.getElementById('syncStatus');
+      if (!statusEl) return;
+      
+      // Очищуємо всі класи
+      statusEl.className = 'sync-status';
+      statusEl.classList.add(status);
+      
+      // Іконки для різних статусів
+      const icons = {
+        local: 'fa-laptop',
+        synced: 'fa-check-circle',
+        syncing: 'fa-sync-alt fa-spin',
+        error: 'fa-exclamation-circle',
+        offline: 'fa-wifi'
+      };
+      
+      statusEl.innerHTML = `
+        <i class="fas ${icons[status] || 'fa-laptop'}"></i>
+        <span>${text}</span>
+      `;
+    },
+    
+    // Запуск автосинхронізації (ОПТИМІЗОВАНО - синхронізує тільки якщо є зміни!)
+    startAutoSync(intervalMinutes) {
+      this.stopAutoSync();
+      
+      if (!State.sync.googleSheets.enabled || !State.sync.googleSheets.autoSyncEnabled) {
+        return;
+      }
+      
+      console.log(`🔄 Auto-sync: кожні ${intervalMinutes} хв (тільки якщо є зміни)`);
+      
+      this.autoSyncInterval = setInterval(async () => {
+        // Перевіряємо чи є незбережені зміни
+        if (!this.hasUnsyncedChanges) {
+          console.log('⏭️ Auto-sync: немає змін, пропускаємо');
+          return;
+        }
+        
+        if (navigator.onLine && GoogleSheetsSync.isAuthorized()) {
+          try {
+            console.log('🔄 Auto-sync: синхронізація...');
+            await Storage.save();
+            this.hasUnsyncedChanges = false;
+          } catch (error) {
+            console.error('Auto-sync failed:', error);
+          }
+        } else {
+          console.log('⚠️ Auto-sync: offline або не авторизовано');
+        }
+      }, intervalMinutes * 60 * 1000);
+    },
+    
+    // Зупинка автосинхронізації
+    stopAutoSync() {
+      if (this.autoSyncInterval) {
+        clearInterval(this.autoSyncInterval);
+        this.autoSyncInterval = null;
+        console.log('Auto-sync stopped');
+      }
+    },
+    
+    // Ручна синхронізація
+    async manualSync() {
+      if (!GoogleSheetsSync.isAuthorized()) {
+        Toast.show('❌ Потрібна авторизація в Google', 'error');
+        return;
+      }
+      
+      try {
+        this.updateStatus('syncing', 'Синхронізація...');
+        await Storage.save();
+        Toast.show('✅ Синхронізація завершена');
+      } catch (error) {
+        console.error('Manual sync error:', error);
+        Toast.show('❌ Помилка синхронізації: ' + error.message, 'error');
+      }
+    },
+    
+    // Ініціалізація (завантажити налаштування та запустити автосинх)
+    async init() {
+      // Завантажити налаштування синхронізації
+      const syncSettings = Storage.loadSyncSettings();
+      if (syncSettings) {
+        State.sync.mode = syncSettings.mode;
+        Object.assign(State.sync.googleSheets, syncSettings.googleSheets);
+        
+        // Якщо Google Sheets режим
+        if (syncSettings.mode === 'googleSheets' && syncSettings.googleSheets.enabled) {
+          try {
+            // Ініціалізуємо Google API
+            await GoogleSheetsSync.initGapi();
+            await GoogleSheetsSync.initGis(syncSettings.googleSheets.clientId);
+            
+            GoogleSheetsSync.config.spreadsheetId = syncSettings.googleSheets.spreadsheetId;
+            
+            // Перевіряємо авторизацію з sessionStorage
+            const savedToken = sessionStorage.getItem('gapi_token');
+            if (savedToken) {
+              GoogleSheetsSync.accessToken = savedToken;
+              if (typeof gapi !== 'undefined' && gapi.client) {
+                gapi.client.setToken({ access_token: savedToken });
+              }
+            }
+            
+            // Запускаємо автосинхронізацію
+            if (syncSettings.googleSheets.autoSyncEnabled) {
+              this.startAutoSync(syncSettings.googleSheets.autoSyncInterval);
+            }
+            
+            const lastSync = syncSettings.googleSheets.lastSync;
+            if (lastSync) {
+              const date = new Date(lastSync);
+              this.updateStatus('synced', `Синхронізовано ${Storage.formatTime(date)}`);
+            } else {
+              this.updateStatus('synced', 'Google Sheets');
+            }
+          } catch (error) {
+            console.error('Sync init error:', error);
+            this.updateStatus('error', 'Помилка ініціалізації');
+          }
+        } else {
+          this.updateStatus('local', 'Local режим');
+        }
+      } else {
+        this.updateStatus('local', 'Local режим');
+      }
+      
+      // Обробка online/offline
+      window.addEventListener('online', () => {
+        if (State.sync.mode === 'googleSheets') {
+          Toast.show('🌐 З\'єднання відновлено', 'info');
+          this.updateStatus('synced', 'Online');
+          this.manualSync();
+        }
+      });
+      
+      window.addEventListener('offline', () => {
+        if (State.sync.mode === 'googleSheets') {
+          Toast.show('⚠️ Офлайн режим', 'warning');
+          this.updateStatus('offline', 'Офлайн');
+        }
+      });
+    }
+  };
+
+  // ============= FORMAT MENU =============
+  const FormatMenu = {
+    menu: document.getElementById('formatMenu'),
+    activeInput: null,
+    selectionStart: 0,
+    selectionEnd: 0,
+    
+    init() {
+      // Обробка виділення тексту в input та textarea
+      const handleSelectionEvent = (e) => {
+        const target = e.target;
+        if (target.matches('.form-input, .form-textarea')) {
+          this.handleSelection(target, e);
+        } else {
+          this.hide();
+        }
+      };
+      
+      document.addEventListener('mouseup', handleSelectionEvent);
+      document.addEventListener('touchend', handleSelectionEvent);
+      
+      // Обробка кліків по кнопках форматування
+      this.menu.querySelectorAll('.format-menu-btn').forEach(btn => {
+        const handleFormatClick = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const format = btn.dataset.format;
+          this.applyFormat(format);
+        };
+        
+        btn.addEventListener('mousedown', handleFormatClick);
+        btn.addEventListener('touchstart', handleFormatClick);
+      });
+      
+      // Приховати меню при кліку поза ним
+      const handleClickOutside = (e) => {
+        if (!this.menu.contains(e.target) && !e.target.matches('.form-input, .form-textarea')) {
+          this.hide();
+        }
+      };
+      
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('touchstart', handleClickOutside);
+      
+      // Гарячі клавіші
+      document.addEventListener('keydown', (e) => {
+        if (!this.activeInput) return;
+        
+        if (e.ctrlKey || e.metaKey) {
+          if (e.key === 'b') {
+            e.preventDefault();
+            this.applyFormat('bold');
+          } else if (e.key === 'i') {
+            e.preventDefault();
+            this.applyFormat('italic');
+          } else if (e.key === 'k') {
+            e.preventDefault();
+            this.applyFormat('link');
+          }
+        }
+      });
+    },
+    
+    handleSelection(input, event) {
+      // Невелика затримка для мобільних, щоб виділення встигло відбутися
+      setTimeout(() => {
+        const selectedText = this.getSelectedText(input);
+        
+        if (selectedText && selectedText.length > 0) {
+          this.activeInput = input;
+          // Зберігаємо позиції виділення
+          this.selectionStart = input.selectionStart;
+          this.selectionEnd = input.selectionEnd;
+          
+          // Отримуємо координати для touch або mouse події
+          let x, y;
+          if (event.type.startsWith('touch')) {
+            const touch = event.changedTouches[0] || event.touches[0];
+            x = touch.pageX;
+            y = touch.pageY;
+          } else {
+            x = event.pageX;
+            y = event.pageY;
+          }
+          
+          this.show(x, y);
+        } else {
+          this.hide();
+        }
+      }, 50);
+    },
+    
+    getSelectedText(input) {
+      const start = input.selectionStart;
+      const end = input.selectionEnd;
+      return input.value.substring(start, end);
+    },
+    
+    show(x, y) {
+      this.menu.style.left = `${x}px`;
+      this.menu.style.top = `${y - 50}px`;
+      this.menu.classList.add('active');
+    },
+    
+    hide() {
+      this.menu.classList.remove('active');
+      this.activeInput = null;
+    },
+    
+    applyFormat(format) {
+      if (!this.activeInput) return;
+      
+      const input = this.activeInput;
+      // Використовуємо збережені позиції
+      const start = this.selectionStart;
+      const end = this.selectionEnd;
+      const selectedText = input.value.substring(start, end);
+      
+      if (!selectedText) return;
+      
+      let formattedText = '';
+      
+      switch(format) {
+        case 'bold':
+          formattedText = `**${selectedText}**`;
+          break;
+        case 'italic':
+          formattedText = `*${selectedText}*`;
+          break;
+        case 'strikethrough':
+          formattedText = `~~${selectedText}~~`;
+          break;
+        case 'link':
+          const url = prompt('Введіть URL:', 'https://');
+          if (url) {
+            formattedText = `[${selectedText}](${url})`;
+          } else {
+            return;
+          }
+          break;
+        case 'chip':
+          formattedText = `<chip>${selectedText}</chip>`;
+          break;
+      }
+      
+      // Замінюємо виділений текст на форматований
+      const newValue = input.value.substring(0, start) + formattedText + input.value.substring(end);
+      input.value = newValue;
+      
+      // Встановлюємо курсор після вставленого тексту
+      const newCursorPos = start + formattedText.length;
+      input.setSelectionRange(newCursorPos, newCursorPos);
+      input.focus();
+      
+      this.hide();
+    }
+  };
+
+  // ============= TOAST =============
+  const Toast = {
+    container: document.getElementById('toastContainer'),
+    
+    show(message, type = 'success') {
+      // Визначаємо тривалість та стиль в залежності від типу
+      const config = {
+        success: { 
+          duration: 3000, 
+          icon: 'fa-check-circle', 
+          class: 'toast-success' 
+        },
+        error: { 
+          duration: 6000,  // ❗ Помилки показуються довше!
+          icon: 'fa-exclamation-circle', 
+          class: 'toast-error' 
+        },
+        warning: { 
+          duration: 5000,  // ⚠️ Попередження теж довше
+          icon: 'fa-exclamation-triangle', 
+          class: 'toast-warning' 
+        },
+        info: { 
+          duration: 4000, 
+          icon: 'fa-info-circle', 
+          class: 'toast-info' 
+        }
+      };
+      
+      const settings = config[type] || config.success;
+      
+      const toast = document.createElement('div');
+      toast.className = `toast ${settings.class}`;
+      toast.innerHTML = `
+        <i class="fas ${settings.icon}"></i>
+        <span>${message}</span>
+      `;
+      
+      this.container.appendChild(toast);
+      
+      // Анімація появи
+      setTimeout(() => toast.classList.add('show'), 10);
+      
+      // Автоматичне приховування
+      setTimeout(() => {
+        toast.classList.remove('show');
+        toast.classList.add('removing');
+        setTimeout(() => toast.remove(), 300);
+      }, settings.duration);
+      
+      // Закриття по кліку
+      toast.addEventListener('click', () => {
+        toast.classList.remove('show');
+        toast.classList.add('removing');
+        setTimeout(() => toast.remove(), 300);
+      });
+    }
+  };
+
+  // ============= MODAL =============
+  const Modal = {
+    backdrop: document.getElementById('modalBackdrop'),
+    title: document.getElementById('modalTitle'),
+    titleIcon: document.getElementById('modalTitleIcon'),
+    body: document.getElementById('modalBody'),
+    saveBtn: document.getElementById('modalSave'),
+    cancelBtn: document.getElementById('modalCancel'),
+    closeBtn: document.getElementById('modalClose'),
+    
+    open(title, contentHtml, options = {}) {
+      const { onSave, icon = 'fa-edit', size = 'medium', onOpen } = options;
+      
+      this.title.textContent = title;
+      this.titleIcon.className = `fas ${icon} modal-title-icon`;
+      this.body.innerHTML = contentHtml;
+      
+      // Додаємо клас розміру до модалки
+      const modal = this.backdrop.querySelector('.modal');
+      modal.classList.remove('modal-large', 'modal-small');
+      if (size === 'large') {
+        modal.classList.add('modal-large');
+      } else if (size === 'small') {
+        modal.classList.add('modal-small');
+      }
+      
+      // Видаляємо closing якщо він залишився
+      this.backdrop.classList.remove('closing');
+      
+      // Показуємо backdrop без анімації
+      this.backdrop.style.display = 'flex';
+      
+      // Додаємо active з невеликою затримкою для анімації
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          this.backdrop.classList.add('active');
+        });
+      });
+      
+      this.saveBtn.onclick = async () => {
+        if (onSave) {
+          const result = await onSave();
+          if (result !== false) {
+            this.close();
+          }
+        } else {
+          this.close();
+        }
+      };
+      
+      // Викликаємо callback після відкриття (для ініціалізації event listeners)
+      if (onOpen) {
+        setTimeout(() => onOpen(), 0);
+      }
+    },
+    
+    close() {
+      // Додаємо клас для анімації закриття
+      this.backdrop.classList.add('closing');
+      this.backdrop.classList.remove('active');
+      
+      // Чекаємо завершення анімації перед повним закриттям
+      setTimeout(() => {
+        this.backdrop.classList.remove('closing');
+        this.backdrop.style.display = 'none';
+        State.ui.modalData = null;
+      }, 200); // 200ms = тривалість transition
+    },
+    
+    init() {
+      this.cancelBtn.onclick = () => this.close();
+      this.closeBtn.onclick = () => this.close();
+      this.backdrop.onclick = (e) => {
+        if (e.target === this.backdrop) this.close();
+      };
+    }
+  };
+
+  // ============= CUSTOM SELECT =============
+  const CustomSelect = {
+    init(selectElement, options) {
+      const container = document.createElement('div');
+      container.className = 'custom-select';
+      
+      const selectedOption = options.find(opt => opt.selected) || options[0];
+      
+      // Trigger
+      const trigger = document.createElement('div');
+      trigger.className = 'custom-select-trigger';
+      trigger.innerHTML = `
+        ${selectedOption.icon ? `<i class="fas ${selectedOption.icon} custom-select-icon"></i>` : ''}
+        <span class="custom-select-text">${selectedOption.label}</span>
+      `;
+      
+      // Dropdown
+      const dropdown = document.createElement('div');
+      dropdown.className = 'custom-select-dropdown';
+      
+      options.forEach(opt => {
+        const option = document.createElement('div');
+        option.className = 'custom-select-option';
+        if (opt.value === selectedOption.value) option.classList.add('selected');
+        option.dataset.value = opt.value;
+        option.innerHTML = `
+          ${opt.icon ? `<i class="fas ${opt.icon} custom-select-option-icon"></i>` : ''}
+          <span class="custom-select-option-text">${opt.label}</span>
+        `;
+        
+        option.onclick = () => {
+          // Update trigger
+          trigger.innerHTML = `
+            ${opt.icon ? `<i class="fas ${opt.icon} custom-select-icon"></i>` : ''}
+            <span class="custom-select-text">${opt.label}</span>
+          `;
+          
+          // Update selected
+          dropdown.querySelectorAll('.custom-select-option').forEach(o => o.classList.remove('selected'));
+          option.classList.add('selected');
+          
+          // Update original select
+          selectElement.value = opt.value;
+          selectElement.dispatchEvent(new Event('change'));
+          
+          // Close dropdown
+          container.classList.remove('active');
+          dropdown.classList.remove('active');
+        };
+        
+        dropdown.appendChild(option);
+      });
+      
+      // Position dropdown
+      const positionDropdown = () => {
+        const rect = trigger.getBoundingClientRect();
+        const dropdownHeight = dropdown.offsetHeight || 300; // max-height
+        const viewportHeight = window.innerHeight;
+        const spaceBelow = viewportHeight - rect.bottom;
+        const spaceAbove = rect.top;
+        
+        // Визначаємо чи показувати dropdown зверху чи знизу
+        let top;
+        if (spaceBelow < dropdownHeight && spaceAbove > spaceBelow) {
+          // Показуємо зверху
+          top = rect.top - dropdownHeight - 8;
+          dropdown.style.transformOrigin = 'bottom';
+        } else {
+          // Показуємо знизу
+          top = rect.bottom + 8;
+          dropdown.style.transformOrigin = 'top';
+        }
+        
+        // Обмежуємо висоту якщо не вміщається
+        const maxHeight = Math.min(300, Math.max(spaceBelow, spaceAbove) - 16);
+        dropdown.style.maxHeight = `${maxHeight}px`;
+        
+        dropdown.style.top = `${Math.max(8, top)}px`;
+        dropdown.style.left = `${rect.left}px`;
+        dropdown.style.width = `${rect.width}px`;
+      };
+      
+      // Toggle dropdown
+      trigger.onclick = (e) => {
+        e.stopPropagation();
+        const wasActive = container.classList.contains('active');
+        
+        // Close other selects
+        document.querySelectorAll('.custom-select.active').forEach(s => {
+          s.classList.remove('active');
+        });
+        document.querySelectorAll('.custom-select-dropdown.active').forEach(d => {
+          d.classList.remove('active');
+        });
+        
+        if (!wasActive) {
+          container.classList.add('active');
+          dropdown.classList.add('active');
+          positionDropdown();
+        }
+      };
+      
+      // Reposition on scroll/resize
+      window.addEventListener('scroll', () => {
+        if (container.classList.contains('active')) {
+          positionDropdown();
+        }
+      }, true);
+      
+      window.addEventListener('resize', () => {
+        if (container.classList.contains('active')) {
+          positionDropdown();
+        }
+      });
+      
+      // Close on outside click
+      document.addEventListener('click', () => {
+        container.classList.remove('active');
+        dropdown.classList.remove('active');
+      });
+      
+      container.appendChild(trigger);
+      document.body.appendChild(dropdown);
+      
+      // Replace original select
+      selectElement.style.display = 'none';
+      selectElement.parentNode.insertBefore(container, selectElement);
+      
+      // Cleanup on container removal
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          mutation.removedNodes.forEach((node) => {
+            if (node === container || node.contains(container)) {
+              dropdown.remove();
+              observer.disconnect();
+            }
+          });
+        });
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+      
+      return container;
+    }
+  };
+
+  // ============= SEARCH =============
+  const Search = {
+    query: '',
+    debounceTimeout: null,
+    
+    // Debounce helper
+    debounce(func, wait) {
+      return (...args) => {
+        clearTimeout(this.debounceTimeout);
+        this.debounceTimeout = setTimeout(() => func(...args), wait);
+      };
+    },
+    
+    // Ініціалізація пошуку
+    init() {
+      const searchInput = document.getElementById('searchInput');
+      const searchClearBtn = document.getElementById('searchClearBtn');
+      
+      if (!searchInput) return;
+      
+      // Обробник введення з debounce
+      const handleSearch = this.debounce((query) => {
+        this.query = query;
+        this.performSearch();
+      }, 300);
+      
+      searchInput.addEventListener('input', (e) => {
+        const query = e.target.value;
+        
+        // Показуємо/ховаємо кнопку очищення
+        if (query) {
+          searchClearBtn.classList.add('visible');
+        } else {
+          searchClearBtn.classList.remove('visible');
+        }
+        
+        handleSearch(query);
+      });
+      
+      // Кнопка очищення
+      if (searchClearBtn) {
+        searchClearBtn.addEventListener('click', () => {
+          searchInput.value = '';
+          searchClearBtn.classList.remove('visible');
+          this.query = '';
+          this.performSearch();
+          searchInput.focus();
+        });
+      }
+      
+      // Очищення пошуку при Escape
+      searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          searchInput.value = '';
+          searchClearBtn.classList.remove('visible');
+          this.query = '';
+          this.performSearch();
+        }
+      });
+    },
+    
+    // Виконує пошук
+    performSearch() {
+      // Якщо є активний пошук, показуємо результати по всіх категоріях
+      if (this.query) {
+        State.ui.searchActive = true;
+        State.ui.activeCategory = null; // Скидаємо активну категорію
+      } else {
+        State.ui.searchActive = false;
+        State.ui.activeCategory = State.ui.lastActiveCategory || 'base';
+      }
+      
+      Renderer.renderCategories();
+      Renderer.renderContent();
+      Progress.update();
+    },
+    
+    // Фільтрує поля за запитом
+    filterFields(fields) {
+      if (!this.query) return fields;
+      
+      const lowerQuery = this.query.toLowerCase();
+      
+      return fields.filter(field => {
+        // Пошук в назві поля
+        if (field.label.toLowerCase().includes(lowerQuery)) return true;
+        
+        // Пошук в значенні
+        const value = State.values[field.id];
+        if (!value) return false;
+        
+        // Для текстових полів
+        if (typeof value === 'string') {
+          return value.toLowerCase().includes(lowerQuery);
+        }
+        
+        // Для тегів
+        if (Array.isArray(value)) {
+          return value.some(v => v.toLowerCase().includes(lowerQuery));
+        }
+        
+        // Для nested полів
+        if (typeof value === 'object') {
+          return JSON.stringify(value).toLowerCase().includes(lowerQuery);
+        }
+        
+        return false;
+      });
+    },
+    
+    // Highlight знайдених збігів
+    highlightText(text) {
+      if (!this.query || !text) return text;
+      
+      const regex = new RegExp(`(${this.escapeRegex(this.query)})`, 'gi');
+      return text.replace(regex, '<span class="search-highlight">$1</span>');
+    },
+    
+    // Escape regex спецсимволів
+    escapeRegex(str) {
+      return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+  };
+
+  // ============= PROGRESS =============
+  const Progress = {
+    // Перевіряє чи поле заповнене
+    isFieldFilled(fieldId) {
+      const field = State.config.fields.find(f => f.id === fieldId);
+      if (!field) return false;
+      
+      const value = State.values[fieldId];
+      
+      // text/textarea: value !== '' && value !== null && value !== undefined
+      if (field.type === 'text' || field.type === 'textarea') {
+        return value !== '' && value !== null && value !== undefined;
+      }
+      
+      // date: value !== '' && value !== null
+      if (field.type === 'date') {
+        return value !== '' && value !== null && value !== undefined;
+      }
+      
+      // tags: array.length > 0
+      if (field.type === 'tags') {
+        return Array.isArray(value) && value.length > 0;
+      }
+      
+      // nested: хоча б один підпункт заповнений
+      if (field.type === 'nested') {
+        if (!value || typeof value !== 'object') return false;
+        
+        for (const catKey in value) {
+          for (const subKey in value[catKey]) {
+            const items = value[catKey][subKey];
+            if (Array.isArray(items) && items.length > 0) {
+              return true;
+            }
+          }
+        }
+        return false;
+      }
+      
+      return false;
+    },
+    
+    // Розраховує прогрес для категорії
+    calculateProgress(categoryId) {
+      if (!categoryId) {
+        return { filled: 0, total: 0, percentage: 0 };
+      }
+      
+      const fields = State.config.fields.filter(f => f.category === categoryId);
+      const total = fields.length;
+      
+      if (total === 0) {
+        return { filled: 0, total: 0, percentage: 0 };
+      }
+      
+      const filled = fields.filter(f => this.isFieldFilled(f.id)).length;
+      const percentage = Math.round((filled / total) * 100);
+      
+      return { filled, total, percentage };
+    },
+    
+    // Оновлює UI прогрес-бару
+    update() {
+      const progressBarFill = document.getElementById('progressBarFill');
+      const progressBarText = document.getElementById('progressBarText');
+      
+      if (!progressBarFill || !progressBarText) return;
+      
+      const categoryId = State.ui.activeCategory;
+      
+      if (!categoryId) {
+        progressBarFill.style.width = '0%';
+        progressBarText.textContent = 'Оберіть категорію';
+        return;
+      }
+      
+      const { filled, total, percentage } = this.calculateProgress(categoryId);
+      const category = State.config.categories.find(c => c.id === categoryId);
+      const categoryName = category ? category.label : 'Категорія';
+      
+      progressBarFill.style.width = `${percentage}%`;
+      progressBarText.textContent = `${categoryName}: ${filled} з ${total} полів (${percentage}%)`;
+      
+      // Оновлюємо tooltip
+      const container = progressBarFill.parentElement;
+      if (container) {
+        container.title = `Заповнено ${filled} з ${total} полів у категорії "${categoryName}"`;
+      }
+    }
+  };
+
+  // ============= RENDERER =============
+  const Renderer = {
+    // Функція для форматування тексту з підтримкою markdown-подібного синтаксису
+    // Приклади використання:
+    // **жирний текст** або __жирний текст__ → <strong>жирний текст</strong>
+    // *курсив* або _курсив_ → <em>курсив</em>
+    // ~~закреслений~~ → <del>закреслений</del>
+    // [текст](url) → <a href="url">текст</a>
+    formatText(text) {
+      if (!text || typeof text !== 'string') return text;
+      
+      // Спочатку обробляємо посилання [текст](url) ДО екранування
+      // Використовуємо унікальний маркер який не буде екранований
+      const links = [];
+      text = text.replace(/\[(.+?)\]\((.+?)\)/g, (match, linkText, url) => {
+        const placeholder = `§§§LINK${links.length}§§§`;
+        links.push({ text: linkText, url: url });
+        return placeholder;
+      });
+      
+      // Обробляємо <chip>текст</chip> ДО екранування
+      const chips = [];
+      text = text.replace(/<chip>(.+?)<\/chip>/g, (match, chipText) => {
+        const placeholder = `§§§CHIP${chips.length}§§§`;
+        chips.push(chipText);
+        return placeholder;
+      });
+      
+      // Екрануємо HTML теги для безпеки (але не наші маркери §§§)
+      text = text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      
+      // **жирний** або __жирний__ (зберігаємо пробіли навколо)
+      text = text.replace(/(\s?)\*\*(.+?)\*\*(\s?)/g, (match, before, content, after) => {
+        return `${before}<strong>${content}</strong>${after}`;
+      });
+      text = text.replace(/(\s?)__(.+?)__(\s?)/g, (match, before, content, after) => {
+        return `${before}<strong>${content}</strong>${after}`;
+      });
+      
+      // *курсив* або _курсив_ (зберігаємо пробіли навколо)
+      text = text.replace(/(\s?)\*(.+?)\*(\s?)/g, (match, before, content, after) => {
+        return `${before}<em>${content}</em>${after}`;
+      });
+      text = text.replace(/(\s?)_(.+?)_(\s?)/g, (match, before, content, after) => {
+        return `${before}<em>${content}</em>${after}`;
+      });
+      
+      // ~~закреслений~~ (зберігаємо пробіли навколо)
+      text = text.replace(/(\s?)~~(.+?)~~(\s?)/g, (match, before, content, after) => {
+        return `${before}<del>${content}</del>${after}`;
+      });
+      
+      // Зберігаємо множинні пробіли (замінюємо подвійні пробіли на &nbsp;)
+      text = text.replace(/  /g, ' &nbsp;');
+      
+      // Відновлюємо chip теги з маркерів ПЕРЕД обробкою пробілів
+      chips.forEach((chipText, index) => {
+        const chipHtml = `<span class="chip">${chipText}</span>`;
+        text = text.replace(`§§§CHIP${index}§§§`, chipHtml);
+      });
+      
+      // Відновлюємо посилання з маркерів ПЕРЕД обробкою пробілів
+      links.forEach((link, index) => {
+        const linkHtml = `<a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.text}</a>`;
+        text = text.replace(`§§§LINK${index}§§§`, linkHtml);
+      });
+      
+      // ВАЖЛИВО: Замінюємо пробіли між закриваючим та відкриваючим тегами на &nbsp;
+      text = text.replace(/(<\/[^>]+>)\s+(<[^>]+>)/g, '$1&nbsp;$2');
+      
+      // Переноси рядків
+      text = text.replace(/\n/g, '<br>');
+      
+      return text;
+    },
+    
+    renderCategories() {
+      const nav = document.getElementById('categoryNav');
+      nav.innerHTML = '';
+      
+      State.config.categories.forEach(cat => {
+        const fieldsCount = State.config.fields.filter(f => f.category === cat.id).length;
+        const item = document.createElement('div');
+        item.className = 'category-item';
+        if (State.ui.activeCategory === cat.id) {
+          item.classList.add('active');
+        }
+        
+        item.innerHTML = `
+          <div class="category-icon">
+            <i class="fas ${cat.icon}"></i>
+          </div>
+          <div class="category-label">${cat.label}</div>
+          <div class="category-count">${fieldsCount}</div>
+        `;
+        
+        item.onclick = () => {
+          // Очищуємо пошук при виборі категорії
+          const searchInput = document.getElementById('searchInput');
+          const searchClearBtn = document.getElementById('searchClearBtn');
+          if (searchInput && searchInput.value) {
+            searchInput.value = '';
+            if (searchClearBtn) searchClearBtn.classList.remove('visible');
+            Search.query = '';
+          }
+          
+          State.ui.searchActive = false;
+          State.ui.activeCategory = cat.id;
+          State.ui.lastActiveCategory = cat.id;
+          this.renderCategories();
+          this.renderContent();
+          Progress.update(); // Оновлюємо прогрес при зміні категорії
+        };
+        
+        nav.appendChild(item);
+      });
+    },
+    
+    renderContent() {
+      const contentTitle = document.getElementById('contentTitle');
+      const contentActions = document.getElementById('contentActions');
+      const contentBody = document.getElementById('contentBody');
+      
+      // Режим пошуку
+      if (State.ui.searchActive && Search.query) {
+        const allFields = State.config.fields;
+        const filteredFields = Search.filterFields(allFields);
+        
+        contentTitle.innerHTML = `
+          <i class="fas fa-search"></i>
+          <span>Результати пошуку</span>
+        `;
+        
+        contentActions.innerHTML = '';
+        
+        if (filteredFields.length === 0) {
+          contentBody.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state-icon"><i class="fas fa-search"></i></div>
+              <div class="empty-state-text">Нічого не знайдено</div>
+              <p>Спробуйте змінити пошуковий запит</p>
+            </div>
+          `;
+          return;
+        }
+        
+        contentBody.innerHTML = '<div class="fields-grid"></div>';
+        const grid = contentBody.querySelector('.fields-grid');
+        
+        filteredFields.forEach(field => {
+          grid.appendChild(this.renderField(field, true));
+        });
+        
+        return;
+      }
+      
+      if (!State.ui.activeCategory) {
+        contentTitle.innerHTML = `
+          <i class="fas fa-hand-pointer"></i>
+          <span>Оберіть категорію</span>
+        `;
+        contentActions.innerHTML = '';
+        contentBody.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon"><i class="fas fa-hand-pointer"></i></div>
+            <div class="empty-state-text">Оберіть категорію зліва</div>
+            <p>Натисніть на категорію, щоб побачити поля</p>
+          </div>
+        `;
+        return;
+      }
+      
+      const category = State.config.categories.find(c => c.id === State.ui.activeCategory);
+      const fields = State.config.fields.filter(f => f.category === State.ui.activeCategory);
+      
+      // Приховуємо приватні категорії якщо потрібно
+      const isPrivateCategory = category && category.isPrivate;
+      
+      contentTitle.innerHTML = `
+        <i class="fas ${category.icon}"></i>
+        <span>${category.label}</span>
+        ${isPrivateCategory ? '<span class="badge badge-high" style="margin-left: 0.5rem;">🔒 Приватна</span>' : ''}
+      `;
+      
+      // Підраховуємо активні фільтри
+      const activeFiltersCount = 
+        (State.ui.fillFilter !== 'all' ? 1 : 0) + 
+        State.ui.importanceFilters.length;
+      
+      const filtersBadge = activeFiltersCount > 0 
+        ? `<span class="filters-badge">${activeFiltersCount}</span>` 
+        : '';
+      
+      contentActions.innerHTML = `
+        <button class="filters-toggle-btn" onclick="App.toggleFiltersDropdown()" id="filtersToggleBtn">
+          <i class="fas fa-filter"></i>
+          <span>Фільтри</span>
+          ${filtersBadge}
+        </button>
+        
+        <button class="btn btn-secondary btn-sm" onclick="App.editCategory('${category.id}')">
+          <i class="fas fa-edit"></i>
+          <span>Редагувати</span>
+        </button>
+        
+        <div class="filters-dropdown" id="filtersDropdown">
+          <div class="filters-dropdown-section">
+            <div class="filters-dropdown-label">
+              <i class="fas fa-check-square"></i>
+              Заповненість
+            </div>
+            <div class="fill-filter">
+              <button class="fill-filter-btn ${State.ui.fillFilter === 'all' ? 'active' : ''}" onclick="App.setFillFilter('all')">
+                <i class="fas fa-list"></i>
+                <span>Всі</span>
+              </button>
+              <button class="fill-filter-btn ${State.ui.fillFilter === 'filled' ? 'active' : ''}" onclick="App.setFillFilter('filled')">
+                <i class="fas fa-check-circle"></i>
+                <span>Заповнені</span>
+              </button>
+              <button class="fill-filter-btn ${State.ui.fillFilter === 'empty' ? 'active' : ''}" onclick="App.setFillFilter('empty')">
+                <i class="fas fa-circle"></i>
+                <span>Порожні</span>
+              </button>
+            </div>
+          </div>
+          <div class="filters-dropdown-section">
+            <div class="filters-dropdown-label">
+              <i class="fas fa-star"></i>
+              Важливість
+            </div>
+            <div class="importance-filter">
+              <button class="importance-filter-btn ${State.ui.importanceFilters.includes('high') ? 'active high' : ''}" onclick="App.toggleImportanceFilter('high')">
+                <i class="fas fa-exclamation-circle"></i>
+                <span>Високі</span>
+              </button>
+              <button class="importance-filter-btn ${State.ui.importanceFilters.includes('medium') ? 'active medium' : ''}" onclick="App.toggleImportanceFilter('medium')">
+                <i class="fas fa-minus-circle"></i>
+                <span>Середні</span>
+              </button>
+              <button class="importance-filter-btn ${State.ui.importanceFilters.includes('low') ? 'active low' : ''}" onclick="App.toggleImportanceFilter('low')">
+                <i class="fas fa-info-circle"></i>
+                <span>Низькі</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      if (fields.length === 0) {
+        contentBody.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon"><i class="fas fa-inbox"></i></div>
+            <div class="empty-state-text">Немає полів у цій категорії</div>
+            <p>Натисніть "Додати поле" щоб створити нове поле</p>
+          </div>
+        `;
+        return;
+      }
+      
+      // Фільтруємо поля за заповненістю
+      let filteredFields = fields;
+      if (State.ui.fillFilter === 'filled') {
+        filteredFields = fields.filter(f => Progress.isFieldFilled(f.id));
+      } else if (State.ui.fillFilter === 'empty') {
+        filteredFields = fields.filter(f => !Progress.isFieldFilled(f.id));
+      }
+      
+      // Фільтруємо поля за важливістю
+      if (State.ui.importanceFilters.length > 0) {
+        filteredFields = filteredFields.filter(f => State.ui.importanceFilters.includes(f.importance));
+      }
+      
+      if (filteredFields.length === 0) {
+        let emptyMessage = 'Немає полів за обраними фільтрами';
+        if (State.ui.fillFilter !== 'all') {
+          const filterText = State.ui.fillFilter === 'filled' ? 'заповнених' : 'порожніх';
+          emptyMessage = `Немає ${filterText} полів за обраними фільтрами`;
+        } else if (State.ui.importanceFilters.length > 0) {
+          emptyMessage = 'Немає полів з обраними рівнями важливості';
+        }
+        contentBody.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon"><i class="fas fa-filter"></i></div>
+            <div class="empty-state-text">${emptyMessage}</div>
+            <p>Змініть фільтри або додайте нові дані</p>
+          </div>
+        `;
+        return;
+      }
+      
+      contentBody.innerHTML = '<div class="fields-grid"></div>';
+      const grid = contentBody.querySelector('.fields-grid');
+      
+      filteredFields.forEach(field => {
+        grid.appendChild(this.renderField(field));
+      });
+    },
+    
+    renderField(field, showCategory = false) {
+      const card = document.createElement('div');
+      card.className = 'field-card fade-in';
+      
+      const value = State.values[field.id];
+      const hasValue = value !== undefined && value !== null && value !== '';
+      
+      let valueHtml = '';
+      
+      if (field.type === 'nested') {
+        if (value && typeof value === 'object') {
+          valueHtml = '<div class="nested-container">';
+          (field.nestedCategories || []).forEach(cat => {
+            valueHtml += `
+              <div class="nested-category">
+                <div class="nested-category-title">${cat.label}</div>
+            `;
+            (cat.subcategories || []).forEach(sub => {
+              const items = (value[cat.id] && value[cat.id][sub.id]) || [];
+              const formattedItems = items.map(item => {
+                const formatted = this.formatText(item);
+                return Search.query ? Search.highlightText(formatted) : formatted;
+              });
+              valueHtml += `
+                <div class="nested-subcategory">
+                  <div class="nested-label">${sub.label}</div>
+                  <div class="chips-container">
+                    ${formattedItems.length ? formattedItems.map(item => `<div class="chip">${item}</div>`).join('') : '<span class="empty">—</span>'}
+                  </div>
+                </div>
+              `;
+            });
+            valueHtml += '</div>';
+          });
+          valueHtml += '</div>';
+        } else {
+          valueHtml = '<div class="field-value empty">Не заповнено</div>';
+        }
+      } else if (field.type === 'tags') {
+        const tags = Array.isArray(value) ? value : (value ? value.split(',').map(t => t.trim()) : []);
+        const formattedTags = tags.map(tag => {
+          const formatted = this.formatText(tag);
+          return Search.query ? Search.highlightText(formatted) : formatted;
+        });
+        valueHtml = `
+          <div class="field-value ${tags.length ? '' : 'empty'}">${tags.length ? `<div class="chips-container">${formattedTags.map(tag => `<div class="chip">${tag}</div>`).join('')}</div>`:'Незаповнено'}</div>`;
+      } else {
+        let formattedValue = hasValue ? this.formatText(value) : 'Не заповнено';
+        if (hasValue && Search.query) {
+          formattedValue = Search.highlightText(formattedValue);
+        }
+        valueHtml = `<div class="field-value ${hasValue ? '' : 'empty'}">${formattedValue}</div>`;
+      }
+      
+      // Визначаємо категорію поля для відображення
+      let categoryBadge = '';
+      if (showCategory) {
+        const category = State.config.categories.find(c => c.id === field.category);
+        if (category) {
+          categoryBadge = `<span class="search-result-badge"><i class="fas ${category.icon}"></i> ${category.label}</span>`;
+        }
+      }
+      
+      // Highlight в назві поля
+      const highlightedLabel = Search.query ? Search.highlightText(field.label) : field.label;
+      
+      card.innerHTML = `
+        <div class="field-header">
+          <div class="field-info">
+            <div class="field-label">
+              <span>${highlightedLabel}${field.required ? '<span style="color: var(--danger)">*</span>' : ''}</span>
+              ${categoryBadge}
+            </div>
+            <div class="field-meta">
+              <span class="badge badge-${field.importance}">${this.getImportanceLabel(field.importance)}</span>
+              <span>${this.getTypeLabel(field.type)}</span>
+            </div>
+          </div>
+          <div class="field-controls">
+            <button class="btn btn-icon btn-secondary btn-sm field-controls-menu-btn" onclick="App.toggleFieldMenu(event, '${field.id}')" title="Меню">
+              <i class="fas fa-ellipsis-v"></i>
+            </button>
+            <button class="btn btn-icon btn-secondary btn-sm" onclick="App.editFieldValue('${field.id}')" title="Редагувати значення">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-icon btn-secondary btn-sm" onclick="App.editField('${field.id}')" title="Налаштування поля">
+              <i class="fas fa-cog"></i>
+            </button>
+            <button class="btn btn-icon btn-secondary btn-sm" onclick="App.deleteField('${field.id}')" title="Видалити">
+              <i class="fas fa-trash"></i>
+            </button>
+            <div class="field-controls-popup" id="fieldMenu_${field.id}">
+              <button class="btn btn-secondary btn-sm" onclick="App.editFieldValue('${field.id}'); App.closeFieldMenu('${field.id}')">
+                <i class="fas fa-edit"></i> Редагувати
+              </button>
+              <button class="btn btn-secondary btn-sm" onclick="App.editField('${field.id}'); App.closeFieldMenu('${field.id}')">
+                <i class="fas fa-cog"></i> Налаштування
+              </button>
+              <button class="btn btn-danger btn-sm" onclick="App.deleteField('${field.id}'); App.closeFieldMenu('${field.id}')">
+                <i class="fas fa-trash"></i> Видалити
+              </button>
+            </div>
+          </div>
+        </div>
+        ${valueHtml}
+      `;
+      
+      return card;
+    },
+    
+    getImportanceLabel(importance) {
+      const labels = {
+        high: '<i class="fas fa-exclamation-circle"></i> Високий',
+        medium: '<i class="fas fa-minus-circle"></i> Середній',
+        low: '<i class="fas fa-info-circle"></i> Низький'
+      };
+      return labels[importance] || importance;
+    },
+    
+    getTypeLabel(type) {
+      const labels = {
+        text: 'Текст',
+        textarea: 'Текстова область',
+        date: 'Дата',
+        tags: 'Теги',
+        nested: 'Вкладені'
+      };
+      return labels[type] || type;
+    }
+  };
+
+  // ============= APP =============
+  const App = {
+    async init() {
+      // Ініціалізуємо синхронізацію СПОЧАТКУ
+      await SyncManager.init();
+      
+      // Load data
+      const saved = await Storage.load();
+      if (saved) {
+        // Merge existing config with new default categories and fields
+        const existingCategoryIds = saved.config.categories.map(c => c.id);
+        const existingFieldIds = saved.config.fields.map(f => f.id);
+        
+        // Add new categories that don't exist
+        const newCategories = DefaultConfig.categories.filter(c => !existingCategoryIds.includes(c.id));
+        const newFields = DefaultConfig.fields.filter(f => !existingFieldIds.includes(f.id));
+        
+        State.config = {
+          categories: [...saved.config.categories, ...newCategories],
+          fields: [...saved.config.fields, ...newFields]
+        };
+        State.values = saved.values;
+        
+        // Save updated config if new items were added
+        if (newCategories.length > 0 || newFields.length > 0) {
+          await Storage.save();
+        }
+      } else {
+        State.config = {
+          categories: [...DefaultConfig.categories],
+          fields: [...DefaultConfig.fields]
+        };
+        State.values = {...DefaultConfig.values};
+        await Storage.save();
+      }
+      
+      // Initialize UI
+      Modal.init();
+      FormatMenu.init();
+      Search.init();
+      this.bindEvents();
+      
+      // Автоматично відкриваємо категорію "Базова інформація" при завантаженні
+      State.ui.activeCategory = 'base';
+      State.ui.lastActiveCategory = 'base';
+      
+      Renderer.renderCategories();
+      Renderer.renderContent();
+      Progress.update(); // Оновлюємо прогрес при ініціалізації
+    },
+    
+    bindEvents() {
+      // Sidebar toggle для мобільних
+      const sidebar = document.getElementById('sidebar');
+      const sidebarToggle = document.getElementById('sidebarToggle');
+      
+      if (sidebarToggle) {
+        // За замовчуванням sidebar згорнутий на планшетах і мобільних
+        if (window.innerWidth <= 1024) {
+          sidebar.classList.add('collapsed');
+        }
+        
+        sidebarToggle.addEventListener('click', () => {
+          sidebar.classList.toggle('collapsed');
+          sidebarToggle.classList.toggle('active');
+        });
+        
+        // Оновлюємо стан при зміні розміру вікна
+        window.addEventListener('resize', () => {
+          if (window.innerWidth > 1024) {
+            sidebar.classList.remove('collapsed');
+            sidebarToggle.classList.remove('active');
+          }
+        });
+        
+        // Автоматично згортаємо sidebar при виборі категорії
+        document.getElementById('categoryNav').addEventListener('click', (e) => {
+          if (e.target.closest('.category-item') && window.innerWidth <= 1024) {
+            sidebar.classList.add('collapsed');
+            sidebarToggle.classList.remove('active');
+          }
+        });
+      }
+      
+      document.getElementById('btnSave').onclick = async () => {
+        await Storage.save();
+        if (State.sync.mode === 'localStorage') {
+          Toast.show('✅ Дані збережено');
+        }
+      };
+      
+      document.getElementById('btnSync').onclick = () => {
+        this.openSyncSettings();
+      };
+      
+      document.getElementById('btnExport').onclick = () => {
+        const data = JSON.stringify({config: State.config, values: State.values}, null, 2);
+        const blob = new Blob([data], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `dossier_${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        Toast.show('📁 Експортовано');
+      };
+      
+      document.getElementById('btnImport').onclick = () => {
+        document.getElementById('fileInput').click();
+      };
+      
+      document.getElementById('fileInput').onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+          try {
+            const data = JSON.parse(event.target.result);
+            if (data.config && data.values) {
+              State.config = data.config;
+              State.values = data.values;
+              SyncManager.markDirty(); // Позначаємо зміни
+              await Storage.save();
+              Renderer.renderCategories();
+              Renderer.renderContent();
+              Toast.show('✅ Імпортовано');
+            } else {
+              Toast.show('❌ Невірний формат файлу');
+            }
+          } catch (error) {
+            Toast.show('❌ Помилка читання файлу');
+          }
+        };
+        reader.readAsText(file);
+        e.target.value = '';
+      };
+      
+      document.getElementById('btnClear').onclick = () => {
+        if (confirm('Ви впевнені, що хочете очистити всі дані? Ця дія незворотна!')) {
+          Storage.clear();
+          State.config = {
+            categories: [...DefaultConfig.categories],
+            fields: [...DefaultConfig.fields]
+          };
+          State.values = {...DefaultConfig.values};
+          State.ui.activeCategory = null;
+          Renderer.renderCategories();
+          Renderer.renderContent();
+          Toast.show('🗑️ Дані очищено');
+        }
+      };
+      
+      document.getElementById('btnAddField').onclick = () => {
+        this.showFieldModal();
+      };
+      
+      document.getElementById('btnAddCategory').onclick = () => {
+        this.showCategoryModal();
+      };
+    },
+    
+    showFieldModal(fieldId = null) {
+      const field = fieldId ? State.config.fields.find(f => f.id === fieldId) : null;
+      const isEdit = !!field;
+      
+      const categories = State.config.categories.map(c => 
+        `<option value="${c.id}" ${field && field.category === c.id ? 'selected' : ''}>${c.label}</option>`
+      ).join('');
+      
+      Modal.open(
+        isEdit ? 'Редагувати поле' : 'Нове поле',
+        `
+          <div class="form-group">
+            <label class="form-label">ID поля</label>
+            <input type="text" class="form-input" id="fieldId" value="${field ? field.id : ''}" ${isEdit ? 'readonly' : ''} required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Назва поля</label>
+            <input type="text" class="form-input" id="fieldLabel" value="${field ? field.label : ''}" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Тип</label>
+              <select class="form-select" id="fieldType">
+                <option value="text" ${field && field.type === 'text' ? 'selected' : ''}>Текст</option>
+                <option value="textarea" ${field && field.type === 'textarea' ? 'selected' : ''}>Текстова область</option>
+                <option value="date" ${field && field.type === 'date' ? 'selected' : ''}>Дата</option>
+                <option value="tags" ${field && field.type === 'tags' ? 'selected' : ''}>Теги</option>
+                <option value="nested" ${field && field.type === 'nested' ? 'selected' : ''}>Вкладені</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Важливість</label>
+              <select class="form-select" id="fieldImportance">
+                <option value="high" ${field && field.importance === 'high' ? 'selected' : ''}>Висока</option>
+                <option value="medium" ${field && field.importance === 'medium' ? 'selected' : ''}>Середня</option>
+                <option value="low" ${field && field.importance === 'low' ? 'selected' : ''}>Низька</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Категорія</label>
+            <select class="form-select" id="fieldCategory">
+              ${categories}
+            </select>
+          </div>
+          <div class="form-checkbox">
+            <input type="checkbox" id="fieldRequired" ${field && field.required ? 'checked' : ''}>
+            <label for="fieldRequired">Обов'язкове поле</label>
+          </div>
+        `,
+        {
+          icon: 'fa-plus-circle',
+          onSave: async () => {
+            const id = document.getElementById('fieldId').value.trim();
+            const label = document.getElementById('fieldLabel').value.trim();
+            const type = document.getElementById('fieldType').value;
+            const importance = document.getElementById('fieldImportance').value;
+            const category = document.getElementById('fieldCategory').value;
+            const required = document.getElementById('fieldRequired').checked;
+            
+            if (!id || !label) {
+              Toast.show('❌ Заповніть всі поля');
+              return false;
+            }
+            
+            if (!isEdit && State.config.fields.find(f => f.id === id)) {
+              Toast.show('❌ Поле з таким ID вже існує');
+              return false;
+            }
+            
+            const fieldData = {id, label, type, importance, category, required};
+            
+            if (type === 'nested') {
+              fieldData.nestedCategories = field && field.nestedCategories ? field.nestedCategories : [];
+            }
+            
+            if (isEdit) {
+              const index = State.config.fields.findIndex(f => f.id === fieldId);
+              State.config.fields[index] = fieldData;
+            } else {
+              State.config.fields.push(fieldData);
+            }
+            
+            SyncManager.markDirty(); // Позначаємо зміни
+            await Storage.save();
+            Renderer.renderContent();
+            Progress.update();
+            Toast.show(isEdit ? '✅ Поле оновлено' : '✅ Поле створено');
+            return true;
+          },
+          onOpen: () => {
+            // Initialize custom selects
+            setTimeout(() => {
+              const typeSelect = document.getElementById('fieldType');
+              if (typeSelect) {
+                CustomSelect.init(typeSelect, [
+                  {value: 'text', label: 'Текст', icon: 'fa-font', selected: field && field.type === 'text'},
+                  {value: 'textarea', label: 'Текстова область', icon: 'fa-align-left', selected: field && field.type === 'textarea'},
+                  {value: 'date', label: 'Дата', icon: 'fa-calendar', selected: field && field.type === 'date'},
+                  {value: 'tags', label: 'Теги', icon: 'fa-tags', selected: field && field.type === 'tags'},
+                  {value: 'nested', label: 'Вкладені', icon: 'fa-layer-group', selected: field && field.type === 'nested'}
+                ]);
+              }
+              
+              const importanceSelect = document.getElementById('fieldImportance');
+              if (importanceSelect) {
+                CustomSelect.init(importanceSelect, [
+                  {value: 'high', label: 'Висока', icon: 'fa-exclamation-circle', selected: field && field.importance === 'high'},
+                  {value: 'medium', label: 'Середня', icon: 'fa-minus-circle', selected: field && field.importance === 'medium'},
+                  {value: 'low', label: 'Низька', icon: 'fa-info-circle', selected: field && field.importance === 'low'}
+                ]);
+              }
+              
+              const categorySelect = document.getElementById('fieldCategory');
+              if (categorySelect) {
+                const categoryOptions = State.config.categories.map(c => ({
+                  value: c.id,
+                  label: c.label,
+                  icon: c.icon || 'fa-folder',
+                  selected: field && field.category === c.id
+                }));
+                CustomSelect.init(categorySelect, categoryOptions);
+              }
+            }, 100);
+          }
+        }
+      );
+    },
+    
+    showCategoryModal(categoryId = null) {
+      const category = categoryId ? State.config.categories.find(c => c.id === categoryId) : null;
+      const isEdit = !!category;
+      
+      Modal.open(
+        isEdit ? 'Редагувати категорію' : 'Нова категорія',
+        `
+          <div class="form-group">
+            <label class="form-label">ID категорії</label>
+            <input type="text" class="form-input" id="catId" value="${category ? category.id : ''}" ${isEdit ? 'readonly' : ''} required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Назва категорії</label>
+            <input type="text" class="form-input" id="catLabel" value="${category ? category.label : ''}" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Іконка (Font Awesome)</label>
+            <input type="text" class="form-input" id="catIcon" value="${category ? category.icon : 'fa-folder'}" placeholder="fa-folder">
+          </div>
+        `,
+        {
+          icon: 'fa-folder',
+          onSave: async () => {
+            const id = document.getElementById('catId').value.trim();
+            const label = document.getElementById('catLabel').value.trim();
+            const icon = document.getElementById('catIcon').value.trim() || 'fa-folder';
+            
+            if (!id || !label) {
+              Toast.show('❌ Заповніть всі поля');
+              return false;
+            }
+            
+            if (!isEdit && State.config.categories.find(c => c.id === id)) {
+              Toast.show('❌ Категорія з таким ID вже існує');
+              return false;
+            }
+            
+            if (isEdit) {
+              const index = State.config.categories.findIndex(c => c.id === categoryId);
+              State.config.categories[index] = {id, label, icon};
+            } else {
+              State.config.categories.push({id, label, icon});
+            }
+            
+            SyncManager.markDirty(); // Позначаємо зміни
+            await Storage.save();
+            Renderer.renderCategories();
+            Toast.show(isEdit ? '✅ Категорію оновлено' : '✅ Категорію створено');
+            return true;
+          }
+        }
+      );
+    },
+    
+    editFieldValue(fieldId) {
+      const field = State.config.fields.find(f => f.id === fieldId);
+      if (!field) return;
+      
+      const value = State.values[fieldId];
+      
+      let contentHtml = '';
+      
+      if (field.type === 'text' || field.type === 'date') {
+        contentHtml = `
+          <div class="form-group">
+            <label class="form-label">${field.label}</label>
+            <input type="${field.type}" class="form-input" id="fieldValue" value="${value || ''}">
+            ${field.type === 'text' ? '<small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">💡 Форматування: **жирний**, *курсив*, ~~закреслений~~, [текст](url)<br>🎨 Виділіть текст для швидкого форматування</small>' : ''}
+          </div>
+        `;
+      } else if (field.type === 'textarea') {
+        contentHtml = `
+          <div class="form-group">
+            <label class="form-label">${field.label}</label>
+            <textarea class="form-textarea" id="fieldValue">${value || ''}</textarea>
+            <small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">💡 Форматування: **жирний**, *курсив*, ~~закреслений~~, [текст](url)<br>🎨 Виділіть текст для швидкого форматування</small>
+          </div>
+        `;
+      } else if (field.type === 'tags') {
+        const tags = Array.isArray(value) ? value.join(', ') : (value || '');
+        contentHtml = `
+          <div class="form-group">
+            <label class="form-label">${field.label}</label>
+            <input type="text" class="form-input" id="fieldValue" value="${tags}" placeholder="тег1, тег2, тег3">
+            <small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">Розділяйте теги комами</small>
+          </div>
+        `;
+      } else if (field.type === 'nested') {
+        contentHtml = '<div>';
+        (field.nestedCategories || []).forEach(cat => {
+          contentHtml += `<div style="margin-bottom: 1.5rem;">
+            <div style="font-weight: 600; margin-bottom: 0.75rem;">${cat.label}</div>`;
+          (cat.subcategories || []).forEach(sub => {
+            const val = (value && value[cat.id] && value[cat.id][sub.id]) ? value[cat.id][sub.id].join(', ') : '';
+            contentHtml += `
+              <div class="form-group">
+                <label class="form-label">${sub.label}</label>
+                <input type="text" class="form-input" data-cat="${cat.id}" data-sub="${sub.id}" value="${val}" placeholder="значення1, значення2">
+              </div>
+            `;
+          });
+          contentHtml += '</div>';
+        });
+        contentHtml += '</div>';
+      }
+      
+      Modal.open(
+        `Редагувати: ${field.label}`,
+        contentHtml,
+        {
+          icon: 'fa-edit',
+          onSave: async () => {
+            if (field.type === 'nested') {
+              const newValue = {};
+              (field.nestedCategories || []).forEach(cat => {
+                newValue[cat.id] = {};
+                (cat.subcategories || []).forEach(sub => {
+                  const input = Modal.body.querySelector(`[data-cat="${cat.id}"][data-sub="${sub.id}"]`);
+                  if (input && input.value) {
+                    newValue[cat.id][sub.id] = input.value.split(',').map(v => v.trim()).filter(Boolean);
+                  } else {
+                    newValue[cat.id][sub.id] = [];
+                  }
+                });
+              });
+              State.values[fieldId] = newValue;
+            } else if (field.type === 'tags') {
+              const input = document.getElementById('fieldValue');
+              State.values[fieldId] = input.value.split(',').map(v => v.trim()).filter(Boolean);
+            } else {
+              const input = document.getElementById('fieldValue');
+              State.values[fieldId] = input.value;
+            }
+            
+            // Позначаємо що є незбережені зміни
+            SyncManager.markDirty();
+            
+            await Storage.save();
+            Renderer.renderContent();
+            Progress.update();
+            Toast.show('✅ Значення оновлено');
+            return true;
+          }
+        }
+      );
+    },
+    
+    editField(fieldId) {
+      this.showFieldModal(fieldId);
+    },
+    
+    editCategory(categoryId) {
+      this.showCategoryModal(categoryId);
+    },
+    
+    toggleFieldMenu(event, fieldId) {
+      event.stopPropagation();
+      const menu = document.getElementById(`fieldMenu_${fieldId}`);
+      const allMenus = document.querySelectorAll('.field-controls-popup');
+      
+      // Закриваємо всі інші меню
+      allMenus.forEach(m => {
+        if (m !== menu) m.classList.remove('active');
+      });
+      
+      // Toggle поточне меню
+      menu.classList.toggle('active');
+      
+      // Закриваємо меню при кліку поза ним
+      if (menu.classList.contains('active')) {
+        setTimeout(() => {
+          document.addEventListener('click', function closeMenu(e) {
+            if (!menu.contains(e.target)) {
+              menu.classList.remove('active');
+              document.removeEventListener('click', closeMenu);
+            }
+          });
+        }, 0);
+      }
+    },
+    
+    closeFieldMenu(fieldId) {
+      const menu = document.getElementById(`fieldMenu_${fieldId}`);
+      if (menu) menu.classList.remove('active');
+    },
+    
+    async deleteField(fieldId) {
+      if (!confirm('Видалити це поле?')) return;
+      
+      State.config.fields = State.config.fields.filter(f => f.id !== fieldId);
+      delete State.values[fieldId];
+      SyncManager.markDirty(); // Позначаємо зміни
+      await Storage.save();
+      Renderer.renderContent();
+      Progress.update();
+      Toast.show('🗑️ Поле видалено');
+    },
+    
+    // Встановлює фільтр заповненості
+    setFillFilter(filter) {
+      State.ui.fillFilter = filter;
+      Renderer.renderContent();
+      Progress.update();
+      
+      const filterNames = {
+        all: 'всі поля',
+        filled: 'заповнені поля',
+        empty: 'порожні поля'
+      };
+      Toast.show(`📊 Показано: ${filterNames[filter]}`);
+      
+      // Оновлюємо badge
+      this.updateFiltersBadge();
+    },
+    
+    // Toggle filters dropdown
+    toggleFiltersDropdown() {
+      const dropdown = document.getElementById('filtersDropdown');
+      const toggleBtn = document.getElementById('filtersToggleBtn');
+      
+      if (!dropdown || !toggleBtn) return;
+      
+      const isActive = dropdown.classList.contains('active');
+      
+      if (isActive) {
+        // Закриваємо з анімацією
+        dropdown.classList.remove('active');
+        dropdown.classList.add('closing');
+        toggleBtn.classList.remove('active');
+        
+        setTimeout(() => {
+          dropdown.classList.remove('closing');
+        }, 200);
+      } else {
+        // Відкриваємо
+        dropdown.classList.add('active');
+        toggleBtn.classList.add('active');
+        
+        // Закриваємо dropdown при кліку поза ним
+        setTimeout(() => {
+          document.addEventListener('click', function closeDropdown(e) {
+            if (!dropdown.contains(e.target) && !toggleBtn.contains(e.target)) {
+              dropdown.classList.remove('active');
+              dropdown.classList.add('closing');
+              toggleBtn.classList.remove('active');
+              document.removeEventListener('click', closeDropdown);
+              
+              setTimeout(() => {
+                dropdown.classList.remove('closing');
+              }, 200);
+            }
+          });
+        }, 0);
+      }
+    },
+    
+    // Toggle фільтр важливості (множинний вибір)
+    toggleImportanceFilter(importance) {
+      const index = State.ui.importanceFilters.indexOf(importance);
+      
+      if (index > -1) {
+        // Видаляємо якщо вже є
+        State.ui.importanceFilters.splice(index, 1);
+      } else {
+        // Додаємо якщо немає
+        State.ui.importanceFilters.push(importance);
+      }
+      
+      Renderer.renderContent();
+      Progress.update();
+      
+      const importanceNames = {
+        high: 'високі',
+        medium: 'середні',
+        low: 'низькі'
+      };
+      
+      if (State.ui.importanceFilters.length === 0) {
+        Toast.show('🔘 Показано поля всіх рівнів важливості');
+      } else {
+        const activeNames = State.ui.importanceFilters.map(i => importanceNames[i]).join(', ');
+        Toast.show(`🎯 Фільтр: ${activeNames}`);
+      }
+      
+      // Оновлюємо badge
+      this.updateFiltersBadge();
+    },
+    
+    // Toggle header menu dropdown
+    toggleHeaderMenu() {
+      const dropdown = document.getElementById('headerMenuDropdown');
+      const toggleBtn = document.getElementById('headerMenuBtn');
+      
+      if (!dropdown || !toggleBtn) return;
+      
+      const isActive = dropdown.classList.contains('active');
+      
+      if (isActive) {
+        // Закриваємо з анімацією
+        dropdown.classList.remove('active');
+        dropdown.classList.add('closing');
+        toggleBtn.classList.remove('active');
+        
+        setTimeout(() => {
+          dropdown.classList.remove('closing');
+        }, 200);
+      } else {
+        // Відкриваємо
+        dropdown.classList.add('active');
+        toggleBtn.classList.add('active');
+        
+        // Закриваємо dropdown при кліку поза ним
+        setTimeout(() => {
+          document.addEventListener('click', function closeDropdown(e) {
+            if (!dropdown.contains(e.target) && !toggleBtn.contains(e.target)) {
+              dropdown.classList.remove('active');
+              dropdown.classList.add('closing');
+              toggleBtn.classList.remove('active');
+              document.removeEventListener('click', closeDropdown);
+              
+              setTimeout(() => {
+                dropdown.classList.remove('closing');
+              }, 200);
+            }
+          });
+        }, 0);
+      }
+    },
+    
+    // Відкрити налаштування синхронізації
+    openSyncSettings() {
+      Modal.open('Налаштування синхронізації', this.renderSyncSettingsModal(), {
+        icon: 'fa-sync-alt',
+        size: 'large',
+        onSave: async () => {
+          return await this.saveSyncSettings();
+        },
+        onOpen: () => {
+          this.initSyncModalListeners();
+        }
+      });
+    },
+    
+    // Ініціалізація event listeners для модального вікна синхронізації
+    initSyncModalListeners() {
+      // Перемикання режиму збереження
+      document.querySelectorAll('input[name="storageMode"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+          const mode = e.target.value;
+          const googleSheetsSettings = document.getElementById('googleSheetsSettings');
+          googleSheetsSettings.style.display = mode === 'googleSheets' ? 'block' : 'none';
+        });
+      });
+      
+      // Автосинхронізація checkbox
+      const autoSyncCheckbox = document.getElementById('syncAutoSync');
+      if (autoSyncCheckbox) {
+        autoSyncCheckbox.addEventListener('change', (e) => {
+          const intervalRow = document.getElementById('autoSyncIntervalRow');
+          intervalRow.style.display = e.target.checked ? 'flex' : 'none';
+        });
+      }
+      
+      // Шифрування checkbox
+      const encryptionCheckbox = document.getElementById('syncEncryption');
+      if (encryptionCheckbox) {
+        encryptionCheckbox.addEventListener('change', (e) => {
+          const passwordFields = document.getElementById('encryptionPasswordFields');
+          passwordFields.style.display = e.target.checked ? 'block' : 'none';
+        });
+      }
+      
+      // Client ID input - активувати кнопку авторизації
+      const clientIdInput = document.getElementById('syncClientId');
+      const authorizeBtn = document.getElementById('btnAuthorizeGoogle');
+      if (clientIdInput && authorizeBtn) {
+        clientIdInput.addEventListener('input', (e) => {
+          authorizeBtn.disabled = !e.target.value.trim();
+        });
+      }
+      
+      // Авторизація в Google
+      if (authorizeBtn) {
+        authorizeBtn.addEventListener('click', async () => {
+          const clientId = document.getElementById('syncClientId').value.trim();
+          if (!clientId) {
+            Toast.show('❌ Введіть Client ID', 'error');
+            return;
+          }
+          
+          try {
+            Toast.show('⏳ Ініціалізація Google API...', 'info');
+            
+            // Ініціалізуємо Google API
+            await GoogleSheetsSync.initGapi();
+            await GoogleSheetsSync.initGis(clientId);
+            
+            // Авторизуємося
+            await GoogleSheetsSync.authorize();
+            
+            Toast.show('✅ Авторизовано в Google');
+            
+            // Показуємо кнопку створення таблиці
+            document.getElementById('btnCreateSpreadsheet').style.display = 'inline-flex';
+          } catch (error) {
+            console.error('Authorization error:', error);
+            Toast.show('❌ Помилка авторизації: ' + error.message, 'error');
+          }
+        });
+      }
+      
+      // Створення таблиці
+      const createSpreadsheetBtn = document.getElementById('btnCreateSpreadsheet');
+      if (createSpreadsheetBtn) {
+        createSpreadsheetBtn.addEventListener('click', async () => {
+          try {
+            Toast.show('⏳ Створення таблиці...', 'info');
+            
+            const result = await GoogleSheetsSync.createSpreadsheet();
+            
+            State.sync.googleSheets.spreadsheetId = result.spreadsheetId;
+            
+            // Оновлюємо UI
+            document.getElementById('syncSpreadsheetId').value = result.spreadsheetId;
+            document.getElementById('spreadsheetIdRow').style.display = 'flex';
+            document.getElementById('btnOpenSpreadsheet').style.display = 'inline-flex';
+            document.getElementById('migrationSection').style.display = 'block';
+            
+            Toast.show('✅ Таблицю створено! <a href="' + result.url + '" target="_blank">Відкрити</a>');
+          } catch (error) {
+            console.error('Create spreadsheet error:', error);
+            Toast.show('❌ Помилка створення таблиці: ' + error.message, 'error');
+          }
+        });
+      }
+      
+      // Відкрити таблицю
+      const openSpreadsheetBtn = document.getElementById('btnOpenSpreadsheet');
+      if (openSpreadsheetBtn) {
+        openSpreadsheetBtn.addEventListener('click', () => {
+          const spreadsheetId = State.sync.googleSheets.spreadsheetId;
+          if (spreadsheetId) {
+            window.open(`https://docs.google.com/spreadsheets/d/${spreadsheetId}`, '_blank');
+          }
+        });
+      }
+      
+      // Експорт Local → Google Sheets
+      const uploadBtn = document.getElementById('btnUploadToSheets');
+      if (uploadBtn) {
+        uploadBtn.addEventListener('click', async () => {
+          if (!GoogleSheetsSync.isAuthorized()) {
+            Toast.show('❌ Потрібна авторизація в Google', 'error');
+            return;
+          }
+          
+          try {
+            Toast.show('⏳ Завантаження даних...', 'info');
+            
+            const password = State.sync.googleSheets.encryptionEnabled ? 
+              sessionStorage.getItem('encryption_password') : null;
+            
+            await GoogleSheetsSync.uploadData(State.config, State.values, password);
+            
+            State.sync.googleSheets.lastSync = new Date().toISOString();
+            Storage.saveSyncSettings();
+            
+            Toast.show('✅ Дані експортовано в Google Sheets');
+          } catch (error) {
+            console.error('Upload error:', error);
+            Toast.show('❌ Помилка експорту: ' + error.message, 'error');
+          }
+        });
+      }
+      
+      // Імпорт Google Sheets → Local
+      const downloadBtn = document.getElementById('btnDownloadFromSheets');
+      if (downloadBtn) {
+        downloadBtn.addEventListener('click', async () => {
+          if (!GoogleSheetsSync.isAuthorized()) {
+            Toast.show('❌ Потрібна авторизація в Google', 'error');
+            return;
+          }
+          
+          try {
+            Toast.show('⏳ Завантаження даних...', 'info');
+            
+            const password = State.sync.googleSheets.encryptionEnabled ? 
+              sessionStorage.getItem('encryption_password') : null;
+            
+            const result = await GoogleSheetsSync.downloadData(password);
+            
+            State.config = result.config;
+            State.values = result.values;
+            
+            // НЕ позначаємо як dirty - це синхронізовані дані!
+            SyncManager.hasUnsyncedChanges = false;
+            
+            // Оновлюємо localStorage як backup
+            await Storage.save();
+            
+            // Перерендерюємо UI
+            Renderer.renderCategories();
+            Renderer.renderContent();
+            Progress.update();
+            
+            Toast.show('✅ Дані імпортовано з Google Sheets');
+          } catch (error) {
+            console.error('Download error:', error);
+            Toast.show('❌ Помилка імпорту: ' + error.message, 'error');
+          }
+        });
+      }
+      
+      // Синхронізувати зараз
+      const syncNowBtn = document.getElementById('btnSyncNow');
+      if (syncNowBtn) {
+        syncNowBtn.addEventListener('click', async () => {
+          await SyncManager.manualSync();
+        });
+      }
+    },
+    
+    // Рендер модального вікна налаштувань синхронізації
+    renderSyncSettingsModal() {
+      const currentMode = State.sync.mode;
+      const gs = State.sync.googleSheets;
+      
+      return `
+        <!-- Розділ 1: Режим збереження -->
+        <div class="settings-section">
+          <div class="settings-section-title">
+            <i class="fas fa-database"></i>
+            Режим збереження даних
+          </div>
+          
+          <div class="radio-group">
+            <label class="radio-option">
+              <input type="radio" name="storageMode" value="localStorage" ${currentMode === 'localStorage' ? 'checked' : ''}>
+              <div class="radio-option-content">
+                <span class="radio-option-label">💾 Local Storage</span>
+                <span class="radio-option-desc">Дані зберігаються тільки в браузері. Швидко та просто, але без синхронізації між пристроями.</span>
+              </div>
+            </label>
+            
+            <label class="radio-option">
+              <input type="radio" name="storageMode" value="googleSheets" ${currentMode === 'googleSheets' ? 'checked' : ''}>
+              <div class="radio-option-content">
+                <span class="radio-option-label">☁️ Google Sheets</span>
+                <span class="radio-option-desc">Синхронізація з Google таблицею. Доступ з будь-якого пристрою, автоматичне збереження.</span>
+              </div>
+            </label>
+            
+            <label class="radio-option">
+              <input type="radio" name="storageMode" value="manual" ${currentMode === 'manual' ? 'checked' : ''}>
+              <div class="radio-option-content">
+                <span class="radio-option-label">📁 Ручні файли</span>
+                <span class="radio-option-desc">Імпорт/Експорт JSON файлів. Повний контроль над даними.</span>
+              </div>
+            </label>
+          </div>
+        </div>
+        
+        <!-- Розділ 2: Google Sheets налаштування -->
+        <div class="settings-section" id="googleSheetsSettings" style="display: ${currentMode === 'googleSheets' ? 'block' : 'none'}">
+          <div class="settings-section-title">
+            <i class="fab fa-google"></i>
+            Google Sheets налаштування
+          </div>
+          
+          <!-- Інструкція -->
+          <div class="instruction-block">
+            <div class="instruction-toggle" onclick="this.classList.toggle('expanded'); this.nextElementSibling.classList.toggle('show')">
+              <i class="fas fa-chevron-down"></i>
+              <span>Покрокова інструкція налаштування</span>
+            </div>
+            <div class="instruction-content">
+              <h4>Крок 1: Google Cloud Console</h4>
+              <ol>
+                <li>Перейдіть: <code>https://console.cloud.google.com</code></li>
+                <li>Натисніть "New Project"</li>
+                <li>Назва: "My Dossier" (або будь-яка)</li>
+                <li>Натисніть "Create"</li>
+              </ol>
+              
+              <h4>Крок 2: Увімкнути API</h4>
+              <ol>
+                <li>Меню → "APIs & Services" → "Library"</li>
+                <li>Знайдіть "Google Sheets API"</li>
+                <li>Натисніть "Enable"</li>
+              </ol>
+              
+              <h4>Крок 3: Створити OAuth Client</h4>
+              <ol>
+                <li>"APIs & Services" → "Credentials"</li>
+                <li>"Create Credentials" → "OAuth client ID"</li>
+                <li>Application type: "Web application"</li>
+                <li>Name: "Love Dossier"</li>
+                <li>Authorized JavaScript origins: ваш домен</li>
+                <li>Натисніть "Create"</li>
+                <li><strong>СКОПІЮЙТЕ Client ID</strong></li>
+              </ol>
+            </div>
+          </div>
+          
+          <div class="sync-settings-group">
+            <div class="form-row">
+              <label class="form-label">Client ID:</label>
+              <input type="text" class="form-input" id="syncClientId" value="${gs.clientId || ''}" placeholder="1234567890-abc123...">
+            </div>
+            
+            <div class="form-row" id="spreadsheetIdRow" style="display: ${gs.spreadsheetId ? 'flex' : 'none'}">
+              <label class="form-label">Spreadsheet ID:</label>
+              <input type="text" class="form-input" id="syncSpreadsheetId" value="${gs.spreadsheetId || ''}" readonly>
+            </div>
+            
+            <div class="sync-buttons">
+              <button class="btn btn-secondary btn-sm" id="btnAuthorizeGoogle" ${!gs.clientId ? 'disabled' : ''}>
+                <i class="fas fa-sign-in-alt"></i> Авторизуватися в Google
+              </button>
+              
+              <button class="btn btn-secondary btn-sm" id="btnCreateSpreadsheet" style="display: none">
+                <i class="fas fa-plus"></i> Створити нову таблицю
+              </button>
+              
+              <button class="btn btn-secondary btn-sm" id="btnOpenSpreadsheet" style="display: ${gs.spreadsheetId ? 'inline-flex' : 'none'}">
+                <i class="fas fa-external-link-alt"></i> Відкрити таблицю
+              </button>
+            </div>
+            
+            <div class="form-row">
+              <label class="checkbox-label">
+                <input type="checkbox" id="syncAutoSync" ${gs.autoSyncEnabled ? 'checked' : ''}>
+                Автоматична синхронізація
+              </label>
+            </div>
+            
+            <div class="form-row" id="autoSyncIntervalRow" style="display: ${gs.autoSyncEnabled ? 'flex' : 'none'}">
+              <label class="form-label">Інтервал:</label>
+              <select class="form-input" id="syncInterval">
+                <option value="1" ${gs.autoSyncInterval === 1 ? 'selected' : ''}>1 хвилина</option>
+                <option value="5" ${gs.autoSyncInterval === 5 ? 'selected' : ''}>5 хвилин</option>
+                <option value="15" ${gs.autoSyncInterval === 15 ? 'selected' : ''}>15 хвилин</option>
+                <option value="30" ${gs.autoSyncInterval === 30 ? 'selected' : ''}>30 хвилин</option>
+                <option value="60" ${gs.autoSyncInterval === 60 ? 'selected' : ''}>1 година</option>
+              </select>
+            </div>
+            
+            <div class="form-row">
+              <label class="checkbox-label">
+                <input type="checkbox" id="syncEncryption" ${gs.encryptionEnabled ? 'checked' : ''}>
+                Шифрування даних (рекомендовано)
+              </label>
+            </div>
+            
+            <div id="encryptionPasswordFields" style="display: ${gs.encryptionEnabled ? 'block' : 'none'}">
+              <div class="form-row">
+                <label class="form-label">Пароль:</label>
+                <div class="password-input-group">
+                  <input type="password" class="form-input" id="syncPassword" placeholder="Введіть пароль">
+                  <button type="button" class="password-toggle" onclick="this.previousElementSibling.type = this.previousElementSibling.type === 'password' ? 'text' : 'password'">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                </div>
+              </div>
+              
+              <div class="form-row">
+                <label class="form-label">Підтвердження:</label>
+                <div class="password-input-group">
+                  <input type="password" class="form-input" id="syncPasswordConfirm" placeholder="Підтвердіть пароль">
+                  <button type="button" class="password-toggle" onclick="this.previousElementSibling.type = this.previousElementSibling.type === 'password' ? 'text' : 'password'">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                </div>
+              </div>
+              
+              <p style="font-size: 0.75rem; color: var(--danger); margin-top: 0.5rem;">
+                ⚠️ <strong>Пароль не зберігається!</strong> Запишіть його в безпечному місці.
+              </p>
+            </div>
+          </div>
+          
+          <!-- Security Notice -->
+          <div class="security-notice">
+            <div class="security-notice-title">
+              <i class="fas fa-shield-alt"></i>
+              Про вашу безпеку
+            </div>
+            <ul>
+              <li>Дані зберігаються у ВАШІЙ Google таблиці</li>
+              <li>Ми НЕ маємо доступу до ваших даних</li>
+              <li>Токени доступу тільки у вашому браузері</li>
+              <li>З шифруванням дані нечитабельні без пароля</li>
+              <li>Ви можете відкликати доступ будь-коли</li>
+            </ul>
+          </div>
+        </div>
+        
+        <!-- Розділ 3: Міграція даних -->
+        <div class="settings-section" id="migrationSection" style="display: ${gs.spreadsheetId ? 'block' : 'none'}">
+          <div class="settings-section-title">
+            <i class="fas fa-exchange-alt"></i>
+            Міграція та статистика
+          </div>
+          
+          <div class="sync-buttons">
+            <button class="btn btn-secondary btn-sm" id="btnUploadToSheets">
+              <i class="fas fa-cloud-upload-alt"></i> Експорт Local → Google Sheets
+            </button>
+            
+            <button class="btn btn-secondary btn-sm" id="btnDownloadFromSheets">
+              <i class="fas fa-cloud-download-alt"></i> Імпорт Google Sheets → Local
+            </button>
+            
+            <button class="btn btn-primary btn-sm" id="btnSyncNow">
+              <i class="fas fa-sync-alt"></i> Синхронізувати зараз
+            </button>
+          </div>
+          
+          <div class="sync-stats">
+            <div class="sync-stat-item">
+              <div class="sync-stat-label">Полів заповнено</div>
+              <div class="sync-stat-value">${Object.keys(State.values).length}</div>
+            </div>
+            <div class="sync-stat-item">
+              <div class="sync-stat-label">Остання синхронізація</div>
+              <div class="sync-stat-value">${gs.lastSync ? new Date(gs.lastSync).toLocaleString('uk-UA') : 'Ніколи'}</div>
+            </div>
+          </div>
+        </div>
+      `;
+    },
+    
+    // Збереження налаштувань синхронізації
+    async saveSyncSettings() {
+      const mode = document.querySelector('input[name="storageMode"]:checked')?.value || 'localStorage';
+      const oldMode = State.sync.mode;
+      
+      State.sync.mode = mode;
+      
+      if (mode === 'googleSheets') {
+        const clientId = document.getElementById('syncClientId')?.value.trim();
+        const autoSync = document.getElementById('syncAutoSync')?.checked;
+        const interval = parseInt(document.getElementById('syncInterval')?.value) || 5;
+        const encryption = document.getElementById('syncEncryption')?.checked;
+        
+        if (!clientId) {
+          Toast.show('❌ Введіть Client ID', 'error');
+          return false;
+        }
+        
+        State.sync.googleSheets.clientId = clientId;
+        State.sync.googleSheets.autoSyncEnabled = autoSync;
+        State.sync.googleSheets.autoSyncInterval = interval;
+        State.sync.googleSheets.encryptionEnabled = encryption;
+        
+        // Якщо шифрування увімкнене, перевіряємо пароль
+        if (encryption) {
+          const password = document.getElementById('syncPassword')?.value;
+          const passwordConfirm = document.getElementById('syncPasswordConfirm')?.value;
+          
+          if (!password || password.length < 6) {
+            Toast.show('❌ Пароль повинен містити мінімум 6 символів', 'error');
+            return false;
+          }
+          
+          if (password !== passwordConfirm) {
+            Toast.show('❌ Паролі не співпадають', 'error');
+            return false;
+          }
+          
+          // Зберігаємо хеш пароля для верифікації
+          State.sync.googleSheets.encryptionPasswordHash = await GoogleSheetsSync.encryption.hashPassword(password);
+          
+          // Зберігаємо пароль в sessionStorage (НЕ в localStorage!)
+          sessionStorage.setItem('encryption_password', password);
+        }
+        
+        State.sync.googleSheets.enabled = true;
+        
+        // Запускаємо автосинхронізацію якщо потрібно
+        if (autoSync) {
+          SyncManager.startAutoSync(interval);
+        } else {
+          SyncManager.stopAutoSync();
+        }
+        
+        SyncManager.updateStatus('synced', 'Google Sheets');
+      } else {
+        State.sync.googleSheets.enabled = false;
+        SyncManager.stopAutoSync();
+        SyncManager.updateStatus('local', 'Local режим');
+      }
+      
+      // Зберігаємо налаштування
+      Storage.saveSyncSettings();
+      
+      // Якщо режим змінився, запитати про міграцію
+      if (oldMode !== mode && oldMode !== 'localStorage') {
+        // TODO: показати діалог міграції
+      }
+      
+      Toast.show('✅ Налаштування збережено');
+      return true;
+    },
+    
+    // Оновлює badge з кількістю активних фільтрів
+    updateFiltersBadge() {
+      const activeFiltersCount = 
+        (State.ui.fillFilter !== 'all' ? 1 : 0) + 
+        State.ui.importanceFilters.length;
+      
+      const toggleBtn = document.getElementById('filtersToggleBtn');
+      if (!toggleBtn) return;
+      
+      let badge = toggleBtn.querySelector('.filters-badge');
+      
+      if (activeFiltersCount > 0) {
+        if (!badge) {
+          badge = document.createElement('span');
+          badge.className = 'filters-badge';
+          toggleBtn.appendChild(badge);
+        }
+        badge.textContent = activeFiltersCount;
+      } else {
+        if (badge) {
+          badge.remove();
+        }
+      }
+    }
+  };
+
+  // Expose App methods globally for onclick handlers
+  window.App = App;
+
+  // Initialize app when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => App.init());
+  } else {
+    App.init();
+  }
+})();
+</script>
+</body>
+</html>
