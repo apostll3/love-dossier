@@ -65,6 +65,41 @@ body {
   line-height: 1.6;
 }
 
+/* 1) Скрыть scrollbar у страницы (html + body) but keep scrolling */
+html, body {
+  height: 100%;
+  overflow: auto;               /* прокрутка сохраняется */
+  -ms-overflow-style: none;     /* IE 10+ */
+  scrollbar-width: none;        /* Firefox */
+  scrollbar-gutter: stable;     /* резервирует место под скроллбар, чтобы не дергался layout (новые браузеры) */
+}
+
+/* Chrome, Edge, Safari */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* 2) Для компонентов, где нужен видимый скролл — явно включаем стандартный стиль полосы */
+.with-visible-scroll {
+  overflow: auto;               /* или overflow-y: auto; */
+  /* Firefox: вернуть стандартный вид */
+  scrollbar-width: auto;
+  /* При желании можно указать цвет: */
+  /* scrollbar-color: initial; */
+}
+
+/* Для WebKit-браузеров вернуть стандартную ширину для компонента */
+.with-visible-scroll::-webkit-scrollbar {
+  width: 12px; /* или 10px и т.д. */
+}
+.with-visible-scroll::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  /* можно задать цвет ползунка, напр.: */
+  background-color: rgba(0,0,0,0.3);
+}
+
 /* Блокування скролу при відкритій модалці */
 body.modal-open {
   overflow: hidden;
@@ -5582,6 +5617,61 @@ textarea,
     }
   };
 
+  // ===== Telegram WebApp Integration =====
+const TelegramWebApp = {
+  /**
+   * Блокування свайпу вниз для Telegram Web App
+   */
+  setupSwipeBehavior() {
+    if (!window.Telegram?.WebApp) return;
+
+    // Перевіряємо підтримку методу web_app_setup_swipe_behavior
+    if (typeof Telegram.WebApp.web_app_setup_swipe_behavior === 'function') {
+      // Відключаємо вертикальний свайп для закриття
+      Telegram.WebApp.web_app_setup_swipe_behavior(false);
+      Debug.log('✅ Vertical swipe disabled in Telegram Web App');
+    } else {
+      // Фолбек для старих версій - блокуємо touchmove на document
+      let startY = 0;
+      let isAtTop = false;
+
+      document.addEventListener('touchstart', (e) => {
+        startY = e.touches[0].clientY;
+        isAtTop = window.scrollY === 0;
+      }, { passive: true });
+
+      document.addEventListener('touchmove', (e) => {
+        if (isAtTop && e.touches[0].clientY > startY) {
+          e.preventDefault();
+        }
+      }, { passive: false });
+
+      Debug.log('⚠️ Using fallback swipe prevention for older Telegram versions');
+    }
+
+    // Додатково: блокуємо pull-to-refresh на всьому документі
+    document.body.style.overscrollBehavior = 'none';
+  },
+
+  /**
+   * Ініціалізація Telegram WebApp
+   */
+  init() {
+    if (!window.Telegram?.WebApp) {
+      // Debug.log('ℹ️ Not running in Telegram WebApp');
+      return;
+    }
+
+    Telegram.WebApp.ready();
+    this.setupSwipeBehavior();
+    
+    // Опціонально: розширюємо на весь екран
+    Telegram.WebApp.expand();
+    
+    Debug.log('✅ Telegram WebApp initialized');
+  }
+};
+
   // ============= FORMAT MENU =============
   const FormatMenu = {
     menu: document.getElementById('formatMenu'),
@@ -7506,6 +7596,9 @@ textarea,
     async init() {
       // Ініціалізуємо синхронізацію СПОЧАТКУ
       await SyncManager.init();
+
+      // Ініціалізація Telegram WebApp
+      TelegramWebApp.init(); 
       
       // Перевірка першого запуску
       const isFirstTime = !localStorage.getItem('onboarding_completed');
@@ -8770,6 +8863,8 @@ textarea,
         }
       });
     },
+
+
     
     // Ініціалізація event listeners для модального вікна синхронізації
     initSyncModalListeners() {
