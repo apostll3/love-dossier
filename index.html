@@ -2558,7 +2558,7 @@ textarea,
           <span data-i18n="ui.addField">Додати поле</span>
         </button>
         
-        <button class="header-menu-btn" onclick="App.toggleHeaderMenu()" id="headerMenuBtn">
+        <button class="header-menu-btn" data-action="App.toggleHeaderMenu" id="headerMenuBtn">
           <i class="fas fa-ellipsis-h"></i>
           <span data-i18n="ui.more">Більше</span>
         </button>
@@ -2706,7 +2706,6 @@ textarea,
 <script>
 (function() {
   'use strict';
-
   // ============= CONSTANTS =============
   const DELAYS = {
     MODAL_INIT: 100,        // Час на ініціалізацію DOM перед додаванням listeners
@@ -2977,6 +2976,7 @@ textarea,
         errorTokenClientNotInitialized: 'Token client не ініціалізовано'
       },
       modal: {
+        confirmAction: 'Підтвердження',
         editField: 'Редагувати поле',
         newField: 'Нове поле',
         editCategory: 'Редагувати категорію',
@@ -3323,6 +3323,7 @@ textarea,
         errorTokenClientNotInitialized: 'Token client not initialized'
       },
       modal: {
+        confirmAction: 'Confirmation',
         editField: 'Edit Field',
         newField: 'New Field',
         editCategory: 'Edit Category',
@@ -3669,6 +3670,7 @@ textarea,
         errorTokenClientNotInitialized: 'Token client не инициализирован'
       },
       modal: {
+        confirmAction: 'Подтверждение',
         editField: 'Редактировать поле',
         newField: 'Новое поле',
         editCategory: 'Редактировать категорию',
@@ -4015,6 +4017,7 @@ textarea,
         errorTokenClientNotInitialized: 'Token client nie zainicjalizowano'
       },
       modal: {
+        confirmAction: 'Potwierdzenie',
         editField: 'Edytuj pole',
         newField: 'Nowe pole',
         editCategory: 'Edytuj kategorię',
@@ -5311,7 +5314,7 @@ textarea,
       this.activeInput = null;
     },
     
-    applyFormat(format) {
+    async applyFormat(format) {
       if (!this.activeInput) return;
       
       const input = this.activeInput;
@@ -5335,7 +5338,8 @@ textarea,
           formattedText = `~~${selectedText}~~`;
           break;
         case 'link':
-          const url = promptT('messages.enterUrl', 'https://');
+          const urlLabel = i18n.t('messages.enterUrl') || 'Введіть URL';
+          const url = await Modal.prompt(urlLabel, '', 'https://');
           if (url) {
             formattedText = `[${selectedText}](${url})`;
           } else {
@@ -5426,16 +5430,16 @@ textarea,
   };
 
   // ============= i18n HELPERS =============
-  // Wrapper для confirm з перекладом
-  window.confirmT = function(messageKey) {
+  // Wrapper для confirm з перекладом (deprecated - використовуйте Modal.confirm)
+  window.confirmT = async function(messageKey) {
     const message = i18n.t(messageKey);
-    return confirm(message);
+    return await Modal.confirm(message);
   };
   
-  // Wrapper для prompt з перекладом
-  window.promptT = function(messageKey, defaultValue = '') {
+  // Wrapper для prompt з перекладом (deprecated - використовуйте Modal.prompt)
+  window.promptT = async function(messageKey, defaultValue = '') {
     const message = i18n.t(messageKey);
-    return prompt(message, defaultValue);
+    return await Modal.prompt(message, '', defaultValue);
   };
   
   // Валідація ID (тільки букви, цифри, _, -)
@@ -5457,6 +5461,27 @@ textarea,
       console.error(...args); // Помилки завжди показуємо
     }
   };
+  
+  // ============= SANITIZER =============
+  const Sanitizer = {
+    // Екранування HTML для безпечного відображення
+    escapeHtml(text) {
+      if (text === null || text === undefined) return '';
+      const div = document.createElement('div');
+      div.textContent = String(text);
+      return div.innerHTML;
+    },
+    
+    // Базова sanitization HTML
+    sanitize(html) {
+      if (!html) return '';
+      return String(html)
+        .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+        .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '')
+        .replace(/on\w+\s*=\s*[^\s>]*/gi, '')
+        .replace(/javascript:/gi, '');
+    }
+  };
 
   // ============= MODAL =============
   const Modal = {
@@ -5467,64 +5492,194 @@ textarea,
     saveBtn: document.getElementById('modalSave'),
     cancelBtn: document.getElementById('modalCancel'),
     closeBtn: document.getElementById('modalClose'),
+    modalStack: [], // Стек модальних вікон
+    baseZIndex: 1000, // Базовий z-index
     
     open(title, contentHtml, options = {}) {
       const { onSave, icon = 'fa-edit', size = 'medium', onOpen } = options;
       
-      this.title.textContent = title;
-      this.titleIcon.className = `fas ${icon} modal-title-icon`;
-      this.body.innerHTML = contentHtml;
-      
-      // Додаємо клас розміру до модалки
-      const modal = this.backdrop.querySelector('.modal');
-      modal.classList.remove('modal-large', 'modal-small');
-      if (size === 'large') {
-        modal.classList.add('modal-large');
-      } else if (size === 'small') {
-        modal.classList.add('modal-small');
+      // Якщо це перше модальне вікно - використовуємо основний backdrop
+      if (this.modalStack.length === 0) {
+        this.title.textContent = title;
+        this.titleIcon.className = `fas ${icon} modal-title-icon`;
+        this.body.innerHTML = contentHtml;
+        
+        // Додаємо клас розміру до модалки
+        const modal = this.backdrop.querySelector('.modal');
+        modal.classList.remove('modal-large', 'modal-small');
+        if (size === 'large') {
+          modal.classList.add('modal-large');
+        } else if (size === 'small') {
+          modal.classList.add('modal-small');
+        }
+        
+        // Видаляємо closing якщо він залишився
+        this.backdrop.classList.remove('closing');
+        
+        // Показуємо backdrop без анімації
+        this.backdrop.style.display = 'flex';
+        
+        // Додаємо active з невеликою затримкою для анімації
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            this.backdrop.classList.add('active');
+          });
+        });
+        
+        this.saveBtn.onclick = async () => {
+          if (onSave) {
+            const result = await onSave();
+            if (result !== false) {
+              this.close();
+            }
+          } else {
+            this.close();
+          }
+        };
+        
+        // Додаємо в стек
+        this.modalStack.push({
+          backdrop: this.backdrop,
+          isMain: true
+        });
+        
+        // Викликаємо onOpen callback для основного модального вікна
+        if (onOpen) {
+          setTimeout(() => onOpen(), DELAYS.DROPDOWN_CLOSE);
+        }
+      } else {
+        // Створюємо нове модальне вікно поверх існуючого
+        this.createOverlayModal(title, contentHtml, { onSave, icon, size, onOpen });
       }
+    },
+    
+    createOverlayModal(title, contentHtml, options = {}) {
+      const { onSave, icon = 'fa-edit', size = 'medium', onOpen } = options;
       
-      // Видаляємо closing якщо він залишився
-      this.backdrop.classList.remove('closing');
+      // Створюємо новий backdrop
+      const newBackdrop = document.createElement('div');
+      newBackdrop.className = 'modal-backdrop';
+      newBackdrop.style.cssText = `
+        z-index: ${this.baseZIndex + this.modalStack.length};
+        display: flex;
+      `;
       
-      // Показуємо backdrop без анімації
-      this.backdrop.style.display = 'flex';
+      // Створюємо структуру модального вікна
+      const modalClass = size === 'large' ? 'modal modal-large' : size === 'small' ? 'modal modal-small' : 'modal';
+      newBackdrop.innerHTML = `
+        <div class="${modalClass}">
+          <div class="modal-header">
+            <div class="modal-title-wrapper">
+              <i class="fas ${icon} modal-title-icon"></i>
+              <h3 class="modal-title">${Sanitizer.escapeHtml(title)}</h3>
+            </div>
+            <button class="modal-close-btn">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <div class="modal-body">${contentHtml}</div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary modal-cancel-btn" data-i18n="ui.cancel">Скасувати</button>
+            <button class="btn btn-primary modal-save-btn" data-i18n="ui.save">Зберегти</button>
+          </div>
+        </div>
+      `;
       
-      // Додаємо active з невеликою затримкою для анімації
+      document.body.appendChild(newBackdrop);
+      
+      // Отримуємо елементи
+      const saveBtn = newBackdrop.querySelector('.modal-save-btn');
+      const cancelBtn = newBackdrop.querySelector('.modal-cancel-btn');
+      const closeBtn = newBackdrop.querySelector('.modal-close-btn');
+      
+      // Додаємо в стек ВІДРАЗУ (щоб onCancel міг бути доданий з prompt/confirm)
+      const modalStackItem = {
+        backdrop: newBackdrop,
+        isMain: false,
+        close: null // Встановимо пізніше
+      };
+      this.modalStack.push(modalStackItem);
+      
+      // Показуємо з анімацією
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          this.backdrop.classList.add('active');
+          newBackdrop.classList.add('active');
         });
       });
       
-      this.saveBtn.onclick = async () => {
+      // Обробники подій
+      const closeModal = () => {
+        // Викликаємо onCancel перед закриттям
+        if (modalStackItem.onCancel) {
+          modalStackItem.onCancel();
+        }
+        
+        newBackdrop.classList.add('closing');
+        newBackdrop.classList.remove('active');
+        
+        setTimeout(() => {
+          newBackdrop.remove();
+          const index = this.modalStack.indexOf(modalStackItem);
+          if (index > -1) {
+            this.modalStack.splice(index, 1);
+          }
+        }, 200);
+      };
+      
+      // Встановлюємо close метод
+      modalStackItem.close = closeModal;
+      
+      saveBtn.onclick = async () => {
         if (onSave) {
           const result = await onSave();
           if (result !== false) {
-            this.close();
+            closeModal();
           }
         } else {
-          this.close();
+          closeModal();
         }
       };
       
-      // Викликаємо callback після відкриття (для ініціалізації event listeners)
+      cancelBtn.onclick = closeModal;
+      closeBtn.onclick = closeModal;
+      
+      newBackdrop.onclick = (e) => {
+        if (e.target === newBackdrop) closeModal();
+      };
+      
+      // Викликаємо onOpen callback
       if (onOpen) {
         setTimeout(() => onOpen(), DELAYS.DROPDOWN_CLOSE);
       }
     },
     
     close() {
-      // Додаємо клас для анімації закриття
-      this.backdrop.classList.add('closing');
-      this.backdrop.classList.remove('active');
+      if (this.modalStack.length === 0) return;
       
-      // Чекаємо завершення анімації перед повним закриттям
-      setTimeout(() => {
-        this.backdrop.classList.remove('closing');
-        this.backdrop.style.display = 'none';
-        State.ui.modalData = null;
-      }, 200); // 200ms = тривалість transition
+      const topModal = this.modalStack[this.modalStack.length - 1];
+      
+      if (topModal.isMain) {
+        // Викликаємо onCancel перед закриттям
+        if (topModal.onCancel) {
+          topModal.onCancel();
+        }
+        
+        // Закриваємо основне модальне вікно
+        this.backdrop.classList.add('closing');
+        this.backdrop.classList.remove('active');
+        
+        setTimeout(() => {
+          this.backdrop.classList.remove('closing');
+          this.backdrop.style.display = 'none';
+          State.ui.modalData = null;
+          this.modalStack.pop();
+        }, 200);
+      } else {
+        // Закриваємо overlay модальне вікно
+        if (topModal.close) {
+          topModal.close();
+        }
+      }
     },
     
     init() {
@@ -5533,6 +5688,100 @@ textarea,
       this.backdrop.onclick = (e) => {
         if (e.target === this.backdrop) this.close();
       };
+    },
+    
+    // Модальне вікно для введення тексту (заміна prompt)
+    prompt(title, placeholder = '', defaultValue = '') {
+      return new Promise((resolve) => {
+        const inputId = 'modalPromptInput_' + Date.now();
+        const contentHtml = `
+          <div class="form-group">
+            <input 
+              type="text" 
+              class="form-input" 
+              id="${inputId}" 
+              placeholder="${Sanitizer.escapeHtml(placeholder)}" 
+              value="${Sanitizer.escapeHtml(defaultValue)}" 
+              autofocus>
+          </div>
+        `;
+        
+        let resolved = false;
+        
+        this.open(title, contentHtml, {
+          icon: 'fa-keyboard',
+          size: 'small',
+          onSave: () => {
+            const input = document.getElementById(inputId);
+            const value = input ? input.value.trim() : '';
+            resolved = true;
+            resolve(value || null);
+            return true;
+          },
+          onOpen: () => {
+            const input = document.getElementById(inputId);
+            if (input) {
+              input.focus();
+              input.select();
+              
+              // Enter для збереження
+              input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  // Натискаємо на кнопку збереження відповідного модального вікна
+                  const topModal = this.modalStack[this.modalStack.length - 1];
+                  if (topModal.isMain) {
+                    this.saveBtn.click();
+                  } else {
+                    const saveBtn = topModal.backdrop.querySelector('.modal-save-btn');
+                    if (saveBtn) saveBtn.click();
+                  }
+                }
+              });
+            }
+          }
+        });
+        
+        // Зберігаємо resolve в стеку для виклику при закритті
+        const topModal = this.modalStack[this.modalStack.length - 1];
+        topModal.onCancel = () => {
+          if (!resolved) {
+            resolve(null);
+          }
+        };
+      });
+    },
+    
+    // Модальне вікно для підтвердження (заміна confirm)
+    confirm(message, title = null) {
+      return new Promise((resolve) => {
+        const displayTitle = title || i18n.t('modal.confirmAction') || 'Підтвердження';
+        const contentHtml = `
+          <div style="padding: 1rem 0; font-size: 1rem; line-height: 1.6;">
+            ${Sanitizer.escapeHtml(message)}
+          </div>
+        `;
+        
+        let resolved = false;
+        
+        this.open(displayTitle, contentHtml, {
+          icon: 'fa-question-circle',
+          size: 'small',
+          onSave: () => {
+            resolved = true;
+            resolve(true);
+            return true;
+          }
+        });
+        
+        // Зберігаємо resolve в стеку для виклику при закритті
+        const topModal = this.modalStack[this.modalStack.length - 1];
+        topModal.onCancel = () => {
+          if (!resolved) {
+            resolve(false);
+          }
+        };
+      });
     }
   };
 
@@ -6106,13 +6355,13 @@ textarea,
         : '';
       
       contentActions.innerHTML = `
-        <button class="filters-toggle-btn" onclick="App.toggleFiltersDropdown()" id="filtersToggleBtn">
+        <button class="filters-toggle-btn" data-action="App.toggleFiltersDropdown" id="filtersToggleBtn">
           <i class="fas fa-filter"></i>
           <span>${i18n.t('ui.filters')}</span>
           ${filtersBadge}
         </button>
         
-        <button class="btn btn-secondary btn-sm" onclick="App.editCategory('${category.id}')">
+        <button class="btn btn-secondary btn-sm" data-action="App.editCategory" data-param="${category.id}">
           <i class="fas fa-edit"></i>
           <span>${i18n.t('ui.edit')}</span>
         </button>
@@ -6124,13 +6373,13 @@ textarea,
               ${i18n.t('fillStatus.filledness')}
             </div>
             <div class="fill-filter">
-              <button class="fill-filter-btn ${State.ui.fillFilter === 'all' ? 'active' : ''}" onclick="App.setFillFilter('all')">
+              <button class="fill-filter-btn ${State.ui.fillFilter === 'all' ? 'active' : ''}" data-action="App.setFillFilter" data-param="all">
                 <i class="fas fa-list"></i> ${i18n.t('fillStatus.all')}
               </button>
-              <button class="fill-filter-btn ${State.ui.fillFilter === 'filled' ? 'active' : ''}" onclick="App.setFillFilter('filled')">
+              <button class="fill-filter-btn ${State.ui.fillFilter === 'filled' ? 'active' : ''}" data-action="App.setFillFilter" data-param="filled">
                 <i class="fas fa-check-circle"></i> ${i18n.t('fillStatus.filled')}
               </button>
-              <button class="fill-filter-btn ${State.ui.fillFilter === 'empty' ? 'active' : ''}" onclick="App.setFillFilter('empty')">
+              <button class="fill-filter-btn ${State.ui.fillFilter === 'empty' ? 'active' : ''}" data-action="App.setFillFilter" data-param="empty">
                 <i class="fas fa-circle"></i> ${i18n.t('fillStatus.empty')}
               </button>
             </div>
@@ -6141,15 +6390,15 @@ textarea,
               ${i18n.t('modal.importance')}
             </div>
             <div class="importance-filter">
-              <button class="importance-filter-btn ${State.ui.importanceFilters.includes('high') ? 'active high' : ''}" onclick="App.toggleImportanceFilter('high')">
+              <button class="importance-filter-btn ${State.ui.importanceFilters.includes('high') ? 'active high' : ''}" data-action="App.toggleImportanceFilter" data-param="high">
                 <i class="fas fa-exclamation-circle"></i>
                 <span>${i18n.t('importance.highPlural')}</span>
               </button>
-              <button class="importance-filter-btn ${State.ui.importanceFilters.includes('medium') ? 'active medium' : ''}" onclick="App.toggleImportanceFilter('medium')">
+              <button class="importance-filter-btn ${State.ui.importanceFilters.includes('medium') ? 'active medium' : ''}" data-action="App.toggleImportanceFilter" data-param="medium">
                 <i class="fas fa-minus-circle"></i>
                 <span>${i18n.t('importance.mediumPlural')}</span>
               </button>
-              <button class="importance-filter-btn ${State.ui.importanceFilters.includes('low') ? 'active low' : ''}" onclick="App.toggleImportanceFilter('low')">
+              <button class="importance-filter-btn ${State.ui.importanceFilters.includes('low') ? 'active low' : ''}" data-action="App.toggleImportanceFilter" data-param="low">
                 <i class="fas fa-info-circle"></i>
                 <span>${i18n.t('importance.lowPlural')}</span>
               </button>
@@ -6288,26 +6537,26 @@ textarea,
             </div>
           </div>
           <div class="field-controls">
-            <button class="btn btn-icon btn-secondary btn-sm field-controls-menu-btn" onclick="App.toggleFieldMenu(event, '${field.id}')" title="${i18n.t('tooltips.menu')}">
+            <button class="btn btn-icon btn-secondary btn-sm field-controls-menu-btn" data-action="App.toggleFieldMenu" data-field-id="${field.id}" title="${i18n.t('tooltips.menu')}">
               <i class="fas fa-ellipsis-v"></i>
             </button>
-            <button class="btn btn-icon btn-secondary btn-sm" onclick="App.editFieldValue('${field.id}')" title="${i18n.t('tooltips.editValue')}">
+            <button class="btn btn-icon btn-secondary btn-sm" data-action="App.editFieldValue" data-param="${field.id}" title="${i18n.t('tooltips.editValue')}">
               <i class="fas fa-edit"></i>
             </button>
-            <button class="btn btn-icon btn-secondary btn-sm" onclick="App.editField('${field.id}')" title="${i18n.t('tooltips.fieldSettings')}">
+            <button class="btn btn-icon btn-secondary btn-sm" data-action="App.editField" data-param="${field.id}" title="${i18n.t('tooltips.fieldSettings')}">
               <i class="fas fa-cog"></i>
             </button>
-            <button class="btn btn-icon btn-secondary btn-sm" onclick="App.deleteField('${field.id}')" title="${i18n.t('tooltips.deleteField')}">
+            <button class="btn btn-icon btn-secondary btn-sm" data-action="App.deleteField" data-param="${field.id}" title="${i18n.t('tooltips.deleteField')}">
               <i class="fas fa-trash"></i>
             </button>
             <div class="field-controls-popup" id="fieldMenu_${field.id}">
-              <button class="btn btn-secondary btn-sm" onclick="App.editFieldValue('${field.id}'); App.closeFieldMenu('${field.id}')">
+              <button class="btn btn-secondary btn-sm" data-action="App.editFieldValue" data-param="${field.id}" data-close-menu="${field.id}">
                 <i class="fas fa-edit"></i> ${i18n.t('ui.edit')}
               </button>
-              <button class="btn btn-secondary btn-sm" onclick="App.editField('${field.id}'); App.closeFieldMenu('${field.id}')">
+              <button class="btn btn-secondary btn-sm" data-action="App.editField" data-param="${field.id}" data-close-menu="${field.id}">
                 <i class="fas fa-cog"></i> ${i18n.t('tooltips.fieldSettings')}
               </button>
-              <button class="btn btn-danger btn-sm" onclick="App.deleteField('${field.id}'); App.closeFieldMenu('${field.id}')">
+              <button class="btn btn-danger btn-sm" data-action="App.deleteField" data-param="${field.id}" data-close-menu="${field.id}">
                 <i class="fas fa-trash"></i> ${i18n.t('ui.delete')}
               </button>
             </div>
@@ -6508,8 +6757,9 @@ textarea,
         e.target.value = '';
       };
       
-      document.getElementById('btnClear').onclick = () => {
-        if (confirmT('messages.confirmClear')) {
+      document.getElementById('btnClear').onclick = async () => {
+        const confirmMessage = i18n.t('messages.confirmClear') || 'Видалити всі дані?';
+        if (await Modal.confirm(confirmMessage)) {
           Storage.clear();
           State.config = {
             categories: [...DefaultConfig.categories],
@@ -6567,6 +6817,63 @@ textarea,
         if (!languageSelector.contains(e.target)) {
           languageSelector.classList.remove('active');
           languageDropdown.classList.remove('active');
+        }
+      });
+      
+      // ============= GLOBAL EVENT DELEGATION =============
+      // Password toggle
+      document.addEventListener('click', (e) => {
+        if (e.target.closest('.password-toggle')) {
+          const button = e.target.closest('.password-toggle');
+          const input = button.previousElementSibling;
+          if (input && input.tagName === 'INPUT') {
+            input.type = input.type === 'password' ? 'text' : 'password';
+          }
+          return;
+        }
+        
+        // Instruction toggle
+        if (e.target.closest('.instruction-toggle')) {
+          const toggle = e.target.closest('.instruction-toggle');
+          const content = toggle.nextElementSibling;
+          toggle.classList.toggle('expanded');
+          if (content) content.classList.toggle('show');
+          return;
+        }
+      });
+      
+      // Обробка всіх App методів через data-action
+      document.addEventListener('click', (e) => {
+        const target = e.target.closest('[data-action]');
+        if (!target) return;
+        
+        const action = target.dataset.action;
+        const param = target.dataset.param;
+        const param2 = target.dataset.param2;
+        const closeMenu = target.dataset.closeMenu;
+        
+        // Розбираємо action на об'єкт і метод
+        const parts = action.split('.');
+        if (parts.length !== 2 || parts[0] !== 'App') return;
+        
+        const method = parts[1];
+        
+        // Викликаємо метод з параметрами
+        if (typeof this[method] === 'function') {
+          if (param2) {
+            this[method](param, param2);
+          } else if (param) {
+            this[method](param);
+          } else if (method === 'toggleFieldMenu') {
+            this[method](e, target.dataset.fieldId);
+          } else {
+            this[method]();
+          }
+          
+          // Закриваємо меню якщо є data-close-menu
+          if (closeMenu) {
+            this.closeFieldMenu(closeMenu);
+          }
         }
       });
     },
@@ -6757,11 +7064,11 @@ textarea,
                   nestedCategoriesList.innerHTML = '<div style="color: var(--text-muted); padding: 1rem; text-align: center;">Немає вкладених категорій. Додайте першу категорію.</div>';
                 } else {
                   nestedCategoriesList.innerHTML = tempNestedCategories.map((cat, catIndex) => `
-                    <div class="nested-cat-item" data-cat-id="${cat.id}" style="margin-bottom: 1rem; padding: 1rem; background: var(--bg-primary); border-radius: 6px;">
+                    <div class="nested-cat-item" data-cat-id="${Sanitizer.escapeHtml(cat.id)}" style="margin-bottom: 1rem; padding: 1rem; background: var(--bg-primary); border-radius: 6px;">
                       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                        <strong class="nested-cat-label">${cat.label}</strong>
+                        <strong class="nested-cat-label">${Sanitizer.escapeHtml(cat.label)}</strong>
                         <div>
-                          <button type="button" class="btn btn-sm" onclick="event.stopPropagation(); this.closest('.nested-cat-item').querySelector('.nested-subcat-add-btn').click();" style="padding: 0.25rem 0.5rem; margin-right: 0.25rem;">
+                          <button type="button" class="btn btn-sm btn-add-subcat-shortcut" data-cat-index="${catIndex}" style="padding: 0.25rem 0.5rem; margin-right: 0.25rem;">
                             <i class="fas fa-plus"></i>
                           </button>
                           <button type="button" class="btn btn-sm btn-edit-nested-cat" data-cat-index="${catIndex}" style="padding: 0.25rem 0.5rem; margin-right: 0.25rem;">
@@ -6774,8 +7081,8 @@ textarea,
                       </div>
                       <div class="nested-subcats-list" style="margin-left: 1rem;">
                         ${(cat.subcategories || []).map((sub, subIndex) => `
-                          <div class="nested-subcat-item" data-sub-id="${sub.id}" style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; margin-bottom: 0.25rem; background: var(--bg-secondary); border-radius: 4px;">
-                            <span class="nested-subcat-label">${sub.label}</span>
+                          <div class="nested-subcat-item" data-sub-id="${Sanitizer.escapeHtml(sub.id)}" style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; margin-bottom: 0.25rem; background: var(--bg-secondary); border-radius: 4px;">
+                            <span class="nested-subcat-label">${Sanitizer.escapeHtml(sub.label)}</span>
                             <div>
                               <button type="button" class="btn btn-sm btn-edit-nested-subcat" data-cat-index="${catIndex}" data-sub-index="${subIndex}" style="padding: 0.25rem 0.5rem; margin-right: 0.25rem;">
                                 <i class="fas fa-edit"></i>
@@ -6799,20 +7106,20 @@ textarea,
               renderNestedCategories();
               
               // Add nested category button
-              document.getElementById('btnAddNestedCategory').addEventListener('click', () => {
-                const catId = prompt('Введіть ID категорії (тільки латиниця, цифри, _, -):');
+              document.getElementById('btnAddNestedCategory').addEventListener('click', async () => {
+                const catId = await Modal.prompt('Введіть ID категорії', 'тільки латиниця, цифри, _, -');
                 if (!catId) return;
                 
                 if (!validateId(catId)) {
-                  alert('Некоректний ID! Використовуйте тільки латинські букви, цифри, підкреслення та дефіс.');
+                  await Modal.confirm('Некоректний ID! Використовуйте тільки латинські букви, цифри, підкреслення та дефіс.', 'Помилка');
                   return;
                 }
                 
-                const catLabel = prompt('Введіть назву категорії:');
+                const catLabel = await Modal.prompt('Введіть назву категорії');
                 if (!catLabel) return;
                 
                 if (tempNestedCategories.find(c => c.id === catId)) {
-                  alert('Категорія з таким ID вже існує!');
+                  await Modal.confirm('Категорія з таким ID вже існує!', 'Помилка');
                   return;
                 }
                 
@@ -6829,14 +7136,22 @@ textarea,
                 nestedCategoriesList.removeEventListener('click', nestedCategoriesList._nestedClickHandler);
               }
               
-              // Створюємо новий handler
-              nestedCategoriesList._nestedClickHandler = (e) => {
+              // Створюємо новий handler (async для Modal)
+              nestedCategoriesList._nestedClickHandler = async (e) => {
+                // Add subcategory shortcut (замість onclick)
+                if (e.target.closest('.btn-add-subcat-shortcut')) {
+                  const catIndex = parseInt(e.target.closest('.btn-add-subcat-shortcut').dataset.catIndex);
+                  const addBtn = nestedCategoriesList.querySelector(`.nested-subcat-add-btn[data-cat-index="${catIndex}"]`);
+                  if (addBtn) addBtn.click();
+                  return;
+                }
+                
                 // Edit category
                 if (e.target.closest('.btn-edit-nested-cat')) {
                   const catIndex = parseInt(e.target.closest('.btn-edit-nested-cat').dataset.catIndex);
                   const cat = tempNestedCategories[catIndex];
                   
-                  const newLabel = prompt('Введіть нову назву категорії:', cat.label);
+                  const newLabel = await Modal.prompt('Введіть нову назву категорії', '', cat.label);
                   if (newLabel && newLabel !== cat.label) {
                     cat.label = newLabel;
                     renderNestedCategories();
@@ -6845,7 +7160,8 @@ textarea,
                 
                 // Delete category
                 else if (e.target.closest('.btn-delete-nested-cat')) {
-                  if (!confirm('Видалити цю категорію?')) return;
+                  const confirmed = await Modal.confirm('Видалити цю категорію?');
+                  if (!confirmed) return;
                   
                   const catIndex = parseInt(e.target.closest('.btn-delete-nested-cat').dataset.catIndex);
                   tempNestedCategories.splice(catIndex, 1);
@@ -6858,21 +7174,21 @@ textarea,
                   const catIndex = parseInt(e.target.closest('.nested-subcat-add-btn').dataset.catIndex);
                   const cat = tempNestedCategories[catIndex];
                   
-                  const subId = prompt('Введіть ID підкатегорії (тільки латиниця, цифри, _, -):');
+                  const subId = await Modal.prompt('Введіть ID підкатегорії', 'тільки латиниця, цифри, _, -');
                   if (!subId) return;
                   
                   if (!validateId(subId)) {
-                    alert('Некоректний ID! Використовуйте тільки латинські букви, цифри, підкреслення та дефіс.');
+                    await Modal.confirm('Некоректний ID! Використовуйте тільки латинські букви, цифри, підкреслення та дефіс.', 'Помилка');
                     return;
                   }
                   
-                  const subLabel = prompt('Введіть назву підкатегорії:');
+                  const subLabel = await Modal.prompt('Введіть назву підкатегорії');
                   if (!subLabel) return;
                   
                   if (!cat.subcategories) cat.subcategories = [];
                   
                   if (cat.subcategories.find(s => s.id === subId)) {
-                    alert('Підкатегорія з таким ID вже існує!');
+                    await Modal.confirm('Підкатегорія з таким ID вже існує!', 'Помилка');
                     return;
                   }
                   
@@ -6887,7 +7203,7 @@ textarea,
                   const subIndex = parseInt(btn.dataset.subIndex);
                   const sub = tempNestedCategories[catIndex].subcategories[subIndex];
                   
-                  const newLabel = prompt('Введіть нову назву підкатегорії:', sub.label);
+                  const newLabel = await Modal.prompt('Введіть нову назву підкатегорії', '', sub.label);
                   if (newLabel && newLabel !== sub.label) {
                     sub.label = newLabel;
                     renderNestedCategories();
@@ -6896,7 +7212,8 @@ textarea,
                 
                 // Delete subcategory
                 else if (e.target.closest('.btn-delete-nested-subcat')) {
-                  if (!confirm('Видалити цю підкатегорію?')) return;
+                  const confirmed = await Modal.confirm('Видалити цю підкатегорію?');
+                  if (!confirmed) return;
                   
                   const btn = e.target.closest('.btn-delete-nested-subcat');
                   const catIndex = parseInt(btn.dataset.catIndex);
@@ -7121,7 +7438,8 @@ textarea,
     },
     
     async deleteField(fieldId) {
-      if (!confirmT('messages.confirmDeleteField')) return;
+      const confirmMessage = i18n.t('messages.confirmDeleteField') || 'Видалити це поле?';
+      if (!await Modal.confirm(confirmMessage)) return;
       
       State.config.fields = State.config.fields.filter(f => f.id !== fieldId);
       delete State.values[fieldId];
@@ -7466,7 +7784,7 @@ textarea,
           
           <!-- Інструкція -->
           <div class="instruction-block">
-            <div class="instruction-toggle" onclick="this.classList.toggle('expanded'); this.nextElementSibling.classList.toggle('show')">
+            <div class="instruction-toggle">
               <i class="fas fa-chevron-down"></i>
               <span>${i18n.t('sync.stepByStepInstructions')}</span>
             </div>
@@ -7554,7 +7872,7 @@ textarea,
                 <label class="form-label">${i18n.t('modal.password')}:</label>
                 <div class="password-input-group">
                   <input type="password" class="form-input" id="syncPassword" placeholder="${i18n.t('modal.enterPassword')}">
-                  <button type="button" class="password-toggle" onclick="this.previousElementSibling.type = this.previousElementSibling.type === 'password' ? 'text' : 'password'">
+                  <button type="button" class="password-toggle">
                     <i class="fas fa-eye"></i>
                   </button>
                 </div>
@@ -7564,7 +7882,7 @@ textarea,
                 <label class="form-label">${i18n.t('modal.confirmPassword')}:</label>
                 <div class="password-input-group">
                   <input type="password" class="form-input" id="syncPasswordConfirm" placeholder="${i18n.t('modal.confirmPasswordPlaceholder')}">
-                  <button type="button" class="password-toggle" onclick="this.previousElementSibling.type = this.previousElementSibling.type === 'password' ? 'text' : 'password'">
+                  <button type="button" class="password-toggle">
                     <i class="fas fa-eye"></i>
                   </button>
                 </div>
