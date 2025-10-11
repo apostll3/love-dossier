@@ -65,6 +65,11 @@ body {
   line-height: 1.6;
 }
 
+/* Блокування скролу при відкритій модалці */
+body.modal-open {
+  overflow: hidden;
+}
+
 /* Заборона виділення UI елементів */
 button,
 .btn,
@@ -5895,6 +5900,7 @@ textarea,
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
             this.backdrop.classList.add('active');
+            document.body.classList.add('modal-open');
           });
         });
         
@@ -5989,6 +5995,11 @@ textarea,
         newBackdrop.classList.add('closing');
         newBackdrop.classList.remove('active');
         
+        // Видаляємо modal-open тільки якщо це остання модалка
+        if (this.modalStack.length === 1) {
+          document.body.classList.remove('modal-open');
+        }
+        
         setTimeout(() => {
           newBackdrop.remove();
           const index = this.modalStack.indexOf(modalStackItem);
@@ -6039,6 +6050,11 @@ textarea,
         // Закриваємо основне модальне вікно
         this.backdrop.classList.add('closing');
         this.backdrop.classList.remove('active');
+        
+        // Видаляємо modal-open тільки якщо це остання модалка
+        if (this.modalStack.length === 1) {
+          document.body.classList.remove('modal-open');
+        }
         
         setTimeout(() => {
           this.backdrop.classList.remove('closing');
@@ -7050,6 +7066,7 @@ textarea,
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           backdrop.classList.add('active');
+          document.body.classList.add('modal-open');
         });
       });
       
@@ -7265,6 +7282,7 @@ textarea,
       if (backdrop) {
         backdrop.classList.remove('active');
         backdrop.classList.add('closing');
+        document.body.classList.remove('modal-open');
         setTimeout(() => backdrop.remove(), 300);
       }
     }
@@ -7332,6 +7350,7 @@ textarea,
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           backdrop.classList.add('active');
+          document.body.classList.add('modal-open');
         });
       });
       
@@ -7476,6 +7495,7 @@ textarea,
       if (backdrop) {
         backdrop.classList.remove('active');
         backdrop.classList.add('closing');
+        document.body.classList.remove('modal-open');
         setTimeout(() => backdrop.remove(), 300);
       }
     }
