@@ -1780,12 +1780,12 @@ textarea,
   
   .language-flag {
     width: 24px;
-    height: 24px;
+    height: auto;
   }
   
   .language-option .language-flag {
     width: 20px;
-    height: 20px;
+    height: auto;
   }
   
   .language-dropdown {
@@ -6575,6 +6575,16 @@ textarea,
             <input type="checkbox" id="fieldRequired" ${field && field.required ? 'checked' : ''}>
             <label for="fieldRequired">${i18n.t('modal.required')}</label>
           </div>
+          
+          <div id="nestedCategoriesContainer" style="display: ${field && field.type === 'nested' ? 'block' : 'none'}; margin-top: 1rem; padding: 1rem; background: var(--bg-secondary); border-radius: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+              <strong>Вкладені категорії</strong>
+              <button type="button" class="btn btn-primary btn-sm" id="btnAddNestedCategory">
+                <i class="fas fa-plus"></i> Додати категорію
+              </button>
+            </div>
+            <div id="nestedCategoriesList"></div>
+          </div>
         `,
         {
           icon: 'fa-plus-circle',
@@ -6599,7 +6609,30 @@ textarea,
             const fieldData = {id, label, type, importance, category, required};
             
             if (type === 'nested') {
-              fieldData.nestedCategories = field && field.nestedCategories ? field.nestedCategories : [];
+              // Collect nested categories from the UI
+              const nestedCategoriesList = document.getElementById('nestedCategoriesList');
+              const categoryElements = nestedCategoriesList.querySelectorAll('.nested-cat-item');
+              fieldData.nestedCategories = [];
+              
+              categoryElements.forEach(catEl => {
+                const catId = catEl.dataset.catId;
+                const catLabel = catEl.querySelector('.nested-cat-label').textContent;
+                const subcategoryElements = catEl.querySelectorAll('.nested-subcat-item');
+                const subcategories = [];
+                
+                subcategoryElements.forEach(subEl => {
+                  subcategories.push({
+                    id: subEl.dataset.subId,
+                    label: subEl.querySelector('.nested-subcat-label').textContent
+                  });
+                });
+                
+                fieldData.nestedCategories.push({
+                  id: catId,
+                  label: catLabel,
+                  subcategories: subcategories
+                });
+              });
             }
             
             if (isEdit) {
@@ -6617,6 +6650,9 @@ textarea,
             return true;
           },
           onOpen: () => {
+            // Local variable to store nested categories during editing
+            let tempNestedCategories = field && field.nestedCategories ? JSON.parse(JSON.stringify(field.nestedCategories)) : [];
+            
             // Initialize custom selects
             setTimeout(() => {
               const typeSelect = document.getElementById('fieldType');
@@ -6649,6 +6685,173 @@ textarea,
                 }));
                 CustomSelect.init(categorySelect, categoryOptions);
               }
+              
+              // Handle nested categories container visibility
+              const nestedContainer = document.getElementById('nestedCategoriesContainer');
+              const updateNestedVisibility = () => {
+                const selectedType = typeSelect.value;
+                nestedContainer.style.display = selectedType === 'nested' ? 'block' : 'none';
+              };
+              
+              typeSelect.addEventListener('change', updateNestedVisibility);
+              
+              // Function to render nested categories
+              const renderNestedCategories = () => {
+                const nestedCategoriesList = document.getElementById('nestedCategoriesList');
+                
+                if (tempNestedCategories.length === 0) {
+                  nestedCategoriesList.innerHTML = '<div style="color: var(--text-muted); padding: 1rem; text-align: center;">Немає вкладених категорій. Додайте першу категорію.</div>';
+                } else {
+                  nestedCategoriesList.innerHTML = tempNestedCategories.map((cat, catIndex) => `
+                    <div class="nested-cat-item" data-cat-id="${cat.id}" style="margin-bottom: 1rem; padding: 1rem; background: var(--bg-primary); border-radius: 6px;">
+                      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <strong class="nested-cat-label">${cat.label}</strong>
+                        <div>
+                          <button type="button" class="btn btn-sm" onclick="event.stopPropagation(); this.closest('.nested-cat-item').querySelector('.nested-subcat-add-btn').click();" style="padding: 0.25rem 0.5rem; margin-right: 0.25rem;">
+                            <i class="fas fa-plus"></i>
+                          </button>
+                          <button type="button" class="btn btn-sm btn-edit-nested-cat" data-cat-index="${catIndex}" style="padding: 0.25rem 0.5rem; margin-right: 0.25rem;">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button type="button" class="btn btn-sm btn-danger btn-delete-nested-cat" data-cat-index="${catIndex}" style="padding: 0.25rem 0.5rem;">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                      <div class="nested-subcats-list" style="margin-left: 1rem;">
+                        ${(cat.subcategories || []).map((sub, subIndex) => `
+                          <div class="nested-subcat-item" data-sub-id="${sub.id}" style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; margin-bottom: 0.25rem; background: var(--bg-secondary); border-radius: 4px;">
+                            <span class="nested-subcat-label">${sub.label}</span>
+                            <div>
+                              <button type="button" class="btn btn-sm btn-edit-nested-subcat" data-cat-index="${catIndex}" data-sub-index="${subIndex}" style="padding: 0.25rem 0.5rem; margin-right: 0.25rem;">
+                                <i class="fas fa-edit"></i>
+                              </button>
+                              <button type="button" class="btn btn-sm btn-danger btn-delete-nested-subcat" data-cat-index="${catIndex}" data-sub-index="${subIndex}" style="padding: 0.25rem 0.5rem;">
+                                <i class="fas fa-trash"></i>
+                              </button>
+                            </div>
+                          </div>
+                        `).join('')}
+                      </div>
+                      <button type="button" class="btn btn-sm nested-subcat-add-btn" data-cat-index="${catIndex}" style="margin-top: 0.5rem; padding: 0.25rem 0.5rem;">
+                        <i class="fas fa-plus"></i> Додати підкатегорію
+                      </button>
+                    </div>
+                  `).join('');
+                }
+              };
+              
+              // Initial render
+              renderNestedCategories();
+              
+              // Add nested category button
+              document.getElementById('btnAddNestedCategory').addEventListener('click', () => {
+                const catId = prompt('Введіть ID категорії:');
+                if (!catId) return;
+                
+                const catLabel = prompt('Введіть назву категорії:');
+                if (!catLabel) return;
+                
+                if (tempNestedCategories.find(c => c.id === catId)) {
+                  alert('Категорія з таким ID вже існує!');
+                  return;
+                }
+                
+                tempNestedCategories.push({id: catId, label: catLabel, subcategories: []});
+                
+                renderNestedCategories();
+                attachNestedEventHandlers();
+              });
+              
+              // Function to attach event handlers
+              const attachNestedEventHandlers = () => {
+                // Edit category
+                document.querySelectorAll('.btn-edit-nested-cat').forEach(btn => {
+                  btn.addEventListener('click', () => {
+                    const catIndex = parseInt(btn.dataset.catIndex);
+                    const cat = tempNestedCategories[catIndex];
+                    
+                    const newLabel = prompt('Введіть нову назву категорії:', cat.label);
+                    if (newLabel && newLabel !== cat.label) {
+                      cat.label = newLabel;
+                      renderNestedCategories();
+                      attachNestedEventHandlers();
+                    }
+                  });
+                });
+                
+                // Delete category
+                document.querySelectorAll('.btn-delete-nested-cat').forEach(btn => {
+                  btn.addEventListener('click', () => {
+                    if (!confirm('Видалити цю категорію?')) return;
+                    
+                    const catIndex = parseInt(btn.dataset.catIndex);
+                    tempNestedCategories.splice(catIndex, 1);
+                    
+                    renderNestedCategories();
+                    attachNestedEventHandlers();
+                  });
+                });
+                
+                // Add subcategory
+                document.querySelectorAll('.nested-subcat-add-btn').forEach(btn => {
+                  btn.addEventListener('click', () => {
+                    const catIndex = parseInt(btn.dataset.catIndex);
+                    const cat = tempNestedCategories[catIndex];
+                    
+                    const subId = prompt('Введіть ID підкатегорії:');
+                    if (!subId) return;
+                    
+                    const subLabel = prompt('Введіть назву підкатегорії:');
+                    if (!subLabel) return;
+                    
+                    if (!cat.subcategories) cat.subcategories = [];
+                    
+                    if (cat.subcategories.find(s => s.id === subId)) {
+                      alert('Підкатегорія з таким ID вже існує!');
+                      return;
+                    }
+                    
+                    cat.subcategories.push({id: subId, label: subLabel});
+                    renderNestedCategories();
+                    attachNestedEventHandlers();
+                  });
+                });
+                
+                // Edit subcategory
+                document.querySelectorAll('.btn-edit-nested-subcat').forEach(btn => {
+                  btn.addEventListener('click', () => {
+                    const catIndex = parseInt(btn.dataset.catIndex);
+                    const subIndex = parseInt(btn.dataset.subIndex);
+                    const sub = tempNestedCategories[catIndex].subcategories[subIndex];
+                    
+                    const newLabel = prompt('Введіть нову назву підкатегорії:', sub.label);
+                    if (newLabel && newLabel !== sub.label) {
+                      sub.label = newLabel;
+                      renderNestedCategories();
+                      attachNestedEventHandlers();
+                    }
+                  });
+                });
+                
+                // Delete subcategory
+                document.querySelectorAll('.btn-delete-nested-subcat').forEach(btn => {
+                  btn.addEventListener('click', () => {
+                    if (!confirm('Видалити цю підкатегорію?')) return;
+                    
+                    const catIndex = parseInt(btn.dataset.catIndex);
+                    const subIndex = parseInt(btn.dataset.subIndex);
+                    tempNestedCategories[catIndex].subcategories.splice(subIndex, 1);
+                    
+                    renderNestedCategories();
+                    attachNestedEventHandlers();
+                  });
+                });
+              };
+              
+              // Attach event handlers initially
+              attachNestedEventHandlers();
+              
             }, 100);
           }
         }
