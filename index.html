@@ -5861,6 +5861,7 @@ textarea,
         const rect = trigger.getBoundingClientRect();
         const dropdownHeight = dropdown.offsetHeight || 300; // max-height
         const viewportHeight = window.innerHeight;
+        const viewportWidth = window.innerWidth;
         const spaceBelow = viewportHeight - rect.bottom;
         const spaceAbove = rect.top;
         
@@ -5881,8 +5882,24 @@ textarea,
         dropdown.style.maxHeight = `${maxHeight}px`;
         
         dropdown.style.top = `${Math.max(8, top)}px`;
-        dropdown.style.left = `${rect.left}px`;
-        dropdown.style.width = `${rect.width}px`;
+        
+        // Розраховуємо ширину з урахуванням min-width
+        const minWidth = parseInt(getComputedStyle(dropdown).minWidth) || rect.width;
+        const dropdownWidth = Math.max(rect.width, minWidth);
+        dropdown.style.width = `${dropdownWidth}px`;
+        
+        // Позиціонуємо горизонтально з урахуванням меж viewport
+        const padding = 8; // Відступ від краю екрану
+        let left = rect.left - 16; // Зміщуємо на 1rem вліво
+        
+        // Обмежуємо позицію в межах viewport
+        const maxLeft = viewportWidth - dropdownWidth - padding;
+        const minLeft = padding;
+        
+        // Застосовуємо обмеження
+        left = Math.max(minLeft, Math.min(left, maxLeft));
+        
+        dropdown.style.left = `${left}px`;
       };
       
       // Toggle dropdown
@@ -6812,8 +6829,25 @@ textarea,
         // Position dropdown
         if (languageDropdown.classList.contains('active')) {
           const rect = languageTrigger.getBoundingClientRect();
+          const viewportWidth = window.innerWidth;
+          const padding = 8;
+          
           languageDropdown.style.top = `${rect.bottom + 8}px`;
-          languageDropdown.style.right = `${window.innerWidth - rect.right}px`;
+          
+          // Розраховуємо ширину dropdown
+          const minWidth = parseInt(getComputedStyle(languageDropdown).minWidth) || 200;
+          const dropdownWidth = Math.max(200, minWidth);
+          languageDropdown.style.width = `${dropdownWidth}px`;
+          
+          // Позиціонуємо з урахуванням меж viewport (зміщено на 1rem вліво)
+          let left = rect.left - 16;
+          const maxLeft = viewportWidth - dropdownWidth - padding;
+          const minLeft = padding;
+          left = Math.max(minLeft, Math.min(left, maxLeft));
+          
+          // Видаляємо right і встановлюємо left
+          languageDropdown.style.right = '';
+          languageDropdown.style.left = `${left}px`;
         }
       });
       
