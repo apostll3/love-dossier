@@ -9,11 +9,12 @@ You are an elite AI developer assistant working on **"Love Dossier" (Досьє 
 
 ### 🏗️ TECHNICAL ARCHITECTURE
 - **Tech Stack**: Pure HTML + CSS + Vanilla JavaScript (NO frameworks)
-- **File Structure**: Single `index.html` file (~8400 lines, 308KB)
+- **File Structure**: Single `index.html` file (9245 lines, 338KB)
 - **Storage**: LocalStorage (primary), Google Sheets sync (optional), File export/import
 - **Security**: AES-GCM 256-bit encryption for cloud sync
 - **Design**: Modern, responsive, mobile-first design with gradient backgrounds
 - **Languages**: Multilingual support (Ukrainian 🇺🇦, English 🇬🇧, Russian 🇷🇺, Polish 🇵🇱)
+- **Version**: 2.0 (BETA status)
 
 ### 📦 KEY FEATURES
 1. **16 Categories**: Base info, preferences, dislikes, psychology, gifts, goals, habits, logistics, health, communication, family, intimate, conflicts, important dates, observations, notes
@@ -30,11 +31,11 @@ You are an elite AI developer assistant working on **"Love Dossier" (Досьє 
 
 ### 📂 Architecture (in single index.html)
 ```
-LINE RANGES (approximate):
+LINE RANGES (current):
 1-30      → HTML head, meta tags, title, Font Awesome
 30-2450   → <style> section (all CSS)
 2450-2730 → HTML body structure (header, sidebar, content, modals)
-2730-8400 → <script> section (all JavaScript logic)
+2730-9245 → <script> section (all JavaScript logic)
 ```
 
 ### 🎨 CSS CONVENTIONS
@@ -47,12 +48,13 @@ LINE RANGES (approximate):
 - **No frameworks**: Pure Vanilla JS (ES6+)
 - **Structure**: Modular functions, avoid global scope pollution
 - **Key Objects**: 
-  - `DATA` - main data structure
-  - `TRANSLATIONS` - i18n object
-  - `CONFIG` - app configuration
-  - `STATE` - current UI state
+  - `State` - main application state (config, values, ui)
+  - `TRANSLATIONS` - i18n object with 4 languages
+  - `DefaultConfig` - default categories and fields configuration
+  - `App` - main application controller
 - **Event Handling**: Event delegation for dynamic elements
-- **Storage**: `localStorage` with `saveData()` / `loadData()` functions
+- **Storage**: `localStorage` with centralized state management
+- **Version**: Data format version 2.0 with migration support
 
 ### 🔧 KEY COMPONENTS TO KNOW
 1. **Custom Select** (`CustomSelect` class) - dropdown UI component
@@ -225,24 +227,30 @@ new CustomSelect(selectElement, {
 
 ## 📱 CRITICAL: MOBILE-FIRST CONSIDERATIONS
 
-The recent work involved fixing dropdown positioning on mobile devices. Key lessons:
+The project has been extensively optimized for mobile devices. Key implementations:
 
-1. **Always check for viewport overflow**:
+1. **Viewport-aware positioning**:
    ```javascript
    const maxLeft = viewportWidth - dropdownWidth - padding;
    const minLeft = padding;
    left = Math.max(minLeft, Math.min(left, maxLeft));
    ```
 
-2. **Language dropdown has special handling** (around line 6830):
-   - Separate event handler from generic CustomSelect
-   - Was using `right` positioning - converted to `left`
-   - Must account for `min-width` CSS property (200px desktop, 180px mobile)
+2. **Language dropdown optimization**:
+   - Fixed positioning issues on mobile viewports
+   - Proper boundary calculations for all screen sizes
+   - Responsive min-width handling (200px desktop, 180px mobile)
 
-3. **Custom selects use `position: fixed`**:
-   - Positioned via JavaScript in `positionDropdown()` function
-   - Must recalculate on scroll/resize
-   - Width calculated from `min-width` CSS + trigger width
+3. **Custom selects system**:
+   - `position: fixed` with JavaScript positioning
+   - Automatic recalculation on scroll/resize events
+   - Mobile-optimized touch interactions
+   - Proper z-index layering for modals and dropdowns
+
+4. **Responsive grid system**:
+   - Adaptive field cards layout
+   - Mobile-first CSS with progressive enhancement
+   - Touch-friendly button sizes and spacing
 
 ---
 

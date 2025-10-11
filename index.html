@@ -7041,9 +7041,14 @@ textarea,
       
       document.body.appendChild(backdrop);
       
+      // Показуємо backdrop без анімації
+      backdrop.style.display = 'flex';
+      
       // Анімація появи
       requestAnimationFrame(() => {
-        backdrop.classList.add('active');
+        requestAnimationFrame(() => {
+          backdrop.classList.add('active');
+        });
       });
       
       // Додаємо обробники подій
@@ -7318,9 +7323,21 @@ textarea,
       
       document.body.appendChild(backdrop);
       
+      // Показуємо backdrop без анімації (як в Modal.open)
+      backdrop.style.display = 'flex';
+      
       // Анімація появи
       requestAnimationFrame(() => {
-        backdrop.classList.add('active');
+        requestAnimationFrame(() => {
+          backdrop.classList.add('active');
+        });
+      });
+      
+      // Обробник закриття при кліку поза модалкою
+      backdrop.addEventListener('click', (e) => {
+        if (e.target === backdrop) {
+          this.close();
+        }
       });
     },
     

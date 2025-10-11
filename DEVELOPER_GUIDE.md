@@ -1,11 +1,11 @@
 
-# 🧠 DEVELOPER_GUIDE.md
+# 🧠 DEVELOPER_GUIDE.md v2.0
 
 ## 🇬🇧 Overview
-This document provides a technical overview of the **"Beloved Person Dossier"** web application.  
+This document provides a technical overview of the **"Love Dossier"** web application v2.0.  
 It is intended for developers who wish to understand, maintain, or extend the project.
 
-The app is a **standalone HTML + CSS + JavaScript** web application that runs entirely in the browser — no server or database is required.
+The app is a **single-file HTML + CSS + JavaScript** web application (9245 lines, 338KB) that runs entirely in the browser — no server or database is required.
 
 ---
 
