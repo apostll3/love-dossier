@@ -1,9 +1,10 @@
 <!doctype html>
-<html lang="uk">
+<html lang="uk" id="htmlRoot">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Досьє коханої людини</title>
+<title data-i18n="app.title">Досьє коханої людини</title>
+<link rel="icon" type="image/x-icon" href="LoveDossier.ico">
 <!--
   📝 ІНСТРУКЦІЯ З ФОРМАТУВАННЯ ТЕКСТУ:
   
@@ -253,13 +254,24 @@ textarea,
 .header-icon {
   width: 2.5rem;
   height: 2.5rem;
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-  border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   font-size: 1.25rem;
+}
+
+/* SVG inside header-icon */
+.header-icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.header-icon svg:hover {
+  transform: scale(1.05);
+  filter: drop-shadow(0 4px 8px rgba(99, 102, 241, 0.3));
 }
 
 .header-actions {
@@ -1662,6 +1674,125 @@ textarea,
   flex: 1;
 }
 
+/* ============= Language Selector Styles ============= */
+.language-select {
+  width: auto;
+  position: relative;
+}
+
+.language-trigger {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 2px solid var(--border);
+  border-radius: 50%;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.language-trigger::after {
+  display: none; /* Прибираємо стрілку */
+}
+
+.language-trigger:hover {
+  border-color: var(--primary);
+  background: rgba(99, 102, 241, 0.05);
+  transform: scale(1.05);
+}
+
+.language-select.active .language-trigger {
+  border-color: var(--primary);
+  background: rgba(99, 102, 241, 0.1);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+.language-flag {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+
+}
+
+.language-flag svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.language-dropdown {
+  min-width: 200px;
+  padding: 0.5rem;
+}
+
+.language-option {
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: none !important;
+}
+
+.language-option:hover {
+  background: rgba(99, 102, 241, 0.08);
+}
+
+.language-option.selected {
+  background: rgba(99, 102, 241, 0.12);
+}
+
+.language-option .language-flag {
+  width: 24px;
+  height: 24px;
+}
+
+.language-name {
+  flex: 1;
+  font-size: 0.9375rem;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.language-check {
+  font-size: 0.875rem;
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+/* Responsive для language selector */
+@media (max-width: 768px) {
+  .language-trigger {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .language-flag {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .language-option .language-flag {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .language-dropdown {
+    min-width: 180px;
+  }
+}
+
 /* Format Menu */
 .format-menu {
   position: absolute;
@@ -2314,44 +2445,136 @@ textarea,
     <div class="header-top">
       <div class="header-title">
         <div class="header-icon">
-          <i class="fas fa-heart"></i>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 513 449" aria-label="Love Dossier Logo" role="img">
+            <defs>
+              <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#6366f1" />
+                <stop offset="100%" stop-color="#8b5cf6" />
+              </linearGradient>
+            </defs>
+            <path fill="url(#logoGradient)" d="m256 75.9l-15-20.8c-25-34.6-65.1-55.1-107.9-55.1-73.5 0-133.1 59.6-133.1 133.1v2.6c0 23.6 6.2 48 16.6 72.3h106c3.2 0 6.1-1.9 7.4-4.9l31.8-76.3c3.7-8.8 12.3-14.6 21.8-14.8 9.5-0.2 18.3 5.4 22.2 14.1l51.3 113.9 41.4-82.8c4.1-8.1 12.4-13.3 21.5-13.3 9.1 0 17.4 5.1 21.5 13.3l23.2 46.3c1.4 2.7 4.1 4.4 7.2 4.4h123.6c10.5-24.3 16.6-48.7 16.6-72.3v-2.6c-0.1-73.4-59.7-133-133.2-133-42.7 0-82.9 20.5-107.9 55.1l-15 20.7zm213.6 180.1h-97.8c-21.2 0-40.6-12-50.1-31l-1.7-3.4-42.5 85.1c-4.1 8.3-12.7 13.5-22 13.3-9.3-0.2-17.6-5.7-21.4-14.1l-49.3-109.5-10.5 25.2c-8.7 20.9-29.1 34.5-51.7 34.5h-80.2c47.2 73.8 123 141.7 170.4 177.9 12.4 9.4 27.6 14.1 43.1 14.1 15.5 0 30.8-4.6 43.1-14.1 47.6-36.3 123.4-104.2 170.6-178z" />
+          </svg>
         </div>
-        <span>Досьє коханої людини</span>
+        <span data-i18n="app.title">Досьє коханої людини</span>
       </div>
       
       <div class="header-main-actions">
-        <div class="sync-status local" id="syncStatus" title="Режим збереження">
+        <!-- Language Switcher -->
+        <div class="custom-select language-select" id="languageSelector">
+          <div class="custom-select-trigger language-trigger" id="languageTrigger" data-i18n-title="tooltips.changeLanguage">
+            <span class="language-flag" id="currentLanguage">
+              <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+                <rect width="800" height="600" fill="#0057B7" rx="50"/>
+                <rect y="300" width="800" height="300" fill="#FFD700"/>
+              </svg>
+            </span>
+          </div>
+          <div class="custom-select-dropdown language-dropdown" id="languageDropdown">
+            <div class="custom-select-option language-option" data-lang="uk" data-flag="uk">
+              <span class="language-flag">
+                <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="800" height="600" fill="#0057B7" rx="50"/>
+                  <rect y="300" width="800" height="300" fill="#FFD700"/>
+                </svg>
+              </span>
+              <span class="language-name">Українська</span>
+              <i class="fas fa-check language-check" style="visibility: visible;"></i>
+            </div>
+            <div class="custom-select-option language-option" data-lang="en" data-flag="en">
+              <span class="language-flag">
+                <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="800" height="600" fill="#f0f0f0" rx="50"/>
+                  <g fill="#B22234">
+                    <rect width="800" height="46.15"/>
+                    <rect y="92.31" width="800" height="46.15"/>
+                    <rect y="184.62" width="800" height="46.15"/>
+                    <rect y="276.92" width="800" height="46.15"/>
+                    <rect y="369.23" width="800" height="46.15"/>
+                    <rect y="461.54" width="800" height="46.15"/>
+                    <rect y="553.85" width="800" height="46.15"/>
+                  </g>
+                  <rect width="342.86" height="323.08" fill="#3C3B6E"/>
+                  <g fill="#fff">
+                    <circle cx="57.14" cy="40" r="15"/>
+                    <circle cx="128.57" cy="40" r="15"/>
+                    <circle cx="200" cy="40" r="15"/>
+                    <circle cx="271.43" cy="40" r="15"/>
+                    <circle cx="92.86" cy="100" r="15"/>
+                    <circle cx="164.29" cy="100" r="15"/>
+                    <circle cx="235.71" cy="100" r="15"/>
+                    <circle cx="57.14" cy="160" r="15"/>
+                    <circle cx="128.57" cy="160" r="15"/>
+                    <circle cx="200" cy="160" r="15"/>
+                    <circle cx="271.43" cy="160" r="15"/>
+                    <circle cx="92.86" cy="220" r="15"/>
+                    <circle cx="164.29" cy="220" r="15"/>
+                    <circle cx="235.71" cy="220" r="15"/>
+                    <circle cx="57.14" cy="280" r="15"/>
+                    <circle cx="128.57" cy="280" r="15"/>
+                    <circle cx="200" cy="280" r="15"/>
+                    <circle cx="271.43" cy="280" r="15"/>
+                  </g>
+                </svg>
+              </span>
+              <span class="language-name">English</span>
+              <i class="fas fa-check language-check" style="visibility: hidden;"></i>
+            </div>
+            <div class="custom-select-option language-option" data-lang="ru" data-flag="ru">
+              <span class="language-flag">
+                <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="800" height="600" fill="#f0f0f0" rx="50"/>
+                  <rect y="200" width="800" height="200" fill="#0039A6"/>
+                  <rect y="400" width="800" height="200" fill="#D52B1E"/>
+                </svg>
+              </span>
+              <span class="language-name">Русский</span>
+              <i class="fas fa-check language-check" style="visibility: hidden;"></i>
+            </div>
+            <div class="custom-select-option language-option" data-lang="pl" data-flag="pl">
+              <span class="language-flag">
+                <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="800" height="600" fill="#f0f0f0" rx="50"/>
+                  <rect y="300" width="800" height="300" fill="#DC143C"/>
+                </svg>
+              </span>
+              <span class="language-name">Polski</span>
+              <i class="fas fa-check language-check" style="visibility: hidden;"></i>
+            </div>
+          </div>
+        </div>
+        
+        <div class="sync-status local" id="syncStatus" data-i18n-title="ui.storageMode">
           <i class="fas fa-laptop"></i>
-          <span>Local режим</span>
+          <span data-i18n="ui.localMode">Local режим</span>
         </div>
         
         <button class="btn btn-secondary btn-sm" id="btnSave">
           <i class="fas fa-save"></i>
-          <span>Зберегти</span>
+          <span data-i18n="ui.save">Зберегти</span>
         </button>
         
         <button class="btn btn-primary btn-sm" id="btnAddField">
           <i class="fas fa-plus"></i>
-          <span>Додати поле</span>
+          <span data-i18n="ui.addField">Додати поле</span>
         </button>
         
         <button class="header-menu-btn" onclick="App.toggleHeaderMenu()" id="headerMenuBtn">
           <i class="fas fa-ellipsis-h"></i>
-          <span>Більше</span>
+          <span data-i18n="ui.more">Більше</span>
         </button>
         
         <div class="header-menu-dropdown" id="headerMenuDropdown">
           <button class="btn" id="btnSync">
-            <i class="fas fa-sync-alt"></i> Синхронізація
+            <i class="fas fa-sync-alt"></i> <span data-i18n="ui.sync">Синхронізація</span>
           </button>
           <button class="btn" id="btnExport">
-            <i class="fas fa-download"></i> Експорт
+            <i class="fas fa-download"></i> <span data-i18n="ui.export">Експорт</span>
           </button>
           <button class="btn" id="btnImport">
-            <i class="fas fa-upload"></i> Імпорт
+            <i class="fas fa-upload"></i> <span data-i18n="ui.import">Імпорт</span>
           </button>
           <button class="btn danger" id="btnClear">
-            <i class="fas fa-trash-alt"></i> Очистити
+            <i class="fas fa-trash-alt"></i> <span data-i18n="ui.clear">Очистити</span>
           </button>
         </div>
       </div>
@@ -2365,21 +2588,22 @@ textarea,
             type="text" 
             class="search-input" 
             id="searchInput" 
+            data-i18n-placeholder="ui.searchPlaceholder"
             placeholder="Пошук по всіх полях..."
             autocomplete="off"
           />
           <i class="fas fa-search search-icon"></i>
-          <button class="search-clear-btn" id="searchClearBtn" title="Очистити пошук">
+          <button class="search-clear-btn" id="searchClearBtn" data-i18n-title="ui.clearSearch">
             <i class="fas fa-times"></i>
           </button>
         </div>
       </div>
       
       <div class="header-progress" id="headerProgress">
-        <div class="progress-bar-container" title="Прогрес заповнення">
+        <div class="progress-bar-container" data-i18n-title="ui.fillProgress">
           <div class="progress-bar-fill" id="progressBarFill" style="width: 0%"></div>
         </div>
-        <div class="progress-bar-text" id="progressBarText">Оберіть категорію</div>
+        <div class="progress-bar-text" id="progressBarText" data-i18n="ui.selectCategory">Оберіть категорію</div>
       </div>
     </div>
     
@@ -2392,16 +2616,16 @@ textarea,
     <aside class="sidebar" id="sidebar">
       <button class="sidebar-toggle-btn" id="sidebarToggle">
         <i class="fas fa-layer-group sidebar-toggle-icon"></i>
-        <span>Категорії</span>
+        <span data-i18n="ui.categories">Категорії</span>
         <i class="fas fa-chevron-down sidebar-toggle-arrow"></i>
       </button>
-      <div class="sidebar-title">Категорії</div>
+      <div class="sidebar-title" data-i18n="ui.categories">Категорії</div>
       <nav class="category-nav" id="categoryNav">
         <!-- Categories will be rendered here -->
       </nav>
       <button class="btn btn-add-category" id="btnAddCategory">
         <i class="fas fa-folder-plus"></i>
-        <span>Додати категорію</span>
+        <span data-i18n="ui.addCategory">Додати категорію</span>
       </button>
     </aside>
 
@@ -2410,7 +2634,7 @@ textarea,
       <div class="content-header">
         <div class="content-title" id="contentTitle">
           <i class="fas fa-folder"></i>
-          <span>Оберіть категорію</span>
+          <span data-i18n="ui.selectCategory">Оберіть категорію</span>
         </div>
         <div class="content-actions" id="contentActions">
           <!-- Dynamic actions will appear here -->
@@ -2419,10 +2643,10 @@ textarea,
       <div id="contentBody">
         <div class="empty-state">
           <div class="empty-state-icon">
-            <i class="fas fa-hand-pointer"></i>
+            <span data-i18n="ui.selectCategory">Оберіть категорію зліва</span>
           </div>
-          <div class="empty-state-text">Оберіть категорію зліва</div>
-          <p>Натисніть на категорію, щоб побачити поля</p>
+          <div class="empty-state-text" data-i18n="ui.selectCategoryLeft">Оберіть категорію зліва</div>
+          <p data-i18n="ui.clickCategory">Натисніть на категорію, щоб побачити поля</p>
         </div>
       </div>
     </main>
@@ -2435,9 +2659,9 @@ textarea,
     <div class="modal-header">
       <div class="modal-title">
         <i class="fas fa-edit modal-title-icon" id="modalTitleIcon"></i>
-        <span id="modalTitle">Модалка</span>
+        <span id="modalTitle" data-i18n="ui.modal">Модалка</span>
       </div>
-      <button class="btn btn-icon btn-secondary btn-sm modal-close-btn" id="modalClose">
+      <button class="btn btn-icon btn-secondary btn-sm modal-close-btn" id="modalClose" data-i18n-title="ui.close">
         <i class="fas fa-times"></i>
       </button>
     </div>
@@ -2447,11 +2671,11 @@ textarea,
     <div class="modal-footer">
       <button class="btn btn-secondary" id="modalCancel">
         <i class="fas fa-times"></i>
-        <span>Скасувати</span>
+        <span data-i18n="ui.cancel">Скасувати</span>
       </button>
       <button class="btn btn-primary" id="modalSave">
         <i class="fas fa-check"></i>
-        <span>Зберегти</span>
+        <span data-i18n="ui.save">Зберегти</span>
       </button>
     </div>
   </div>
@@ -2462,19 +2686,19 @@ textarea,
 
 <!-- Format Menu -->
 <div class="format-menu" id="formatMenu">
-  <button class="format-menu-btn" data-format="bold" title="Жирний (Ctrl+B)">
+  <button class="format-menu-btn" data-format="bold" data-i18n-title="format.bold">
     <i class="fas fa-bold"></i>
   </button>
-  <button class="format-menu-btn" data-format="italic" title="Курсив (Ctrl+I)">
+  <button class="format-menu-btn" data-format="italic" data-i18n-title="format.italic">
     <i class="fas fa-italic"></i>
   </button>
-  <button class="format-menu-btn" data-format="strikethrough" title="Закреслений">
+  <button class="format-menu-btn" data-format="strikethrough" data-i18n-title="format.strikethrough">
     <i class="fas fa-strikethrough"></i>
   </button>
-  <button class="format-menu-btn" data-format="link" title="Посилання (Ctrl+K)">
+  <button class="format-menu-btn" data-format="link" data-i18n-title="format.link">
     <i class="fas fa-link"></i>
   </button>
-  <button class="format-menu-btn" data-format="chip" title="Chip">
+  <button class="format-menu-btn" data-format="chip" data-i18n-title="format.chip">
     <i class="fas fa-tag"></i>
   </button>
 </div>
@@ -2511,31 +2735,1588 @@ textarea,
         encryptionPasswordHash: null // для верифікації
       },
       status: 'local', // 'local' | 'synced' | 'syncing' | 'error' | 'offline'
-      statusText: 'Local режим',
+      statusText: '',
       lastError: null
+    },
+    language: localStorage.getItem('app_language') || 'uk'
+  };
+
+  // ============= TRANSLATIONS =============
+  const TRANSLATIONS = {
+    uk: {
+      app: {
+        title: 'Досьє коханої людини',
+        filePrefix: 'dosie',
+        spreadsheetTitle: 'Досьє'
+      },
+      ui: {
+        localMode: 'Local режим',
+        save: 'Зберегти',
+        addField: 'Додати поле',
+        more: 'Більше',
+        sync: 'Синхронізація',
+        export: 'Експорт',
+        import: 'Імпорт',
+        clear: 'Очистити',
+        searchPlaceholder: 'Пошук по всіх полях...',
+        clearSearch: 'Очистити пошук',
+        fillProgress: 'Прогрес заповнення',
+        selectCategory: 'Оберіть категорію',
+        categories: 'Категорії',
+        addCategory: 'Додати категорію',
+        selectCategoryLeft: 'Оберіть категорію зліва',
+        clickCategory: 'Натисніть на категорію, щоб побачити поля',
+        modal: 'Модалка',
+        close: 'Закрити',
+        cancel: 'Скасувати',
+        storageMode: 'Режим збереження',
+        filled: 'Заповнено',
+        empty: 'Порожньо',
+        all: 'Всі',
+        high: 'Високий',
+        medium: 'Середній',
+        low: 'Низький',
+        filters: 'Фільтри',
+        importance: 'Важливість',
+        edit: 'Редагувати',
+        delete: 'Видалити',
+        addSubcategory: 'Додати підкатегорію',
+        emptyValue: 'Не заповнено',
+        searchResults: 'результатів',
+        searchResultsTitle: 'Результати пошуку',
+        noResults: 'Нічого не знайдено',
+        changeSearchQuery: 'Спробуйте змінити пошуковий запит',
+        changeFilters: 'Спробуйте змінити фільтри',
+        privateBadge: '🔒 Приватна',
+        of: 'з',
+        fields: 'полів',
+        filledProgress: 'Заповнено',
+        inCategory: 'у категорії'
+      },
+      format: {
+        bold: 'Жирний (Ctrl+B)',
+        italic: 'Курсив (Ctrl+I)',
+        strikethrough: 'Закреслений',
+        link: 'Посилання (Ctrl+K)',
+        chip: 'Тег'
+      },
+      categories: {
+        base: 'Базова інформація',
+        character: 'Характер',
+        preferences: 'Вподобання',
+        antipreferences: 'Антивподобання',
+        gifts: 'Подарунки',
+        psychology: 'Психологія',
+        psych: 'Психологічні особливості',
+        logistics: 'Логістика та побут',
+        goals: 'Цілі та мрії',
+        custom: 'Додаткове',
+        communication: 'Комунікація',
+        finance: 'Фінанси',
+        intimacy: 'Інтимність',
+        family: 'Сім\'я',
+        career: 'Кар\'єра',
+        culture: 'Культура'
+      },
+      fields: {
+        fullName: 'ПІБ',
+        dob: 'Дата народження',
+        character: 'Особливості характеру',
+        dreams: 'Мрії та бажання',
+        likes: 'Що любить',
+        memories: 'Пам\'ять і спогади',
+        dislikes: 'Що не любить',
+        anti_triggers: 'Тригери та роздратування',
+        anti_topics: 'Неприємні теми для розмов',
+        anti_places: 'Місця, які не подобаються',
+        anti_sounds: 'Неприємні звуки/запахи',
+        anti_situations: 'Некомфортні ситуації',
+        gift_wishlist: 'Список бажань',
+        gift_sizes: 'Розміри',
+        gift_brands: 'Улюблені бренди',
+        gift_anti: 'Антиподарунки',
+        gift_history: 'Історія подарунків',
+        love_language: 'Мова кохання',
+        values: 'Основні цінності',
+        psy_conflict_style: 'Стиль поведінки в конфліктах',
+        psy_compliments: 'Як любить отримувати компліменти',
+        psy_stress_relief: 'Способи зняття стресу',
+        log_places: 'Улюблені місця',
+        log_social_circle: 'Соціальне коло',
+        log_schedule_peak: 'Пікові години активності',
+        log_media: 'Медіа вподобання',
+        short_goals: 'Короткострокові цілі',
+        goal_travel: 'Мрії про подорожі',
+        goal_traditions: 'Традиції, які хоче створити',
+        goal_cozy_ideal: 'Ідеальний затишний вечір',
+        contact_phone: 'Телефон',
+        contact_email: 'Email',
+        city: 'Місто / Локація',
+        anniversary: 'Річниця / Важлива дата',
+        attachment_style: 'Стиль прихильності',
+        humor_style: 'Почуття гумору',
+        personal_boundaries: 'Особисті кордони',
+        cuisines_fav: 'Улюблені кухні',
+        allergies: 'Алергії / Чутливості',
+        aesthetics: 'Естетики / Стилі',
+        fav_colors: 'Улюблені кольори',
+        anti_allergies: 'Заборонені через алергії',
+        anti_people_types: 'Типи людей, з якими важко',
+        gift_price_range: 'Комфортний бюджет подарунків',
+        gift_stores: 'Улюблені магазини / платформи',
+        psy_anxiety_triggers: 'Тригери тривоги',
+        psy_motivators: 'Що мотивує',
+        psy_calming_words: 'Слова/фрази підтримки',
+        log_transport: 'Звичний транспорт',
+        log_work_hours: 'Години роботи/навчання',
+        log_routines: 'Щоденні рутини',
+        log_food_schedule: 'Харчовий режим',
+        long_goals: 'Довгострокові цілі',
+        learning_topics: 'Що хоче вивчити',
+        bucket_list: 'Bucket list',
+        notes_private: 'Особисті нотатки',
+        comm_style: 'Стиль спілкування',
+        comm_frequency: 'Частота бажаного контакту',
+        comm_topics_good: 'Комфортні теми',
+        comm_topics_bad: 'Складні теми',
+        comm_love_language: 'Мова любові в комунікації',
+        finance_habits: 'Фінансові звички',
+        finance_attitude: 'Ставлення до грошей',
+        finance_goals: 'Спільні фінансові цілі',
+        finance_split: 'Розподіл витрат',
+        intimacy_language: 'Мова інтимності',
+        intimacy_boundaries: 'Boundaries та комфорт',
+        intimacy_gestures: 'Романтичні жести',
+        family_info: 'Інформація про родину',
+        family_important: 'Важливі люди',
+        family_traditions: 'Сімейні традиції',
+        family_attitude: 'Ставлення до родини',
+        career_goals: 'Професійні цілі',
+        career_schedule: 'Робочий графік',
+        career_dreams: 'Кар\'єрні мрії',
+        career_balance: 'Work-life balance',
+        culture_religion: 'Релігійні погляди',
+        culture_politics: 'Політичні переконання',
+        culture_traditions: 'Культурні традиції',
+        culture_principles: 'Життєві принципи'
+      },
+      nested: {
+        food: 'Їжа',
+        activities: 'Заняття',
+        sweet: 'Солодке',
+        drinks: 'Напої',
+        active: 'Активні',
+        calm: 'Спокійні',
+        tastes: 'Смаки',
+        dishes: 'Страви',
+        social: 'Соціальні',
+        personal: 'Особисті',
+        behaviors: 'Поведінка',
+        communication: 'Спілкування',
+        habits: 'Звички'
+      },
+      messages: {
+        dataSaved: 'Дані збережено',
+        exported: 'Експортовано',
+        imported: 'Імпортовано',
+        invalidFile: 'Невірний формат файлу',
+        fileReadError: 'Помилка читання файлу',
+        dataCleared: 'Дані очищено',
+        confirmClear: 'Ви впевнені, що хочете очистити всі дані? Ця дія незворотна!',
+        fillAllFields: 'Заповніть всі поля',
+        fieldExists: 'Поле з таким ID вже існує',
+        fieldUpdated: 'Поле оновлено',
+        fieldCreated: 'Поле створено',
+        categoryExists: 'Категорія з таким ID вже існує',
+        categoryUpdated: 'Категорію оновлено',
+        categoryCreated: 'Категорію створено',
+        valueUpdated: 'Значення оновлено',
+        fieldDeleted: 'Поле видалено',
+        confirmDeleteField: 'Видалити це поле?',
+        syncError: 'Помилка синхронізації',
+        syncComplete: 'Синхронізація завершена',
+        syncInitError: 'Помилка ініціалізації',
+        needAuth: 'Потрібна авторизація в Google',
+        enterUrl: 'Введіть URL:',
+        connectionRestored: 'З\'єднання відновлено',
+        offlineMode: 'Офлайн режим',
+        localSave: 'Дані збережено локально',
+        showFilled: 'Показано: заповнені поля',
+        showEmpty: 'Показано: порожні поля',
+        showAll: 'Показано: всі поля',
+        allImportance: 'Показано поля всіх рівнів важливості',
+        syncing: 'Синхронізація...',
+        noFieldsWithFilters: 'Немає полів за обраними фільтрами',
+        noFilledFields: 'Немає заповнених полів за обраними фільтрами',
+        noEmptyFields: 'Немає порожніх полів за обраними фільтрами',
+        noFieldsWithImportance: 'Немає полів з обраними рівнями важливості',
+        enterClientId: 'Введіть Client ID',
+        passwordMinLength: 'Пароль повинен містити мінімум 6 символів',
+        passwordsNotMatch: 'Паролі не співпадають',
+        settingsSaved: 'Налаштування збережено',
+        passwordNotStored: 'Пароль не зберігається!',
+        writeItDown: 'Запишіть його в безпечному місці.',
+        errorNotAuthorized: 'Не авторизовано',
+        errorSpreadsheetIdNotSet: 'Spreadsheet ID не встановлено',
+        errorDataNotFound: 'Дані не знайдено',
+        errorDataEncrypted: 'Дані зашифровано. Введіть пароль для розшифрування.',
+        errorNotAuthorizedGoogle: 'Не авторизовано в Google',
+        errorGoogleApiNotLoaded: 'Google API не завантажено',
+        errorGoogleIdentityNotLoaded: 'Google Identity Services не завантажено',
+        errorTokenClientNotInitialized: 'Token client не ініціалізовано'
+      },
+      modal: {
+        editField: 'Редагувати поле',
+        newField: 'Нове поле',
+        editCategory: 'Редагувати категорію',
+        newCategory: 'Нова категорія',
+        editValue: 'Редагувати',
+        syncSettings: 'Налаштування синхронізації',
+        fieldId: 'ID поля',
+        fieldName: 'Назва поля',
+        type: 'Тип',
+        importance: 'Важливість',
+        category: 'Категорія',
+        required: 'Обов\'язкове поле',
+        categoryId: 'ID категорії',
+        categoryName: 'Назва категорії',
+        icon: 'Іконка (Font Awesome)',
+        customCategoryNote: 'Змінюючи назву кастомної категорії, ви змінюєте її для всіх мов',
+        password: 'Пароль',
+        confirmPassword: 'Підтвердження',
+        enterPassword: 'Введіть пароль',
+        confirmPasswordPlaceholder: 'Підтвердіть пароль'
+      },
+      types: {
+        text: 'Текст',
+        textarea: 'Текстова область',
+        date: 'Дата',
+        tags: 'Теги',
+        nested: 'Вкладені'
+      },
+      importance: {
+        high: 'Висока',
+        medium: 'Середня',
+        low: 'Низька',
+        highShort: 'Високий',
+        mediumShort: 'Середній',
+        lowShort: 'Низький',
+        highPlural: 'Високі',
+        mediumPlural: 'Середні',
+        lowPlural: 'Низькі'
+      },
+      tooltips: {
+        menu: 'Меню',
+        editValue: 'Редагувати значення',
+        fieldSettings: 'Налаштування поля',
+        deleteField: 'Видалити',
+        changeLanguage: 'Змінити мову'
+      },
+      fillStatus: {
+        all: 'Всі',
+        filled: 'Заповнені',
+        empty: 'Порожні',
+        filledness: 'Заповненість'
+      },
+      sync: {
+        storageMode: 'Режим збереження',
+        localMode: '💾 Локальне сховище',
+        localModeDesc: 'Дані зберігаються у браузері. Швидко, але доступ тільки з цього пристрою.',
+        googleSheetsMode: '☁️ Google Sheets',
+        googleSheetsModeDesc: 'Синхронізація з Google таблицею. Доступ з будь-якого пристрою, автоматичне збереження.',
+        manualMode: '📁 Ручні файли',
+        manualModeDesc: 'Імпорт/Експорт JSON файлів. Повний контроль над даними.',
+        googleSheetsSettings: 'Google Sheets налаштування',
+        stepByStepInstructions: 'Покрокова інструкція налаштування',
+        step1: 'Крок 1: Google Cloud Console',
+        step2: 'Крок 2: Увімкнити API',
+        step3: 'Крок 3: Створити OAuth Client',
+        projectName: 'Назва',
+        clientId: 'Client ID',
+        spreadsheetId: 'Spreadsheet ID',
+        authorizeGoogle: 'Авторизуватись в Google',
+        createSpreadsheet: 'Створити таблицю',
+        openSpreadsheet: 'Відкрити таблицю',
+        autoSync: 'Автоматична синхронізація',
+        interval: 'Інтервал',
+        encryption: 'Шифрування даних (рекомендовано)',
+        migrationData: 'Міграція даних',
+        exportToSheets: 'Експорт Local → Google Sheets',
+        importFromSheets: 'Імпорт Google Sheets → Local',
+        syncNow: 'Синхронізувати зараз',
+        initializing: 'Ініціалізація Google API...',
+        authorized: 'Авторизовано в Google',
+        spreadsheetCreated: 'Таблицю створено!',
+        openLink: 'Відкрити',
+        uploadingData: 'Завантаження даних...',
+        downloadingData: 'Завантаження даних...',
+        errorAuth: 'Помилка авторизації',
+        errorCreateSheet: 'Помилка створення таблиці',
+        minute1: '1 хвилина',
+        minutes5: '5 хвилин',
+        minutes15: '15 хвилин',
+        minutes30: '30 хвилин',
+        hour1: '1 година',
+        securityTitle: 'Про вашу безпеку',
+        securityItem1: 'Дані зберігаються у ВАШІЙ Google таблиці',
+        securityItem2: 'Ми НЕ маємо доступу до ваших даних',
+        securityItem3: 'Токени доступу тільки у вашому браузері',
+        securityItem4: 'З шифруванням дані нечитабельні без пароля',
+        securityItem5: 'Ви можете відкликати доступ будь-коли',
+        migrationAndStats: 'Міграція та статистика',
+        fieldsFilled: 'Полів заповнено',
+        lastSync: 'Остання синхронізація',
+        never: 'Ніколи'
+      },
+      hints: {
+        formatting: 'Форматування: **жирний**, *курсив*, ~~закреслений~~, [текст](url)',
+        selectTextForFormatting: 'Виділіть текст для швидкого форматування',
+        separateTagsWithCommas: 'Розділяйте теги комами',
+        tagsPlaceholder: 'тег1, тег2, тег3',
+        valuesPlaceholder: 'значення1, значення2',
+        iconPlaceholder: 'fa-folder',
+        clientIdPlaceholder: '1234567890-abc123...'
+      },
+      emptyStates: {
+        noFieldsInCategory: 'Немає полів у цій категорії',
+        clickAddFieldToCreate: 'Натисніть "Додати поле" щоб створити нове поле'
+      },
+      instructions: {
+        goTo: 'Перейдіть',
+        click: 'Натисніть',
+        find: 'Знайдіть',
+        yourDomain: 'ваш домен',
+        copyClientId: 'СКОПІЮЙТЕ'
+      }
+    },
+    en: {
+      app: {
+        title: 'Love Dossier (BETA)',
+        filePrefix: 'dossier',
+        spreadsheetTitle: 'Dossier'
+      },
+      ui: {
+        localMode: 'Local mode',
+        save: 'Save',
+        addField: 'Add field',
+        more: 'More',
+        sync: 'Sync',
+        export: 'Export',
+        import: 'Import',
+        clear: 'Clear',
+        searchPlaceholder: 'Search in all fields...',
+        clearSearch: 'Clear search',
+        fillProgress: 'Fill progress',
+        selectCategory: 'Select category',
+        categories: 'Categories',
+        addCategory: 'Add category',
+        selectCategoryLeft: 'Select category on the left',
+        clickCategory: 'Click on a category to see fields',
+        changeFilters: 'Try changing filters',
+        modal: 'Modal',
+        close: 'Close',
+        cancel: 'Cancel',
+        storageMode: 'Storage mode',
+        filled: 'Filled',
+        empty: 'Empty',
+        all: 'All',
+        high: 'High',
+        medium: 'Medium',
+        low: 'Low',
+        filters: 'Filters',
+        importance: 'Importance',
+        edit: 'Edit',
+        delete: 'Delete',
+        addSubcategory: 'Add subcategory',
+        emptyValue: 'Not filled',
+        searchResults: 'results',
+        searchResultsTitle: 'Search results',
+        noResults: 'No results found',
+        changeSearchQuery: 'Try changing your search query',
+        privateBadge: '🔒 Private',
+        of: 'of',
+        fields: 'fields',
+        filledProgress: 'Filled',
+        inCategory: 'in category'
+      },
+      format: {
+        bold: 'Bold (Ctrl+B)',
+        italic: 'Italic (Ctrl+I)',
+        strikethrough: 'Strikethrough',
+        link: 'Link (Ctrl+K)',
+        chip: 'Tag'
+      },
+      categories: {
+        base: 'Basic Information',
+        character: 'Character',
+        preferences: 'Preferences',
+        antipreferences: 'Dislikes',
+        gifts: 'Gifts',
+        psychology: 'Psychology',
+        psych: 'Psychological Features',
+        logistics: 'Logistics & Routine',
+        goals: 'Goals & Dreams',
+        custom: 'Additional',
+        communication: 'Communication',
+        finance: 'Finance',
+        intimacy: 'Intimacy',
+        family: 'Family',
+        career: 'Career',
+        culture: 'Culture'
+      },
+      fields: {
+        fullName: 'Full Name',
+        dob: 'Date of Birth',
+        character: 'Character Traits',
+        dreams: 'Dreams & Wishes',
+        likes: 'Likes',
+        memories: 'Memories',
+        dislikes: 'Dislikes',
+        anti_triggers: 'Triggers & Irritants',
+        anti_topics: 'Uncomfortable Topics',
+        anti_places: 'Disliked Places',
+        anti_sounds: 'Unpleasant Sounds/Smells',
+        anti_situations: 'Uncomfortable Situations',
+        gift_wishlist: 'Wishlist',
+        gift_sizes: 'Sizes',
+        gift_brands: 'Favorite Brands',
+        gift_anti: 'Anti-gifts',
+        gift_history: 'Gift History',
+        love_language: 'Love Language',
+        values: 'Core Values',
+        psy_conflict_style: 'Conflict Behavior Style',
+        psy_compliments: 'How Likes to Receive Compliments',
+        psy_stress_relief: 'Stress Relief Methods',
+        log_places: 'Favorite Places',
+        log_social_circle: 'Social Circle',
+        log_schedule_peak: 'Peak Activity Hours',
+        log_media: 'Media Preferences',
+        short_goals: 'Short-term Goals',
+        goal_travel: 'Travel Dreams',
+        goal_traditions: 'Traditions to Create',
+        goal_cozy_ideal: 'Perfect Cozy Evening',
+        contact_phone: 'Phone',
+        contact_email: 'Email',
+        city: 'City / Location',
+        anniversary: 'Anniversary / Important Date',
+        attachment_style: 'Attachment Style',
+        humor_style: 'Sense of Humor',
+        personal_boundaries: 'Personal Boundaries',
+        cuisines_fav: 'Favorite Cuisines',
+        allergies: 'Allergies / Sensitivities',
+        aesthetics: 'Aesthetics / Styles',
+        fav_colors: 'Favorite Colors',
+        anti_allergies: 'Forbidden Due to Allergies',
+        anti_people_types: 'Difficult People Types',
+        gift_price_range: 'Comfortable Gift Budget',
+        gift_stores: 'Favorite Stores / Platforms',
+        psy_anxiety_triggers: 'Anxiety Triggers',
+        psy_motivators: 'Motivators',
+        psy_calming_words: 'Support Words/Phrases',
+        log_transport: 'Usual Transport',
+        log_work_hours: 'Work/Study Hours',
+        log_routines: 'Daily Routines',
+        log_food_schedule: 'Food Schedule',
+        long_goals: 'Long-term Goals',
+        learning_topics: 'Wants to Learn',
+        bucket_list: 'Bucket List',
+        notes_private: 'Personal Notes',
+        comm_style: 'Communication Style',
+        comm_frequency: 'Desired Contact Frequency',
+        comm_topics_good: 'Comfortable Topics',
+        comm_topics_bad: 'Difficult Topics',
+        comm_love_language: 'Love Language in Communication',
+        finance_habits: 'Financial Habits',
+        finance_attitude: 'Attitude Towards Money',
+        finance_goals: 'Shared Financial Goals',
+        finance_split: 'Expense Split',
+        intimacy_language: 'Language of Intimacy',
+        intimacy_boundaries: 'Boundaries & Comfort',
+        intimacy_gestures: 'Romantic Gestures',
+        family_info: 'Family Information',
+        family_important: 'Important People',
+        family_traditions: 'Family Traditions',
+        family_attitude: 'Attitude Towards Family',
+        career_goals: 'Professional Goals',
+        career_schedule: 'Work Schedule',
+        career_dreams: 'Career Dreams',
+        career_balance: 'Work-life Balance',
+        culture_religion: 'Religious Views',
+        culture_politics: 'Political Beliefs',
+        culture_traditions: 'Cultural Traditions',
+        culture_principles: 'Life Principles'
+      },
+      nested: {
+        food: 'Food',
+        activities: 'Activities',
+        sweet: 'Sweets',
+        drinks: 'Drinks',
+        active: 'Active',
+        calm: 'Calm',
+        tastes: 'Tastes',
+        dishes: 'Dishes',
+        social: 'Social',
+        personal: 'Personal',
+        behaviors: 'Behavior',
+        communication: 'Communication',
+        habits: 'Habits'
+      },
+      messages: {
+        dataSaved: 'Data saved',
+        exported: 'Exported',
+        imported: 'Imported',
+        invalidFile: 'Invalid file format',
+        fileReadError: 'File read error',
+        dataCleared: 'Data cleared',
+        confirmClear: 'Are you sure you want to clear all data? This action is irreversible!',
+        fillAllFields: 'Fill in all fields',
+        fieldExists: 'A field with this ID already exists',
+        fieldUpdated: 'Field updated',
+        fieldCreated: 'Field created',
+        categoryExists: 'A category with this ID already exists',
+        categoryUpdated: 'Category updated',
+        categoryCreated: 'Category created',
+        valueUpdated: 'Value updated',
+        fieldDeleted: 'Field deleted',
+        confirmDeleteField: 'Delete this field?',
+        syncError: 'Sync error',
+        syncComplete: 'Sync completed',
+        syncInitError: 'Initialization error',
+        needAuth: 'Google authorization required',
+        enterUrl: 'Enter URL:',
+        connectionRestored: 'Connection restored',
+        offlineMode: 'Offline mode',
+        localSave: 'Data saved locally',
+        showFilled: 'Shown: filled fields',
+        showEmpty: 'Shown: empty fields',
+        showAll: 'Shown: all fields',
+        allImportance: 'Shown fields of all importance levels',
+        syncing: 'Syncing...',
+        noFieldsWithFilters: 'No fields with selected filters',
+        noFilledFields: 'No filled fields with selected filters',
+        noEmptyFields: 'No empty fields with selected filters',
+        noFieldsWithImportance: 'No fields with selected importance levels',
+        enterClientId: 'Enter Client ID',
+        passwordMinLength: 'Password must be at least 6 characters',
+        passwordsNotMatch: 'Passwords do not match',
+        settingsSaved: 'Settings saved',
+        passwordNotStored: 'Password is not stored!',
+        writeItDown: 'Write it down in a safe place.',
+        errorNotAuthorized: 'Not authorized',
+        errorSpreadsheetIdNotSet: 'Spreadsheet ID not set',
+        errorDataNotFound: 'Data not found',
+        errorDataEncrypted: 'Data is encrypted. Enter password to decrypt.',
+        errorNotAuthorizedGoogle: 'Not authorized with Google',
+        errorGoogleApiNotLoaded: 'Google API not loaded',
+        errorGoogleIdentityNotLoaded: 'Google Identity Services not loaded',
+        errorTokenClientNotInitialized: 'Token client not initialized'
+      },
+      modal: {
+        editField: 'Edit Field',
+        newField: 'New Field',
+        editCategory: 'Edit Category',
+        newCategory: 'New Category',
+        editValue: 'Edit',
+        syncSettings: 'Sync Settings',
+        fieldId: 'Field ID',
+        fieldName: 'Field Name',
+        type: 'Type',
+        importance: 'Importance',
+        category: 'Category',
+        required: 'Required field',
+        categoryId: 'Category ID',
+        categoryName: 'Category Name',
+        icon: 'Icon (Font Awesome)',
+        customCategoryNote: 'Changing the name of a custom category changes it for all languages',
+        password: 'Password',
+        confirmPassword: 'Confirmation',
+        enterPassword: 'Enter password',
+        confirmPasswordPlaceholder: 'Confirm password'
+      },
+      types: {
+        text: 'Text',
+        textarea: 'Text Area',
+        date: 'Date',
+        tags: 'Tags',
+        nested: 'Nested'
+      },
+      importance: {
+        high: 'High',
+        medium: 'Medium',
+        low: 'Low',
+        highShort: 'High',
+        mediumShort: 'Medium',
+        lowShort: 'Low',
+        highPlural: 'High',
+        mediumPlural: 'Medium',
+        lowPlural: 'Low'
+      },
+      tooltips: {
+        menu: 'Menu',
+        editValue: 'Edit value',
+        fieldSettings: 'Field settings',
+        deleteField: 'Delete',
+        changeLanguage: 'Change language'
+      },
+      fillStatus: {
+        all: 'All',
+        filled: 'Filled',
+        empty: 'Empty',
+        filledness: 'Fill Status'
+      },
+      sync: {
+        storageMode: 'Storage Mode',
+        localMode: '💾 Local Storage',
+        localModeDesc: 'Data is stored in the browser. Fast, but only accessible from this device.',
+        googleSheetsMode: '☁️ Google Sheets',
+        googleSheetsModeDesc: 'Sync with Google spreadsheet. Access from any device, automatic saving.',
+        manualMode: '📁 Manual Files',
+        manualModeDesc: 'Import/Export JSON files. Full control over data.',
+        googleSheetsSettings: 'Google Sheets Settings',
+        stepByStepInstructions: 'Step-by-step setup instructions',
+        step1: 'Step 1: Google Cloud Console',
+        step2: 'Step 2: Enable API',
+        step3: 'Step 3: Create OAuth Client',
+        projectName: 'Name',
+        clientId: 'Client ID',
+        spreadsheetId: 'Spreadsheet ID',
+        authorizeGoogle: 'Authorize with Google',
+        createSpreadsheet: 'Create Spreadsheet',
+        openSpreadsheet: 'Open Spreadsheet',
+        autoSync: 'Automatic synchronization',
+        interval: 'Interval',
+        encryption: 'Data encryption (recommended)',
+        migrationData: 'Data Migration',
+        exportToSheets: 'Export Local → Google Sheets',
+        importFromSheets: 'Import Google Sheets → Local',
+        syncNow: 'Sync Now',
+        initializing: 'Initializing Google API...',
+        authorized: 'Authorized with Google',
+        spreadsheetCreated: 'Spreadsheet created!',
+        openLink: 'Open',
+        uploadingData: 'Uploading data...',
+        downloadingData: 'Downloading data...',
+        errorAuth: 'Authorization error',
+        errorCreateSheet: 'Error creating spreadsheet',
+        minute1: '1 minute',
+        minutes5: '5 minutes',
+        minutes15: '15 minutes',
+        minutes30: '30 minutes',
+        hour1: '1 hour',
+        securityTitle: 'About Your Security',
+        securityItem1: 'Data is stored in YOUR Google spreadsheet',
+        securityItem2: 'We do NOT have access to your data',
+        securityItem3: 'Access tokens are only in your browser',
+        securityItem4: 'With encryption, data is unreadable without password',
+        securityItem5: 'You can revoke access at any time',
+        migrationAndStats: 'Migration and Statistics',
+        fieldsFilled: 'Fields filled',
+        lastSync: 'Last sync',
+        never: 'Never'
+      },
+      hints: {
+        formatting: 'Formatting: **bold**, *italic*, ~~strikethrough~~, [text](url)',
+        selectTextForFormatting: 'Select text for quick formatting',
+        separateTagsWithCommas: 'Separate tags with commas',
+        tagsPlaceholder: 'tag1, tag2, tag3',
+        valuesPlaceholder: 'value1, value2',
+        iconPlaceholder: 'fa-folder',
+        clientIdPlaceholder: '1234567890-abc123...'
+      },
+      emptyStates: {
+        noFieldsInCategory: 'No fields in this category',
+        clickAddFieldToCreate: 'Click "Add field" to create a new field'
+      },
+      instructions: {
+        goTo: 'Go to',
+        click: 'Click',
+        find: 'Find',
+        yourDomain: 'your domain',
+        copyClientId: 'COPY'
+      }
+    },
+    ru: {
+      app: {
+        title: 'Досье любимого человека (BETA)',
+        filePrefix: 'dose',
+        spreadsheetTitle: 'Досье'
+      },
+      ui: {
+        localMode: 'Локальный режим',
+        save: 'Сохранить',
+        addField: 'Добавить поле',
+        more: 'Больше',
+        sync: 'Синхронизация',
+        export: 'Экспорт',
+        import: 'Импорт',
+        clear: 'Очистить',
+        searchPlaceholder: 'Поиск по всем полям...',
+        clearSearch: 'Очистить поиск',
+        fillProgress: 'Прогресс заполнения',
+        selectCategory: 'Выберите категорию',
+        categories: 'Категории',
+        addCategory: 'Добавить категорию',
+        selectCategoryLeft: 'Выберите категорию слева',
+        clickCategory: 'Нажмите на категорию, чтобы увидеть поля',
+        changeFilters: 'Попробуйте изменить фильтры',
+        modal: 'Модальное окно',
+        close: 'Закрыть',
+        cancel: 'Отменить',
+        storageMode: 'Режим хранения',
+        filled: 'Заполнено',
+        empty: 'Пусто',
+        all: 'Все',
+        high: 'Высокий',
+        medium: 'Средний',
+        low: 'Низкий',
+        filters: 'Фильтры',
+        importance: 'Важность',
+        edit: 'Редактировать',
+        delete: 'Удалить',
+        addSubcategory: 'Добавить подкатегорию',
+        emptyValue: 'Не заполнено',
+        searchResults: 'результатов',
+        searchResultsTitle: 'Результаты поиска',
+        noResults: 'Ничего не найдено',
+        changeSearchQuery: 'Попробуйте изменить поисковый запрос',
+        privateBadge: '🔒 Приватная',
+        of: 'из',
+        fields: 'полей',
+        filledProgress: 'Заполнено',
+        inCategory: 'в категории'
+      },
+      format: {
+        bold: 'Жирный (Ctrl+B)',
+        italic: 'Курсив (Ctrl+I)',
+        strikethrough: 'Зачёркнутый',
+        link: 'Ссылка (Ctrl+K)',
+        chip: 'Тег'
+      },
+      categories: {
+        base: 'Базовая информация',
+        character: 'Характер',
+        preferences: 'Предпочтения',
+        antipreferences: 'Антипредпочтения',
+        gifts: 'Подарки',
+        psychology: 'Психология',
+        psych: 'Психологические особенности',
+        logistics: 'Логистика и быт',
+        goals: 'Цели и мечты',
+        custom: 'Дополнительное',
+        communication: 'Коммуникация',
+        finance: 'Финансы',
+        intimacy: 'Интимность',
+        family: 'Семья',
+        career: 'Карьера',
+        culture: 'Культура'
+      },
+      fields: {
+        fullName: 'ФИО',
+        dob: 'Дата рождения',
+        character: 'Особенности характера',
+        dreams: 'Мечты и желания',
+        likes: 'Что любит',
+        memories: 'Память и воспоминания',
+        dislikes: 'Что не любит',
+        anti_triggers: 'Триггеры и раздражители',
+        anti_topics: 'Неудобные темы',
+        anti_places: 'Нелюбимые места',
+        anti_sounds: 'Неприятные звуки/запахи',
+        anti_situations: 'Неудобные ситуации',
+        gift_wishlist: 'Список желаний',
+        gift_sizes: 'Размеры',
+        gift_brands: 'Любимые бренды',
+        gift_anti: 'Анти-подарки',
+        gift_history: 'История подарков',
+        love_language: 'Язык любви',
+        values: 'Основные ценности',
+        psy_conflict_style: 'Стиль поведения в конфликтах',
+        psy_compliments: 'Как любит получать комплименты',
+        psy_stress_relief: 'Способы снятия стресса',
+        log_places: 'Любимые места',
+        log_social_circle: 'Круг общения',
+        log_schedule_peak: 'Часы пиковой активности',
+        log_media: 'Медиа предпочтения',
+        short_goals: 'Краткосрочные цели',
+        goal_travel: 'Мечты о путешествиях',
+        goal_traditions: 'Традиции для создания',
+        goal_cozy_ideal: 'Идеальный уютный вечер',
+        contact_phone: 'Телефон',
+        contact_email: 'Email',
+        city: 'Город / Локация',
+        anniversary: 'Годовщина / Важная дата',
+        attachment_style: 'Стиль привязанности',
+        humor_style: 'Чувство юмора',
+        personal_boundaries: 'Личные границы',
+        cuisines_fav: 'Любимые кухни',
+        allergies: 'Аллергии / Чувствительности',
+        aesthetics: 'Эстетика / Стили',
+        fav_colors: 'Любимые цвета',
+        anti_allergies: 'Запрещено из-за аллергии',
+        anti_people_types: 'Сложные типы людей',
+        gift_price_range: 'Комфортный бюджет подарка',
+        gift_stores: 'Любимые магазины / Платформы',
+        psy_anxiety_triggers: 'Триггеры тревожности',
+        psy_motivators: 'Мотиваторы',
+        psy_calming_words: 'Слова/фразы поддержки',
+        log_transport: 'Обычный транспорт',
+        log_work_hours: 'Часы работы/учёбы',
+        log_routines: 'Ежедневные рутины',
+        log_food_schedule: 'График питания',
+        long_goals: 'Долгосрочные цели',
+        learning_topics: 'Хочет изучить',
+        bucket_list: 'Список мечт',
+        notes_private: 'Личные заметки',
+        comm_style: 'Стиль общения',
+        comm_frequency: 'Желаемая частота контактов',
+        comm_topics_good: 'Комфортные темы',
+        comm_topics_bad: 'Сложные темы',
+        comm_love_language: 'Язык любви в общении',
+        finance_habits: 'Финансовые привычки',
+        finance_attitude: 'Отношение к деньгам',
+        finance_goals: 'Общие финансовые цели',
+        finance_split: 'Разделение расходов',
+        intimacy_language: 'Язык интимности',
+        intimacy_boundaries: 'Границы и комфорт',
+        intimacy_gestures: 'Романтические жесты',
+        family_info: 'Информация о семье',
+        family_important: 'Важные люди',
+        family_traditions: 'Семейные традиции',
+        family_attitude: 'Отношение к семье',
+        career_goals: 'Профессиональные цели',
+        career_schedule: 'График работы',
+        career_dreams: 'Карьерные мечты',
+        career_balance: 'Баланс работы и жизни',
+        culture_religion: 'Религиозные взгляды',
+        culture_politics: 'Политические убеждения',
+        culture_traditions: 'Культурные традиции',
+        culture_principles: 'Жизненные принципы'
+      },
+      nested: {
+        food: 'Еда',
+        activities: 'Занятия',
+        sweet: 'Сладкое',
+        drinks: 'Напитки',
+        active: 'Активные',
+        calm: 'Спокойные',
+        tastes: 'Вкусы',
+        dishes: 'Блюда',
+        social: 'Социальные',
+        personal: 'Личные',
+        behaviors: 'Поведение',
+        communication: 'Коммуникация',
+        habits: 'Привычки'
+      },
+      messages: {
+        dataSaved: 'Данные сохранены',
+        exported: 'Экспортировано',
+        imported: 'Импортировано',
+        invalidFile: 'Неверный формат файла',
+        fileReadError: 'Ошибка чтения файла',
+        dataCleared: 'Данные очищены',
+        confirmClear: 'Вы уверены, что хотите очистить все данные? Это действие необратимо!',
+        fillAllFields: 'Заполните все поля',
+        fieldExists: 'Поле с таким ID уже существует',
+        fieldUpdated: 'Поле обновлено',
+        fieldCreated: 'Поле создано',
+        categoryExists: 'Категория с таким ID уже существует',
+        categoryUpdated: 'Категория обновлена',
+        categoryCreated: 'Категория создана',
+        valueUpdated: 'Значение обновлено',
+        fieldDeleted: 'Поле удалено',
+        confirmDeleteField: 'Удалить это поле?',
+        syncError: 'Ошибка синхронизации',
+        syncComplete: 'Синхронизация завершена',
+        syncInitError: 'Ошибка инициализации',
+        needAuth: 'Требуется авторизация в Google',
+        syncing: 'Синхронизация...',
+        enterClientId: 'Введите Client ID',
+        passwordMinLength: 'Пароль должен содержать минимум 6 символов',
+        passwordsNotMatch: 'Пароли не совпадают',
+        settingsSaved: 'Настройки сохранены',
+        enterUrl: 'Введите URL:',
+        connectionRestored: 'Соединение восстановлено',
+        offlineMode: 'Офлайн режим',
+        localSave: 'Данные сохранены локально',
+        showFilled: 'Показано: заполненные поля',
+        showEmpty: 'Показано: пустые поля',
+        showAll: 'Показано: все поля',
+        allImportance: 'Показаны поля всех уровней важности',
+        noFieldsWithFilters: 'Нет полей с выбранными фильтрами',
+        noFilledFields: 'Нет заполненных полей с выбранными фильтрами',
+        noEmptyFields: 'Нет пустых полей с выбранными фильтрами',
+        noFieldsWithImportance: 'Нет полей с выбранными уровнями важности',
+        passwordNotStored: 'Пароль не сохраняется!',
+        writeItDown: 'Запишите его в безопасном месте.',
+        errorNotAuthorized: 'Не авторизовано',
+        errorSpreadsheetIdNotSet: 'Spreadsheet ID не установлен',
+        errorDataNotFound: 'Данные не найдены',
+        errorDataEncrypted: 'Данные зашифрованы. Введите пароль для расшифровки.',
+        errorNotAuthorizedGoogle: 'Не авторизовано в Google',
+        errorGoogleApiNotLoaded: 'Google API не загружен',
+        errorGoogleIdentityNotLoaded: 'Google Identity Services не загружен',
+        errorTokenClientNotInitialized: 'Token client не инициализирован'
+      },
+      modal: {
+        editField: 'Редактировать поле',
+        newField: 'Новое поле',
+        editCategory: 'Редактировать категорию',
+        newCategory: 'Новая категория',
+        syncSettings: 'Настройки синхронизации',
+        fieldId: 'ID поля',
+        fieldName: 'Название поля',
+        type: 'Тип',
+        importance: 'Важность',
+        category: 'Категория',
+        required: 'Обязательное поле',
+        password: 'Пароль',
+        confirmPassword: 'Подтверждение',
+        editValue: 'Редактировать',
+        categoryId: 'ID категории',
+        categoryName: 'Название категории',
+        icon: 'Иконка (Font Awesome)',
+        customCategoryNote: 'Изменение названия пользовательской категории изменяет её для всех языков',
+        enterPassword: 'Введите пароль',
+        confirmPasswordPlaceholder: 'Подтвердите пароль'
+      },
+      types: {
+        text: 'Текст',
+        textarea: 'Текстовая область',
+        date: 'Дата',
+        tags: 'Теги',
+        nested: 'Вложенные'
+      },
+      importance: {
+        high: 'Высокая',
+        medium: 'Средняя',
+        low: 'Низкая',
+        highPlural: 'Высокие',
+        mediumPlural: 'Средние',
+        lowPlural: 'Низкие',
+        highShort: 'Высокая',
+        mediumShort: 'Средняя',
+        lowShort: 'Низкая'
+      },
+      tooltips: {
+        menu: 'Меню',
+        editValue: 'Редактировать значение',
+        fieldSettings: 'Настройки поля',
+        deleteField: 'Удалить',
+        changeLanguage: 'Изменить язык'
+      },
+      fillStatus: {
+        all: 'Все',
+        filled: 'Заполненные',
+        empty: 'Пустые',
+        filledness: 'Заполненность'
+      },
+      sync: {
+        storageMode: 'Режим хранения',
+        localMode: '💾 Локальное хранилище',
+        localModeDesc: 'Данные хранятся в браузере. Быстро, но доступ только с этого устройства.',
+        googleSheetsMode: '☁️ Google Sheets',
+        googleSheetsModeDesc: 'Синхронизация с Google таблицей. Доступ с любого устройства, автосохранение.',
+        manualMode: '📁 Ручные файлы',
+        manualModeDesc: 'Импорт/Экспорт JSON файлов. Полный контроль над данными.',
+        googleSheetsSettings: 'Настройки Google Sheets',
+        stepByStepInstructions: 'Пошаговая инструкция настройки',
+        step1: 'Шаг 1: Google Cloud Console',
+        step2: 'Шаг 2: Включить API',
+        step3: 'Шаг 3: Создать OAuth Client',
+        projectName: 'Название',
+        clientId: 'Client ID',
+        spreadsheetId: 'Spreadsheet ID',
+        authorizeGoogle: 'Авторизоваться в Google',
+        createSpreadsheet: 'Создать таблицу',
+        openSpreadsheet: 'Открыть таблицу',
+        autoSync: 'Автоматическая синхронизация',
+        interval: 'Интервал',
+        encryption: 'Шифрование данных (рекомендовано)',
+        migrationData: 'Миграция данных',
+        exportToSheets: 'Экспорт Local → Google Sheets',
+        importFromSheets: 'Импорт Google Sheets → Local',
+        syncNow: 'Синхронизировать сейчас',
+        initializing: 'Инициализация Google API...',
+        authorized: 'Авторизовано в Google',
+        spreadsheetCreated: 'Таблица создана!',
+        openLink: 'Открыть',
+        uploadingData: 'Загрузка данных...',
+        downloadingData: 'Загрузка данных...',
+        errorAuth: 'Ошибка авторизации',
+        errorCreateSheet: 'Ошибка создания таблицы',
+        minute1: '1 минута',
+        minutes5: '5 минут',
+        minutes15: '15 минут',
+        minutes30: '30 минут',
+        hour1: '1 час',
+        securityTitle: 'О вашей безопасности',
+        securityItem1: 'Данные хранятся в ВАШЕЙ таблице Google',
+        securityItem2: 'Мы НЕ имеем доступа к вашим данным',
+        securityItem3: 'Токены доступа только в вашем браузере',
+        securityItem4: 'С шифрованием данные нечитаемы без пароля',
+        securityItem5: 'Вы можете отозвать доступ в любое время',
+        migrationAndStats: 'Миграция и статистика',
+        fieldsFilled: 'Полей заполнено',
+        lastSync: 'Последняя синхронизация',
+        never: 'Никогда'
+      },
+      hints: {
+        formatting: 'Форматирование: **жирный**, *курсив*, ~~зачёркнутый~~, [текст](url)',
+        selectTextForFormatting: 'Выделите текст для быстрого форматирования',
+        separateTagsWithCommas: 'Разделяйте теги запятыми',
+        tagsPlaceholder: 'тег1, тег2, тег3',
+        valuesPlaceholder: 'значение1, значение2',
+        iconPlaceholder: 'fa-folder',
+        clientIdPlaceholder: '1234567890-abc123...'
+      },
+      emptyStates: {
+        noFieldsInCategory: 'Нет полей в этой категории',
+        clickAddFieldToCreate: 'Нажмите "Добавить поле", чтобы создать новое поле'
+      },
+      instructions: {
+        goTo: 'Перейдите',
+        click: 'Нажмите',
+        find: 'Найдите',
+        yourDomain: 'ваш домен',
+        copyClientId: 'СКОПИРУЙТЕ'
+      }
+    },
+    pl: {
+      app: {
+        title: 'Kartoteka ukochanej osoby (BETA)',
+        filePrefix: 'kartoteka',
+        spreadsheetTitle: 'Kartoteka'
+      },
+      ui: {
+        localMode: 'Tryb lokalny',
+        save: 'Zapisz',
+        addField: 'Dodaj pole',
+        more: 'Więcej',
+        sync: 'Synchronizacja',
+        export: 'Eksport',
+        import: 'Import',
+        clear: 'Wyczyść',
+        searchPlaceholder: 'Szukaj we wszystkich polach...',
+        clearSearch: 'Wyczyść wyszukiwanie',
+        fillProgress: 'Postęp wypełniania',
+        selectCategory: 'Wybierz kategorię',
+        categories: 'Kategorie',
+        addCategory: 'Dodaj kategorię',
+        selectCategoryLeft: 'Wybierz kategorię po lewej',
+        clickCategory: 'Kliknij kategorię, aby zobaczyć pola',
+        changeFilters: 'Spróbuj zmienić filtry',
+        modal: 'Okno modalne',
+        close: 'Zamknij',
+        cancel: 'Anuluj',
+        storageMode: 'Tryb przechowywania',
+        filled: 'Wypełnione',
+        empty: 'Puste',
+        all: 'Wszystkie',
+        high: 'Wysoki',
+        medium: 'Średni',
+        low: 'Niski',
+        filters: 'Filtry',
+        importance: 'Ważność',
+        edit: 'Edytuj',
+        delete: 'Usuń',
+        addSubcategory: 'Dodaj podkategorię',
+        emptyValue: 'Nie wypełniono',
+        searchResults: 'wyników',
+        searchResultsTitle: 'Wyniki wyszukiwania',
+        noResults: 'Nie znaleziono wyników',
+        changeSearchQuery: 'Spróbuj zmienić zapytanie wyszukiwania',
+        privateBadge: '🔒 Prywatna',
+        of: 'z',
+        fields: 'pól',
+        filledProgress: 'Wypełniono',
+        inCategory: 'w kategorii'
+      },
+      format: {
+        bold: 'Pogrubienie (Ctrl+B)',
+        italic: 'Kursywa (Ctrl+I)',
+        strikethrough: 'Przekreślenie',
+        link: 'Link (Ctrl+K)',
+        chip: 'Tag'
+      },
+      categories: {
+        base: 'Informacje podstawowe',
+        character: 'Charakter',
+        preferences: 'Preferencje',
+        antipreferences: 'Antypreferencje',
+        gifts: 'Prezenty',
+        psychology: 'Psychologia',
+        psych: 'Cechy psychologiczne',
+        logistics: 'Logistyka i codzienność',
+        goals: 'Cele i marzenia',
+        custom: 'Dodatkowe',
+        communication: 'Komunikacja',
+        finance: 'Finanse',
+        intimacy: 'Intymność',
+        family: 'Rodzina',
+        career: 'Kariera',
+        culture: 'Kultura'
+      },
+      fields: {
+        fullName: 'Imię i nazwisko',
+        dob: 'Data urodzenia',
+        character: 'Cechy charakteru',
+        dreams: 'Marzenia i życzenia',
+        likes: 'Co lubi',
+        memories: 'Wspomnienia',
+        dislikes: 'Czego nie lubi',
+        anti_triggers: 'Wyzwalacze i irytacje',
+        anti_topics: 'Niewygodne tematy',
+        anti_places: 'Nielubiane miejsca',
+        anti_sounds: 'Nieprzyjemne dźwięki/zapachy',
+        anti_situations: 'Niewygodne sytuacje',
+        gift_wishlist: 'Lista życzeń',
+        gift_sizes: 'Rozmiary',
+        gift_brands: 'Ulubione marki',
+        gift_anti: 'Anty-prezenty',
+        gift_history: 'Historia prezentów',
+        love_language: 'Język miłości',
+        values: 'Podstawowe wartości',
+        psy_conflict_style: 'Styl zachowania w konfliktach',
+        psy_compliments: 'Jak lubi otrzymywać komplementy',
+        psy_stress_relief: 'Sposoby radzenia sobie ze stresem',
+        log_places: 'Ulubione miejsca',
+        log_social_circle: 'Krąg społeczny',
+        log_schedule_peak: 'Godziny szczytowej aktywności',
+        log_media: 'Preferencje medialne',
+        short_goals: 'Cele krótkoterminowe',
+        goal_travel: 'Marzenia podróżnicze',
+        goal_traditions: 'Tradycje do stworzenia',
+        goal_cozy_ideal: 'Idealny przytulny wieczór',
+        contact_phone: 'Telefon',
+        contact_email: 'Email',
+        city: 'Miasto / Lokalizacja',
+        anniversary: 'Rocznica / Ważna data',
+        attachment_style: 'Styl przywiązania',
+        humor_style: 'Poczucie humoru',
+        personal_boundaries: 'Granice osobiste',
+        cuisines_fav: 'Ulubione kuchnie',
+        allergies: 'Alergie / Wrażliwości',
+        aesthetics: 'Estetyka / Style',
+        fav_colors: 'Ulubione kolory',
+        anti_allergies: 'Zabronione z powodu alergii',
+        anti_people_types: 'Trudne typy osób',
+        gift_price_range: 'Komfortowy budżet na prezent',
+        gift_stores: 'Ulubione sklepy / Platformy',
+        psy_anxiety_triggers: 'Wyzwalacze lęku',
+        psy_motivators: 'Motywatory',
+        psy_calming_words: 'Słowa/frazy wsparcia',
+        log_transport: 'Zwykły transport',
+        log_work_hours: 'Godziny pracy/nauki',
+        log_routines: 'Codzienne rutyny',
+        log_food_schedule: 'Harmonogram posiłków',
+        long_goals: 'Cele długoterminowe',
+        learning_topics: 'Chce się nauczyć',
+        bucket_list: 'Lista życzeń',
+        notes_private: 'Notatki osobiste',
+        comm_style: 'Styl komunikacji',
+        comm_frequency: 'Pożądana częstotliwość kontaktów',
+        comm_topics_good: 'Wygodne tematy',
+        comm_topics_bad: 'Trudne tematy',
+        comm_love_language: 'Język miłości w komunikacji',
+        finance_habits: 'Nawyki finansowe',
+        finance_attitude: 'Stosunek do pieniędzy',
+        finance_goals: 'Wspólne cele finansowe',
+        finance_split: 'Podział wydatków',
+        intimacy_language: 'Język intymności',
+        intimacy_boundaries: 'Granice i komfort',
+        intimacy_gestures: 'Romantyczne gesty',
+        family_info: 'Informacje o rodzinie',
+        family_important: 'Ważne osoby',
+        family_traditions: 'Tradycje rodzinne',
+        family_attitude: 'Stosunek do rodziny',
+        career_goals: 'Cele zawodowe',
+        career_schedule: 'Harmonogram pracy',
+        career_dreams: 'Marzenia zawodowe',
+        career_balance: 'Równowaga praca-życie',
+        culture_religion: 'Poglądy religijne',
+        culture_politics: 'Przekonania polityczne',
+        culture_traditions: 'Tradycje kulturowe',
+        culture_principles: 'Zasady życiowe'
+      },
+      nested: {
+        food: 'Jedzenie',
+        activities: 'Działania',
+        sweet: 'Słodycze',
+        drinks: 'Napoje',
+        active: 'Aktywne',
+        calm: 'Spokojne',
+        tastes: 'Smaki',
+        dishes: 'Potrawy',
+        social: 'Społeczne',
+        personal: 'Osobiste',
+        behaviors: 'Zachowanie',
+        communication: 'Komunikacja',
+        habits: 'Nawyki'
+      },
+      messages: {
+        dataSaved: 'Dane zapisane',
+        exported: 'Wyeksportowano',
+        imported: 'Zaimportowano',
+        invalidFile: 'Nieprawidłowy format pliku',
+        fileReadError: 'Błąd odczytu pliku',
+        dataCleared: 'Dane wyczyszczone',
+        confirmClear: 'Czy na pewno chcesz wyczyścić wszystkie dane? Ta akcja jest nieodwracalna!',
+        confirmDeleteField: 'Usunąć to pole?',
+        fillAllFields: 'Wypełnij wszystkie pola',
+        syncing: 'Synchronizacja...',
+        syncInitError: 'Błąd inicjalizacji',
+        enterClientId: 'Wprowadź Client ID',
+        passwordMinLength: 'Hasło musi mieć co najmniej 6 znaków',
+        passwordsNotMatch: 'Hasła się nie zgadzają',
+        settingsSaved: 'Ustawienia zapisane',
+        enterUrl: 'Wprowadź URL:',
+        connectionRestored: 'Połączenie przywrócone',
+        offlineMode: 'Tryb offline',
+        localSave: 'Dane zapisane lokalnie',
+        showFilled: 'Pokazano: wypełnione pola',
+        showEmpty: 'Pokazano: puste pola',
+        showAll: 'Pokazano: wszystkie pola',
+        allImportance: 'Pokazano pola wszystkich poziomów ważności',
+        noFieldsWithFilters: 'Brak pól z wybranymi filtrami',
+        noFilledFields: 'Brak wypełnionych pól z wybranymi filtrami',
+        noEmptyFields: 'Brak pustych pól z wybranymi filtrami',
+        noFieldsWithImportance: 'Brak pól z wybranymi poziomami ważności',
+        fieldExists: 'Pole o tym ID już istnieje',
+        fieldUpdated: 'Pole zaktualizowane',
+        fieldCreated: 'Pole utworzone',
+        categoryExists: 'Kategoria o tym ID już istnieje',
+        categoryUpdated: 'Kategoria zaktualizowana',
+        categoryCreated: 'Kategoria utworzona',
+        valueUpdated: 'Wartość zaktualizowana',
+        fieldDeleted: 'Pole usunięte',
+        passwordNotStored: 'Hasło nie jest przechowywane!',
+        writeItDown: 'Zapisz je w bezpiecznym miejscu.',
+        syncError: 'Błąd synchronizacji',
+        syncComplete: 'Synchronizacja zakończona',
+        needAuth: 'Wymagana autoryzacja Google',
+        errorNotAuthorized: 'Nie autoryzowano',
+        errorSpreadsheetIdNotSet: 'Spreadsheet ID nie ustawiono',
+        errorDataNotFound: 'Nie znaleziono danych',
+        errorDataEncrypted: 'Dane są zaszyfrowane. Wprowadź hasło, aby odszyfrować.',
+        errorNotAuthorizedGoogle: 'Nie autoryzowano w Google',
+        errorGoogleApiNotLoaded: 'Google API nie załadowano',
+        errorGoogleIdentityNotLoaded: 'Google Identity Services nie załadowano',
+        errorTokenClientNotInitialized: 'Token client nie zainicjalizowano'
+      },
+      modal: {
+        editField: 'Edytuj pole',
+        newField: 'Nowe pole',
+        editCategory: 'Edytuj kategorię',
+        newCategory: 'Nowa kategoria',
+        syncSettings: 'Ustawienia synchronizacji',
+        fieldId: 'ID pola',
+        fieldName: 'Nazwa pola',
+        type: 'Typ',
+        importance: 'Ważność',
+        category: 'Kategoria',
+        required: 'Pole wymagane',
+        password: 'Hasło',
+        confirmPassword: 'Potwierdzenie',
+        editValue: 'Edytuj',
+        categoryId: 'ID kategorii',
+        categoryName: 'Nazwa kategorii',
+        icon: 'Ikona (Font Awesome)',
+        customCategoryNote: 'Zmiana nazwy własnej kategorii zmienia ją dla wszystkich języków',
+        enterPassword: 'Wprowadź hasło',
+        confirmPasswordPlaceholder: 'Potwierdź hasło'
+      },
+      types: {
+        text: 'Tekst',
+        textarea: 'Obszar tekstowy',
+        date: 'Data',
+        tags: 'Tagi',
+        nested: 'Zagnieżdżone'
+      },
+      importance: {
+        high: 'Wysoka',
+        medium: 'Średnia',
+        low: 'Niska',
+        highPlural: 'Wysokie',
+        mediumPlural: 'Średnie',
+        lowPlural: 'Niskie',
+        highShort: 'Wysoka',
+        mediumShort: 'Średnia',
+        lowShort: 'Niska'
+      },
+      tooltips: {
+        menu: 'Menu',
+        editValue: 'Edytuj wartość',
+        fieldSettings: 'Ustawienia pola',
+        deleteField: 'Usuń',
+        changeLanguage: 'Zmień język'
+      },
+      fillStatus: {
+        all: 'Wszystkie',
+        filled: 'Wypełnione',
+        empty: 'Puste',
+        filledness: 'Status wypełnienia'
+      },
+      sync: {
+        storageMode: 'Tryb przechowywania',
+        localMode: '💾 Pamięć lokalna',
+        localModeDesc: 'Dane są przechowywane w przeglądarce. Szybkie, ale dostępne tylko z tego urządzenia.',
+        googleSheetsMode: '☁️ Google Sheets',
+        googleSheetsModeDesc: 'Synchronizacja z arkuszem Google. Dostęp z dowolnego urządzenia, automatyczny zapis.',
+        manualMode: '📁 Pliki ręczne',
+        manualModeDesc: 'Import/Eksport plików JSON. Pełna kontrola nad danymi.',
+        googleSheetsSettings: 'Ustawienia Google Sheets',
+        stepByStepInstructions: 'Instrukcje krok po kroku',
+        step1: 'Krok 1: Google Cloud Console',
+        step2: 'Krok 2: Włącz API',
+        step3: 'Krok 3: Utwórz klienta OAuth',
+        projectName: 'Nazwa',
+        clientId: 'Client ID',
+        spreadsheetId: 'Spreadsheet ID',
+        authorizeGoogle: 'Autoryzuj w Google',
+        createSpreadsheet: 'Utwórz arkusz',
+        openSpreadsheet: 'Otwórz arkusz',
+        autoSync: 'Automatyczna synchronizacja',
+        interval: 'Interwał',
+        encryption: 'Szyfrowanie danych (zalecane)',
+        migrationData: 'Migracja danych',
+        exportToSheets: 'Eksport Local → Google Sheets',
+        importFromSheets: 'Import Google Sheets → Local',
+        syncNow: 'Synchronizuj teraz',
+        initializing: 'Inicjalizacja Google API...',
+        authorized: 'Autoryzowano w Google',
+        spreadsheetCreated: 'Arkusz utworzony!',
+        openLink: 'Otwórz',
+        uploadingData: 'Przesyłanie danych...',
+        downloadingData: 'Pobieranie danych...',
+        errorAuth: 'Błąd autoryzacji',
+        errorCreateSheet: 'Błąd tworzenia arkusza',
+        minute1: '1 minuta',
+        minutes5: '5 minut',
+        minutes15: '15 minut',
+        minutes30: '30 minut',
+        hour1: '1 godzina',
+        securityTitle: 'O Twoim bezpieczeństwie',
+        securityItem1: 'Dane są przechowywane w TWOIM arkuszu Google',
+        securityItem2: 'My NIE mamy dostępu do Twoich danych',
+        securityItem3: 'Tokeny dostępu tylko w Twojej przeglądarce',
+        securityItem4: 'Z szyfrowaniem dane są nieczytelne bez hasła',
+        securityItem5: 'Możesz cofnąć dostęp w każdej chwili',
+        migrationAndStats: 'Migracja i statystyki',
+        fieldsFilled: 'Wypełnionych pól',
+        lastSync: 'Ostatnia synchronizacja',
+        never: 'Nigdy'
+      },
+      hints: {
+        formatting: 'Formatowanie: **pogrubienie**, *kursywa*, ~~przekreślenie~~, [tekst](url)',
+        selectTextForFormatting: 'Zaznacz tekst, aby szybko formatować',
+        separateTagsWithCommas: 'Rozdziel tagi przecinkami',
+        tagsPlaceholder: 'tag1, tag2, tag3',
+        valuesPlaceholder: 'wartość1, wartość2',
+        iconPlaceholder: 'fa-folder',
+        clientIdPlaceholder: '1234567890-abc123...'
+      },
+      emptyStates: {
+        noFieldsInCategory: 'Brak pól w tej kategorii',
+        clickAddFieldToCreate: 'Kliknij "Dodaj pole", aby utworzyć nowe pole'
+      },
+      instructions: {
+        goTo: 'Przejdź do',
+        click: 'Kliknij',
+        find: 'Znajdź',
+        yourDomain: 'twój domena',
+        copyClientId: 'SKOPIUJ'
+      }
+    }
+  };
+
+  // ============= I18N SYSTEM =============
+  const i18n = {
+    currentLang: State.language,
+    
+    // Get translation by key path (e.g., 'ui.save')
+    t(key, lang = null) {
+      const language = lang || this.currentLang;
+      const keys = key.split('.');
+      let value = TRANSLATIONS[language];
+      
+      for (const k of keys) {
+        if (value && value[k] !== undefined) {
+          value = value[k];
+        } else {
+          // Fallback to Ukrainian if translation missing
+          value = TRANSLATIONS['uk'];
+          for (const fallbackKey of keys) {
+            if (value && value[fallbackKey] !== undefined) {
+              value = value[fallbackKey];
+            } else {
+              return key; // Return key if not found
+            }
+          }
+        }
+      }
+      
+      return value;
+    },
+    
+    // Apply translations to all elements with data-i18n attributes
+    applyTranslations() {
+      // Update document lang attribute
+      document.getElementById('htmlRoot').setAttribute('lang', this.currentLang);
+      
+      // Translate text content
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        el.textContent = this.t(key);
+      });
+      
+      // Translate placeholders
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        el.placeholder = this.t(key);
+      });
+      
+      // Translate titles
+      document.querySelectorAll('[data-i18n-title]').forEach(el => {
+        const key = el.getAttribute('data-i18n-title');
+        el.title = this.t(key);
+      });
+      
+      // Update category labels if config is loaded
+      if (State.config.categories && State.config.categories.length > 0) {
+        State.config.categories = State.config.categories.map(cat => {
+          // Зберігаємо оригінальну назву при першому завантаженні
+          if (!cat.originalLabel) {
+            cat.originalLabel = cat.label;
+          }
+          
+          // Перевіряємо чи є переклад для цієї категорії
+          const translationKey = `categories.${cat.id}`;
+          const translated = this.t(translationKey);
+          
+          // Якщо переклад повертає той самий ключ - значить перекладу немає
+          // Використовуємо оригінальну назву (для кастомних категорій)
+          const label = translated === translationKey ? cat.originalLabel : translated;
+          
+          return {
+            ...cat,
+            label: label
+          };
+        });
+      }
+      
+      // Update field labels if config is loaded
+      if (State.config.fields && State.config.fields.length > 0) {
+        State.config.fields = State.config.fields.map(field => {
+          // Зберігаємо оригінальну назву при першому завантаженні
+          if (!field.originalLabel) {
+            field.originalLabel = field.label;
+          }
+          
+          // Перевіряємо чи є переклад для цього поля
+          const translationKey = `fields.${field.id}`;
+          const translated = this.t(translationKey);
+          
+          // Якщо переклад повертає той самий ключ - використовуємо originalLabel
+          let label = translated === translationKey ? field.originalLabel : translated;
+          
+          // Також перекладаємо nested categories і subcategories
+          if (field.type === 'nested' && field.nestedCategories) {
+            field.nestedCategories = field.nestedCategories.map(nestedCat => {
+              const nestedTranslated = this.t(`nested.${nestedCat.id}`);
+              const nestedLabel = nestedTranslated === `nested.${nestedCat.id}` ? nestedCat.label : nestedTranslated;
+              
+              return {
+                ...nestedCat,
+                label: nestedLabel,
+                subcategories: nestedCat.subcategories ? nestedCat.subcategories.map(sub => {
+                  const subTranslated = this.t(`nested.${sub.id}`);
+                  const subLabel = subTranslated === `nested.${sub.id}` ? sub.label : subTranslated;
+                  return {
+                    ...sub,
+                    label: subLabel
+                  };
+                }) : []
+              };
+            });
+          }
+          
+          return {
+            ...field,
+            label: label
+          };
+        });
+      }
+    },
+    
+    // Change language
+    setLanguage(lang) {
+      if (TRANSLATIONS[lang]) {
+        this.currentLang = lang;
+        State.language = lang;
+        localStorage.setItem('app_language', lang);
+        this.applyTranslations();
+        
+        // Update language selector UI
+        this.updateLanguageUI();
+        
+        // Re-render current view to apply translations
+        Renderer.renderCategories();
+        Renderer.renderContent();
+        Progress.update(); // Оновлюємо прогрес бар з новою мовою
+      }
+    },
+    
+    // Update language selector UI
+    updateLanguageUI() {
+      // Update checkmarks and find current language flag
+      document.querySelectorAll('#languageDropdown .language-option').forEach(opt => {
+        const lang = opt.getAttribute('data-lang');
+        const check = opt.querySelector('.language-check');
+        check.style.visibility = lang === this.currentLang ? 'visible' : 'hidden';
+        if (lang === this.currentLang) {
+          opt.classList.add('selected');
+          // Update current language flag SVG
+          const flagSVG = opt.querySelector('.language-flag svg').cloneNode(true);
+          const currentLangElement = document.getElementById('currentLanguage');
+          currentLangElement.innerHTML = '';
+          currentLangElement.appendChild(flagSVG);
+        } else {
+          opt.classList.remove('selected');
+        }
+      });
     }
   };
 
   // ============= DEFAULT CONFIG =============
+  // 💡 Категорії використовують i18n.t() - будуть на мові за замовчуванням при декларації,
+  //    але applyTranslations() автоматично оновить їх при зміні мови
+  // 💡 Fields з українськими label - це OK! originalLabel зберігається як fallback,
+  //    а applyTranslations() замінює на переклад через fields.${id} якщо він існує
   const DefaultConfig = {
     categories: [
-      {id: 'base', label: 'Базова інформація', icon: 'fa-id-card'},
-      {id: 'character', label: 'Характер', icon: 'fa-brain'},
-      {id: 'preferences', label: 'Вподобання', icon: 'fa-heart'},
-      {id: 'antipreferences', label: 'Антивподобання', icon: 'fa-heart-broken'},
-      {id: 'gifts', label: 'Подарунки', icon: 'fa-gift'},
-      {id: 'psychology', label: 'Психологія', icon: 'fa-user-circle'},
-      {id: 'psych', label: 'Психологічні особливості', icon: 'fa-brain'},
-      {id: 'logistics', label: 'Логістика та побут', icon: 'fa-map-marked-alt'},
-      {id: 'goals', label: 'Цілі та мрії', icon: 'fa-star'},
-      {id: 'custom', label: 'Додаткове', icon: 'fa-plus-circle'},
-      {id: 'communication', label: 'Комунікація', icon: 'fa-comments'},
-      {id: 'finance', label: 'Фінанси', icon: 'fa-wallet'},
-      {id: 'intimacy', label: 'Інтимність', icon: 'fa-heart', isPrivate: true},
-      {id: 'family', label: 'Сім\'я', icon: 'fa-users'},
-      {id: 'career', label: 'Кар\'єра', icon: 'fa-briefcase'},
-      {id: 'culture', label: 'Культура', icon: 'fa-globe'}
+      {id: 'base', label: i18n.t('categories.base'), icon: 'fa-id-card'},
+      {id: 'character', label: i18n.t('categories.character'), icon: 'fa-brain'},
+      {id: 'preferences', label: i18n.t('categories.preferences'), icon: 'fa-heart'},
+      {id: 'antipreferences', label: i18n.t('categories.antipreferences'), icon: 'fa-heart-broken'},
+      {id: 'gifts', label: i18n.t('categories.gifts'), icon: 'fa-gift'},
+      {id: 'psychology', label: i18n.t('categories.psychology'), icon: 'fa-user-circle'},
+      {id: 'psych', label: i18n.t('categories.psych'), icon: 'fa-brain'},
+      {id: 'logistics', label: i18n.t('categories.logistics'), icon: 'fa-map-marked-alt'},
+      {id: 'goals', label: i18n.t('categories.goals'), icon: 'fa-star'},
+      {id: 'custom', label: i18n.t('categories.custom'), icon: 'fa-plus-circle'},
+      {id: 'communication', label: i18n.t('categories.communication'), icon: 'fa-comments'},
+      {id: 'finance', label: i18n.t('categories.finance'), icon: 'fa-wallet'},
+      {id: 'intimacy', label: i18n.t('categories.intimacy'), icon: 'fa-heart', isPrivate: true},
+      {id: 'family', label: i18n.t('categories.family'), icon: 'fa-users'},
+      {id: 'career', label: i18n.t('categories.career'), icon: 'fa-briefcase'},
+      {id: 'culture', label: i18n.t('categories.culture'), icon: 'fa-globe'}
     ],
+    // Fields: українські label є ПРАВИЛЬНИМ рішенням!
+    // Причини:
+    // 1. originalLabel зберігається при ініціалізації для кастомних полів
+    // 2. Дефолтні поля автоматично перекладаються через fields.${id}
+    // 3. При зміні мови applyTranslations() оновлює всі label
+    // 4. Це дозволяє легко розрізняти дефолтні та кастомні поля
     fields: [
       {id: 'fullName', label: 'ПІБ', type: 'text', category: 'base', importance: 'high', required: true},
       {id: 'dob', label: 'Дата народження', type: 'date', category: 'base', importance: 'high'},
@@ -2717,7 +4498,7 @@ textarea,
         }
         
         if (typeof gapi === 'undefined') {
-          reject(new Error('Google API не завантажено'));
+          reject(new Error(i18n.t('messages.errorGoogleApiNotLoaded')));
           return;
         }
         
@@ -2744,7 +4525,7 @@ textarea,
         }
         
         if (typeof google === 'undefined') {
-          reject(new Error('Google Identity Services не завантажено'));
+          reject(new Error(i18n.t('messages.errorGoogleIdentityNotLoaded')));
           return;
         }
         
@@ -2765,7 +4546,7 @@ textarea,
     async authorize() {
       return new Promise((resolve, reject) => {
         if (!this.tokenClient) {
-          reject(new Error('Token client не ініціалізовано'));
+          reject(new Error(i18n.t('messages.errorTokenClientNotInitialized')));
           return;
         }
         
@@ -2813,11 +4594,11 @@ textarea,
     // Створення нової таблиці (ОПТИМІЗОВАНО - 1 лист!)
     async createSpreadsheet() {
       if (!this.isAuthorized()) {
-        throw new Error('Не авторизовано');
+        throw new Error(i18n.t('messages.errorNotAuthorized'));
       }
       
       const date = new Date().toISOString().split('T')[0];
-      const title = `Dosier - ${date}`;
+      const title = `${i18n.t('app.spreadsheetTitle')} - ${date}`;
       
       try {
         const response = await gapi.client.sheets.spreadsheets.create({
@@ -2871,12 +4652,12 @@ textarea,
     // Завантаження даних у Google Sheets (ОПТИМІЗОВАНО - 1 запит!)
     async uploadData(config, values, encryptionPassword = null) {
       if (!this.isAuthorized()) {
-        throw new Error('Не авторизовано');
+        throw new Error(i18n.t('messages.errorNotAuthorized'));
       }
       
       const spreadsheetId = this.config.spreadsheetId;
       if (!spreadsheetId) {
-        throw new Error('Spreadsheet ID не встановлено');
+        throw new Error(i18n.t('messages.errorSpreadsheetIdNotSet'));
       }
       
       try {
@@ -2934,12 +4715,12 @@ textarea,
     // Завантаження даних з Google Sheets (ОПТИМІЗОВАНО - 1 запит!)
     async downloadData(encryptionPassword = null) {
       if (!this.isAuthorized()) {
-        throw new Error('Не авторизовано');
+        throw new Error(i18n.t('messages.errorNotAuthorized'));
       }
       
       const spreadsheetId = this.config.spreadsheetId;
       if (!spreadsheetId) {
-        throw new Error('Spreadsheet ID не встановлено');
+        throw new Error(i18n.t('messages.errorSpreadsheetIdNotSet'));
       }
       
       try {
@@ -2966,14 +4747,14 @@ textarea,
         }
         
         if (!dataStr) {
-          throw new Error('Дані не знайдено');
+          throw new Error(i18n.t('messages.errorDataNotFound'));
         }
         
         // Дешифрування якщо потрібно
         if (encrypted && encryptionPassword) {
           dataStr = await this.encryption.decrypt(dataStr, encryptionPassword, salt, iv);
         } else if (encrypted && !encryptionPassword) {
-          throw new Error('Дані зашифровано. Введіть пароль для розшифрування.');
+          throw new Error(i18n.t('messages.errorDataEncrypted'));
         }
         
         // Парсимо JSON
@@ -3114,7 +4895,7 @@ textarea,
       // Якщо Google Sheets режим - синхронізуємо
       if (mode === 'googleSheets' && State.sync.googleSheets.enabled) {
         try {
-          SyncManager.updateStatus('syncing', 'Синхронізація...');
+          SyncManager.updateStatus('syncing', i18n.t('messages.syncing'));
           
           const password = State.sync.googleSheets.encryptionEnabled ? 
             sessionStorage.getItem('encryption_password') : null;
@@ -3127,19 +4908,19 @@ textarea,
           // Скидаємо флаг незбережених змін
           SyncManager.hasUnsyncedChanges = false;
           
-          SyncManager.updateStatus('synced', `Синхронізовано ${this.formatTime(new Date())}`);
-          Toast.show('☁️ Дані синхронізовані з Google Sheets');
+          SyncManager.updateStatus('synced', `${i18n.t('messages.syncComplete')} ${this.formatTime(new Date())}`);
+          Toast.show('☁️ ' + i18n.t('messages.syncComplete'));
         } catch (error) {
           console.error('Sync error:', error);
           State.sync.lastError = error.message;
-          SyncManager.updateStatus('error', 'Помилка синхронізації');
-          Toast.show('❌ Помилка синхронізації: ' + error.message, 'error');
+          SyncManager.updateStatus('error', i18n.t('messages.syncError'));
+          Toast.show('❌ ' + i18n.t('messages.syncError') + ': ' + error.message, 'error');
           
           // Зберігаємо локально якщо синхронізація не вдалась
-          Toast.show('💾 Дані збережено локально', 'warning');
+          Toast.t('messages.localSave', 'warning');
         }
       } else {
-        SyncManager.updateStatus('local', 'Local режим');
+        SyncManager.updateStatus('local', i18n.t('ui.localMode'));
       }
     },
     
@@ -3151,18 +4932,18 @@ textarea,
       if (mode === 'googleSheets' && State.sync.googleSheets.enabled) {
         try {
           if (!GoogleSheetsSync.isAuthorized()) {
-            throw new Error('Не авторизовано в Google');
+            throw new Error(i18n.t('messages.errorNotAuthorizedGoogle'));
           }
           
           const password = State.sync.googleSheets.encryptionEnabled ? 
             sessionStorage.getItem('encryption_password') : null;
           
           const result = await GoogleSheetsSync.downloadData(password);
-          Toast.show('☁️ Дані завантажено з Google Sheets');
+          Toast.t('messages.imported');
           return result;
         } catch (error) {
           console.error('Load from Google Sheets error:', error);
-          Toast.show('⚠️ Завантажую з локального backup', 'warning');
+          Toast.t('messages.localSave', 'warning');
           // Повертаємось до localStorage
           return this.loadFromLocalStorage();
         }
@@ -3231,14 +5012,20 @@ textarea,
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `dossier-${new Date().toISOString().split('T')[0]}.json`;
+      a.download = `${i18n.t('app.filePrefix')}-${new Date().toISOString().split('T')[0]}.json`;
       a.click();
       URL.revokeObjectURL(url);
     },
     
     // Форматування часу
     formatTime(date) {
-      return date.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' });
+      const locale = {
+        uk: 'uk-UA',
+        en: 'en-US',
+        ru: 'ru-RU',
+        pl: 'pl-PL'
+      }[i18n.currentLang] || 'uk-UA';
+      return date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
     }
   };
 
@@ -3323,17 +5110,17 @@ textarea,
     // Ручна синхронізація
     async manualSync() {
       if (!GoogleSheetsSync.isAuthorized()) {
-        Toast.show('❌ Потрібна авторизація в Google', 'error');
+        Toast.t('messages.needAuth', 'error');
         return;
       }
       
       try {
-        this.updateStatus('syncing', 'Синхронізація...');
+        this.updateStatus('syncing', i18n.t('messages.syncing'));
         await Storage.save();
-        Toast.show('✅ Синхронізація завершена');
+        Toast.t('messages.syncComplete');
       } catch (error) {
         console.error('Manual sync error:', error);
-        Toast.show('❌ Помилка синхронізації: ' + error.message, 'error');
+        Toast.show('❌ ' + i18n.t('messages.syncError') + ': ' + error.message, 'error');
       }
     },
     
@@ -3371,25 +5158,25 @@ textarea,
             const lastSync = syncSettings.googleSheets.lastSync;
             if (lastSync) {
               const date = new Date(lastSync);
-              this.updateStatus('synced', `Синхронізовано ${Storage.formatTime(date)}`);
+              this.updateStatus('synced', `${i18n.t('messages.syncComplete')} ${Storage.formatTime(date)}`);
             } else {
               this.updateStatus('synced', 'Google Sheets');
             }
           } catch (error) {
             console.error('Sync init error:', error);
-            this.updateStatus('error', 'Помилка ініціалізації');
+            this.updateStatus('error', i18n.t('messages.syncInitError'));
           }
         } else {
-          this.updateStatus('local', 'Local режим');
+          this.updateStatus('local', i18n.t('ui.localMode'));
         }
       } else {
-        this.updateStatus('local', 'Local режим');
+        this.updateStatus('local', i18n.t('ui.localMode'));
       }
       
       // Обробка online/offline
       window.addEventListener('online', () => {
-        if (State.sync.mode === 'googleSheets') {
-          Toast.show('🌐 З\'єднання відновлено', 'info');
+        if (State.sync.mode === 'googleSheets' && State.sync.lastError) {
+          Toast.t('messages.connectionRestored');
           this.updateStatus('synced', 'Online');
           this.manualSync();
         }
@@ -3397,8 +5184,8 @@ textarea,
       
       window.addEventListener('offline', () => {
         if (State.sync.mode === 'googleSheets') {
-          Toast.show('⚠️ Офлайн режим', 'warning');
-          this.updateStatus('offline', 'Офлайн');
+          Toast.t('messages.offlineMode', 'warning');
+          this.updateStatus('offline', i18n.t('messages.offlineMode'));
         }
       });
     }
@@ -3537,7 +5324,7 @@ textarea,
           formattedText = `~~${selectedText}~~`;
           break;
         case 'link':
-          const url = prompt('Введіть URL:', 'https://');
+          const url = promptT('messages.enterUrl', 'https://');
           if (url) {
             formattedText = `[${selectedText}](${url})`;
           } else {
@@ -3565,6 +5352,12 @@ textarea,
   // ============= TOAST =============
   const Toast = {
     container: document.getElementById('toastContainer'),
+    
+    // Показати повідомлення з перекладом
+    t(key, type = 'success') {
+      const message = i18n.t(key);
+      this.show(message, type);
+    },
     
     show(message, type = 'success') {
       // Визначаємо тривалість та стиль в залежності від типу
@@ -3619,6 +5412,19 @@ textarea,
         setTimeout(() => toast.remove(), 300);
       });
     }
+  };
+
+  // ============= i18n HELPERS =============
+  // Wrapper для confirm з перекладом
+  window.confirmT = function(messageKey) {
+    const message = i18n.t(messageKey);
+    return confirm(message);
+  };
+  
+  // Wrapper для prompt з перекладом
+  window.promptT = function(messageKey, defaultValue = '') {
+    const message = i18n.t(messageKey);
+    return prompt(message, defaultValue);
   };
 
   // ============= MODAL =============
@@ -4040,21 +5846,23 @@ textarea,
       
       if (!categoryId) {
         progressBarFill.style.width = '0%';
-        progressBarText.textContent = 'Оберіть категорію';
+        progressBarText.textContent = i18n.t('ui.selectCategory');
         return;
       }
       
       const { filled, total, percentage } = this.calculateProgress(categoryId);
       const category = State.config.categories.find(c => c.id === categoryId);
-      const categoryName = category ? category.label : 'Категорія';
+      const categoryName = category ? category.label : i18n.t('ui.selectCategory');
       
       progressBarFill.style.width = `${percentage}%`;
-      progressBarText.textContent = `${categoryName}: ${filled} з ${total} полів (${percentage}%)`;
+      
+      progressBarText.textContent = `${filled} ${i18n.t('ui.of')} ${total} ${i18n.t('ui.fields')} (${Math.round(percentage)}%)`;
       
       // Оновлюємо tooltip
       const container = progressBarFill.parentElement;
       if (container) {
-        container.title = `Заповнено ${filled} з ${total} полів у категорії "${categoryName}"`;
+        
+        container.title = `${filled} ${i18n.t('ui.of')} ${total} ${i18n.t('ui.fields')} ${i18n.t('ui.inCategory')} "${categoryName}"`;
       }
     }
   };
@@ -4189,7 +5997,7 @@ textarea,
         
         contentTitle.innerHTML = `
           <i class="fas fa-search"></i>
-          <span>Результати пошуку</span>
+          <span>${i18n.t('ui.searchResultsTitle')}</span>
         `;
         
         contentActions.innerHTML = '';
@@ -4198,8 +6006,8 @@ textarea,
           contentBody.innerHTML = `
             <div class="empty-state">
               <div class="empty-state-icon"><i class="fas fa-search"></i></div>
-              <div class="empty-state-text">Нічого не знайдено</div>
-              <p>Спробуйте змінити пошуковий запит</p>
+              <div class="empty-state-text">${i18n.t('ui.noResults')}</div>
+              <p>${i18n.t('ui.changeSearchQuery')}</p>
             </div>
           `;
           return;
@@ -4218,14 +6026,14 @@ textarea,
       if (!State.ui.activeCategory) {
         contentTitle.innerHTML = `
           <i class="fas fa-hand-pointer"></i>
-          <span>Оберіть категорію</span>
+          <span>${i18n.t('ui.selectCategory')}</span>
         `;
         contentActions.innerHTML = '';
         contentBody.innerHTML = `
           <div class="empty-state">
             <div class="empty-state-icon"><i class="fas fa-hand-pointer"></i></div>
-            <div class="empty-state-text">Оберіть категорію зліва</div>
-            <p>Натисніть на категорію, щоб побачити поля</p>
+            <div class="empty-state-text">${i18n.t('ui.selectCategoryLeft')}</div>
+            <p>${i18n.t('ui.clickCategory')}</p>
           </div>
         `;
         return;
@@ -4240,7 +6048,7 @@ textarea,
       contentTitle.innerHTML = `
         <i class="fas ${category.icon}"></i>
         <span>${category.label}</span>
-        ${isPrivateCategory ? '<span class="badge badge-high" style="margin-left: 0.5rem;">🔒 Приватна</span>' : ''}
+        ${isPrivateCategory ? `<span class="badge badge-high" style="margin-left: 0.5rem;">${i18n.t('ui.privateBadge')}</span>` : ''}
       `;
       
       // Підраховуємо активні фільтри
@@ -4255,53 +6063,50 @@ textarea,
       contentActions.innerHTML = `
         <button class="filters-toggle-btn" onclick="App.toggleFiltersDropdown()" id="filtersToggleBtn">
           <i class="fas fa-filter"></i>
-          <span>Фільтри</span>
+          <span>${i18n.t('ui.filters')}</span>
           ${filtersBadge}
         </button>
         
         <button class="btn btn-secondary btn-sm" onclick="App.editCategory('${category.id}')">
           <i class="fas fa-edit"></i>
-          <span>Редагувати</span>
+          <span>${i18n.t('ui.edit')}</span>
         </button>
         
         <div class="filters-dropdown" id="filtersDropdown">
           <div class="filters-dropdown-section">
             <div class="filters-dropdown-label">
               <i class="fas fa-check-square"></i>
-              Заповненість
+              ${i18n.t('fillStatus.filledness')}
             </div>
             <div class="fill-filter">
               <button class="fill-filter-btn ${State.ui.fillFilter === 'all' ? 'active' : ''}" onclick="App.setFillFilter('all')">
-                <i class="fas fa-list"></i>
-                <span>Всі</span>
+                <i class="fas fa-list"></i> ${i18n.t('fillStatus.all')}
               </button>
               <button class="fill-filter-btn ${State.ui.fillFilter === 'filled' ? 'active' : ''}" onclick="App.setFillFilter('filled')">
-                <i class="fas fa-check-circle"></i>
-                <span>Заповнені</span>
+                <i class="fas fa-check-circle"></i> ${i18n.t('fillStatus.filled')}
               </button>
               <button class="fill-filter-btn ${State.ui.fillFilter === 'empty' ? 'active' : ''}" onclick="App.setFillFilter('empty')">
-                <i class="fas fa-circle"></i>
-                <span>Порожні</span>
+                <i class="fas fa-circle"></i> ${i18n.t('fillStatus.empty')}
               </button>
             </div>
           </div>
           <div class="filters-dropdown-section">
             <div class="filters-dropdown-label">
               <i class="fas fa-star"></i>
-              Важливість
+              ${i18n.t('modal.importance')}
             </div>
             <div class="importance-filter">
               <button class="importance-filter-btn ${State.ui.importanceFilters.includes('high') ? 'active high' : ''}" onclick="App.toggleImportanceFilter('high')">
                 <i class="fas fa-exclamation-circle"></i>
-                <span>Високі</span>
+                <span>${i18n.t('importance.highPlural')}</span>
               </button>
               <button class="importance-filter-btn ${State.ui.importanceFilters.includes('medium') ? 'active medium' : ''}" onclick="App.toggleImportanceFilter('medium')">
                 <i class="fas fa-minus-circle"></i>
-                <span>Середні</span>
+                <span>${i18n.t('importance.mediumPlural')}</span>
               </button>
               <button class="importance-filter-btn ${State.ui.importanceFilters.includes('low') ? 'active low' : ''}" onclick="App.toggleImportanceFilter('low')">
                 <i class="fas fa-info-circle"></i>
-                <span>Низькі</span>
+                <span>${i18n.t('importance.lowPlural')}</span>
               </button>
             </div>
           </div>
@@ -4312,8 +6117,8 @@ textarea,
         contentBody.innerHTML = `
           <div class="empty-state">
             <div class="empty-state-icon"><i class="fas fa-inbox"></i></div>
-            <div class="empty-state-text">Немає полів у цій категорії</div>
-            <p>Натисніть "Додати поле" щоб створити нове поле</p>
+            <div class="empty-state-text">${i18n.t('emptyStates.noFieldsInCategory')}</div>
+            <p>${i18n.t('emptyStates.clickAddFieldToCreate')}
           </div>
         `;
         return;
@@ -4333,18 +6138,19 @@ textarea,
       }
       
       if (filteredFields.length === 0) {
-        let emptyMessage = 'Немає полів за обраними фільтрами';
-        if (State.ui.fillFilter !== 'all') {
-          const filterText = State.ui.fillFilter === 'filled' ? 'заповнених' : 'порожніх';
-          emptyMessage = `Немає ${filterText} полів за обраними фільтрами`;
+        let emptyMessage = i18n.t('messages.noFieldsWithFilters');
+        if (State.ui.fillFilter === 'filled') {
+          emptyMessage = i18n.t('messages.noFilledFields');
+        } else if (State.ui.fillFilter === 'empty') {
+          emptyMessage = i18n.t('messages.noEmptyFields');
         } else if (State.ui.importanceFilters.length > 0) {
-          emptyMessage = 'Немає полів з обраними рівнями важливості';
+          emptyMessage = i18n.t('messages.noFieldsWithImportance');
         }
         contentBody.innerHTML = `
           <div class="empty-state">
             <div class="empty-state-icon"><i class="fas fa-filter"></i></div>
             <div class="empty-state-text">${emptyMessage}</div>
-            <p>Змініть фільтри або додайте нові дані</p>
+            <p>${i18n.t('ui.changeFilters')}</p>
           </div>
         `;
         return;
@@ -4394,7 +6200,7 @@ textarea,
           });
           valueHtml += '</div>';
         } else {
-          valueHtml = '<div class="field-value empty">Не заповнено</div>';
+          valueHtml = `<div class="field-value empty">${i18n.t('ui.emptyValue')}</div>`;
         }
       } else if (field.type === 'tags') {
         const tags = Array.isArray(value) ? value : (value ? value.split(',').map(t => t.trim()) : []);
@@ -4403,9 +6209,9 @@ textarea,
           return Search.query ? Search.highlightText(formatted) : formatted;
         });
         valueHtml = `
-          <div class="field-value ${tags.length ? '' : 'empty'}">${tags.length ? `<div class="chips-container">${formattedTags.map(tag => `<div class="chip">${tag}</div>`).join('')}</div>`:'Незаповнено'}</div>`;
+          <div class="field-value ${tags.length ? '' : 'empty'}">${tags.length ? `<div class="chips-container">${formattedTags.map(tag => `<div class="chip">${tag}</div>`).join('')}</div>`:i18n.t('ui.emptyValue')}</div>`;
       } else {
-        let formattedValue = hasValue ? this.formatText(value) : 'Не заповнено';
+        let formattedValue = hasValue ? this.formatText(value) : i18n.t('ui.emptyValue');
         if (hasValue && Search.query) {
           formattedValue = Search.highlightText(formattedValue);
         }
@@ -4437,27 +6243,27 @@ textarea,
             </div>
           </div>
           <div class="field-controls">
-            <button class="btn btn-icon btn-secondary btn-sm field-controls-menu-btn" onclick="App.toggleFieldMenu(event, '${field.id}')" title="Меню">
+            <button class="btn btn-icon btn-secondary btn-sm field-controls-menu-btn" onclick="App.toggleFieldMenu(event, '${field.id}')" title="${i18n.t('tooltips.menu')}">
               <i class="fas fa-ellipsis-v"></i>
             </button>
-            <button class="btn btn-icon btn-secondary btn-sm" onclick="App.editFieldValue('${field.id}')" title="Редагувати значення">
+            <button class="btn btn-icon btn-secondary btn-sm" onclick="App.editFieldValue('${field.id}')" title="${i18n.t('tooltips.editValue')}">
               <i class="fas fa-edit"></i>
             </button>
-            <button class="btn btn-icon btn-secondary btn-sm" onclick="App.editField('${field.id}')" title="Налаштування поля">
+            <button class="btn btn-icon btn-secondary btn-sm" onclick="App.editField('${field.id}')" title="${i18n.t('tooltips.fieldSettings')}">
               <i class="fas fa-cog"></i>
             </button>
-            <button class="btn btn-icon btn-secondary btn-sm" onclick="App.deleteField('${field.id}')" title="Видалити">
+            <button class="btn btn-icon btn-secondary btn-sm" onclick="App.deleteField('${field.id}')" title="${i18n.t('tooltips.deleteField')}">
               <i class="fas fa-trash"></i>
             </button>
             <div class="field-controls-popup" id="fieldMenu_${field.id}">
               <button class="btn btn-secondary btn-sm" onclick="App.editFieldValue('${field.id}'); App.closeFieldMenu('${field.id}')">
-                <i class="fas fa-edit"></i> Редагувати
+                <i class="fas fa-edit"></i> ${i18n.t('ui.edit')}
               </button>
               <button class="btn btn-secondary btn-sm" onclick="App.editField('${field.id}'); App.closeFieldMenu('${field.id}')">
-                <i class="fas fa-cog"></i> Налаштування
+                <i class="fas fa-cog"></i> ${i18n.t('tooltips.fieldSettings')}
               </button>
               <button class="btn btn-danger btn-sm" onclick="App.deleteField('${field.id}'); App.closeFieldMenu('${field.id}')">
-                <i class="fas fa-trash"></i> Видалити
+                <i class="fas fa-trash"></i> ${i18n.t('ui.delete')}
               </button>
             </div>
           </div>
@@ -4470,23 +6276,16 @@ textarea,
     
     getImportanceLabel(importance) {
       const labels = {
-        high: '<i class="fas fa-exclamation-circle"></i> Високий',
-        medium: '<i class="fas fa-minus-circle"></i> Середній',
-        low: '<i class="fas fa-info-circle"></i> Низький'
+        high: `<i class="fas fa-exclamation-circle"></i> ${i18n.t('importance.highShort')}`,
+        medium: `<i class="fas fa-minus-circle"></i> ${i18n.t('importance.mediumShort')}`,
+        low: `<i class="fas fa-info-circle"></i> ${i18n.t('importance.lowShort')}`
       };
       return labels[importance] || importance;
     },
     
     getTypeLabel(type) {
-      const labels = {
-        text: 'Текст',
-        textarea: 'Текстова область',
-        date: 'Дата',
-        tags: 'Теги',
-        nested: 'Вкладені'
-      };
-      return labels[type] || type;
-    }
+      return i18n.t(`types.${type}`) || type;
+    },
   };
 
   // ============= APP =============
@@ -4498,13 +6297,39 @@ textarea,
       // Load data
       const saved = await Storage.load();
       if (saved) {
+        // Міграція: додаємо originalLabel для існуючих категорій
+        saved.config.categories = saved.config.categories.map(cat => {
+          if (!cat.originalLabel) {
+            cat.originalLabel = cat.label;
+          }
+          return cat;
+        });
+        
+        // Міграція: додаємо originalLabel для існуючих полів
+        saved.config.fields = saved.config.fields.map(field => {
+          if (!field.originalLabel) {
+            field.originalLabel = field.label;
+          }
+          return field;
+        });
+        
         // Merge existing config with new default categories and fields
         const existingCategoryIds = saved.config.categories.map(c => c.id);
         const existingFieldIds = saved.config.fields.map(f => f.id);
         
         // Add new categories that don't exist
-        const newCategories = DefaultConfig.categories.filter(c => !existingCategoryIds.includes(c.id));
-        const newFields = DefaultConfig.fields.filter(f => !existingFieldIds.includes(f.id));
+        const newCategories = DefaultConfig.categories
+          .filter(c => !existingCategoryIds.includes(c.id))
+          .map(cat => ({
+            ...cat,
+            originalLabel: cat.label // Додаємо originalLabel для нових дефолтних категорій
+          }));
+        const newFields = DefaultConfig.fields
+          .filter(f => !existingFieldIds.includes(f.id))
+          .map(field => ({
+            ...field,
+            originalLabel: field.label // Додаємо originalLabel для нових дефолтних полів
+          }));
         
         State.config = {
           categories: [...saved.config.categories, ...newCategories],
@@ -4518,18 +6343,29 @@ textarea,
         }
       } else {
         State.config = {
-          categories: [...DefaultConfig.categories],
-          fields: [...DefaultConfig.fields]
+          categories: DefaultConfig.categories.map(cat => ({
+            ...cat,
+            originalLabel: cat.label // Зберігаємо оригінальну назву для дефолтних категорій
+          })),
+          fields: DefaultConfig.fields.map(field => ({
+            ...field,
+            originalLabel: field.label // Зберігаємо оригінальну назву для дефолтних полів
+          }))
         };
         State.values = {...DefaultConfig.values};
         await Storage.save();
       }
+      
+      // Apply translations
+      i18n.applyTranslations();
+      i18n.updateLanguageUI();
       
       // Initialize UI
       Modal.init();
       FormatMenu.init();
       Search.init();
       this.bindEvents();
+      this.bindLanguageSelector();
       
       // Автоматично відкриваємо категорію "Базова інформація" при завантаженні
       State.ui.activeCategory = 'base';
@@ -4576,7 +6412,7 @@ textarea,
       document.getElementById('btnSave').onclick = async () => {
         await Storage.save();
         if (State.sync.mode === 'localStorage') {
-          Toast.show('✅ Дані збережено');
+          Toast.t('messages.dataSaved');
         }
       };
       
@@ -4590,10 +6426,10 @@ textarea,
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `dossier_${new Date().toISOString().split('T')[0]}.json`;
+        a.download = `${i18n.t('app.filePrefix')}_${new Date().toISOString().split('T')[0]}.json`;
         a.click();
         URL.revokeObjectURL(url);
-        Toast.show('📁 Експортовано');
+        Toast.t('messages.exported');
       };
       
       document.getElementById('btnImport').onclick = () => {
@@ -4615,12 +6451,12 @@ textarea,
               await Storage.save();
               Renderer.renderCategories();
               Renderer.renderContent();
-              Toast.show('✅ Імпортовано');
+              Toast.t('messages.imported');
             } else {
-              Toast.show('❌ Невірний формат файлу');
+              Toast.t('messages.invalidFile', 'error');
             }
           } catch (error) {
-            Toast.show('❌ Помилка читання файлу');
+            Toast.t('messages.fileReadError', 'error');
           }
         };
         reader.readAsText(file);
@@ -4628,7 +6464,7 @@ textarea,
       };
       
       document.getElementById('btnClear').onclick = () => {
-        if (confirm('Ви впевнені, що хочете очистити всі дані? Ця дія незворотна!')) {
+        if (confirmT('messages.confirmClear')) {
           Storage.clear();
           State.config = {
             categories: [...DefaultConfig.categories],
@@ -4638,7 +6474,7 @@ textarea,
           State.ui.activeCategory = null;
           Renderer.renderCategories();
           Renderer.renderContent();
-          Toast.show('🗑️ Дані очищено');
+          Toast.t('messages.dataCleared');
         }
       };
       
@@ -4651,6 +6487,45 @@ textarea,
       };
     },
     
+    bindLanguageSelector() {
+      const languageSelector = document.getElementById('languageSelector');
+      const languageTrigger = document.getElementById('languageTrigger');
+      const languageDropdown = document.getElementById('languageDropdown');
+      
+      // Toggle dropdown
+      languageTrigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        languageSelector.classList.toggle('active');
+        languageDropdown.classList.toggle('active');
+        
+        // Position dropdown
+        if (languageDropdown.classList.contains('active')) {
+          const rect = languageTrigger.getBoundingClientRect();
+          languageDropdown.style.top = `${rect.bottom + 8}px`;
+          languageDropdown.style.right = `${window.innerWidth - rect.right}px`;
+        }
+      });
+      
+      // Language selection
+      languageDropdown.querySelectorAll('.custom-select-option').forEach(option => {
+        option.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const lang = option.getAttribute('data-lang');
+          i18n.setLanguage(lang);
+          languageSelector.classList.remove('active');
+          languageDropdown.classList.remove('active');
+        });
+      });
+      
+      // Close dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!languageSelector.contains(e.target)) {
+          languageSelector.classList.remove('active');
+          languageDropdown.classList.remove('active');
+        }
+      });
+    },
+    
     showFieldModal(fieldId = null) {
       const field = fieldId ? State.config.fields.find(f => f.id === fieldId) : null;
       const isEdit = !!field;
@@ -4660,45 +6535,45 @@ textarea,
       ).join('');
       
       Modal.open(
-        isEdit ? 'Редагувати поле' : 'Нове поле',
+        i18n.t(isEdit ? 'modal.editField' : 'modal.newField'),
         `
           <div class="form-group">
-            <label class="form-label">ID поля</label>
+            <label class="form-label">${i18n.t('modal.fieldId')}</label>
             <input type="text" class="form-input" id="fieldId" value="${field ? field.id : ''}" ${isEdit ? 'readonly' : ''} required>
           </div>
           <div class="form-group">
-            <label class="form-label">Назва поля</label>
+            <label class="form-label">${i18n.t('modal.fieldName')}</label>
             <input type="text" class="form-input" id="fieldLabel" value="${field ? field.label : ''}" required>
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label class="form-label">Тип</label>
+              <label class="form-label">${i18n.t('modal.type')}</label>
               <select class="form-select" id="fieldType">
-                <option value="text" ${field && field.type === 'text' ? 'selected' : ''}>Текст</option>
-                <option value="textarea" ${field && field.type === 'textarea' ? 'selected' : ''}>Текстова область</option>
-                <option value="date" ${field && field.type === 'date' ? 'selected' : ''}>Дата</option>
-                <option value="tags" ${field && field.type === 'tags' ? 'selected' : ''}>Теги</option>
-                <option value="nested" ${field && field.type === 'nested' ? 'selected' : ''}>Вкладені</option>
+                <option value="text" ${field && field.type === 'text' ? 'selected' : ''}>${i18n.t('types.text')}</option>
+                <option value="textarea" ${field && field.type === 'textarea' ? 'selected' : ''}>${i18n.t('types.textarea')}</option>
+                <option value="date" ${field && field.type === 'date' ? 'selected' : ''}>${i18n.t('types.date')}</option>
+                <option value="tags" ${field && field.type === 'tags' ? 'selected' : ''}>${i18n.t('types.tags')}</option>
+                <option value="nested" ${field && field.type === 'nested' ? 'selected' : ''}>${i18n.t('types.nested')}</option>
               </select>
             </div>
             <div class="form-group">
-              <label class="form-label">Важливість</label>
+              <label class="form-label">${i18n.t('modal.importance')}</label>
               <select class="form-select" id="fieldImportance">
-                <option value="high" ${field && field.importance === 'high' ? 'selected' : ''}>Висока</option>
-                <option value="medium" ${field && field.importance === 'medium' ? 'selected' : ''}>Середня</option>
-                <option value="low" ${field && field.importance === 'low' ? 'selected' : ''}>Низька</option>
+                <option value="high" ${field && field.importance === 'high' ? 'selected' : ''}>${i18n.t('importance.high')}</option>
+                <option value="medium" ${field && field.importance === 'medium' ? 'selected' : ''}>${i18n.t('importance.medium')}</option>
+                <option value="low" ${field && field.importance === 'low' ? 'selected' : ''}>${i18n.t('importance.low')}</option>
               </select>
             </div>
           </div>
           <div class="form-group">
-            <label class="form-label">Категорія</label>
+            <label class="form-label">${i18n.t('modal.category')}</label>
             <select class="form-select" id="fieldCategory">
               ${categories}
             </select>
           </div>
           <div class="form-checkbox">
             <input type="checkbox" id="fieldRequired" ${field && field.required ? 'checked' : ''}>
-            <label for="fieldRequired">Обов'язкове поле</label>
+            <label for="fieldRequired">${i18n.t('modal.required')}</label>
           </div>
         `,
         {
@@ -4712,12 +6587,12 @@ textarea,
             const required = document.getElementById('fieldRequired').checked;
             
             if (!id || !label) {
-              Toast.show('❌ Заповніть всі поля');
+              Toast.t('messages.fillAllFields', 'error');
               return false;
             }
             
             if (!isEdit && State.config.fields.find(f => f.id === id)) {
-              Toast.show('❌ Поле з таким ID вже існує');
+              Toast.t('messages.fieldExists', 'error');
               return false;
             }
             
@@ -4738,7 +6613,7 @@ textarea,
             await Storage.save();
             Renderer.renderContent();
             Progress.update();
-            Toast.show(isEdit ? '✅ Поле оновлено' : '✅ Поле створено');
+            Toast.t(isEdit ? 'messages.fieldUpdated' : 'messages.fieldCreated');
             return true;
           },
           onOpen: () => {
@@ -4747,20 +6622,20 @@ textarea,
               const typeSelect = document.getElementById('fieldType');
               if (typeSelect) {
                 CustomSelect.init(typeSelect, [
-                  {value: 'text', label: 'Текст', icon: 'fa-font', selected: field && field.type === 'text'},
-                  {value: 'textarea', label: 'Текстова область', icon: 'fa-align-left', selected: field && field.type === 'textarea'},
-                  {value: 'date', label: 'Дата', icon: 'fa-calendar', selected: field && field.type === 'date'},
-                  {value: 'tags', label: 'Теги', icon: 'fa-tags', selected: field && field.type === 'tags'},
-                  {value: 'nested', label: 'Вкладені', icon: 'fa-layer-group', selected: field && field.type === 'nested'}
+                  {value: 'text', label: i18n.t('types.text'), icon: 'fa-font', selected: field && field.type === 'text'},
+                  {value: 'textarea', label: i18n.t('types.textarea'), icon: 'fa-align-left', selected: field && field.type === 'textarea'},
+                  {value: 'date', label: i18n.t('types.date'), icon: 'fa-calendar', selected: field && field.type === 'date'},
+                  {value: 'tags', label: i18n.t('types.tags'), icon: 'fa-tags', selected: field && field.type === 'tags'},
+                  {value: 'nested', label: i18n.t('types.nested'), icon: 'fa-layer-group', selected: field && field.type === 'nested'}
                 ]);
               }
               
               const importanceSelect = document.getElementById('fieldImportance');
               if (importanceSelect) {
                 CustomSelect.init(importanceSelect, [
-                  {value: 'high', label: 'Висока', icon: 'fa-exclamation-circle', selected: field && field.importance === 'high'},
-                  {value: 'medium', label: 'Середня', icon: 'fa-minus-circle', selected: field && field.importance === 'medium'},
-                  {value: 'low', label: 'Низька', icon: 'fa-info-circle', selected: field && field.importance === 'low'}
+                  {value: 'high', label: i18n.t('importance.high'), icon: 'fa-exclamation-circle', selected: field && field.importance === 'high'},
+                  {value: 'medium', label: i18n.t('importance.medium'), icon: 'fa-minus-circle', selected: field && field.importance === 'medium'},
+                  {value: 'low', label: i18n.t('importance.low'), icon: 'fa-info-circle', selected: field && field.importance === 'low'}
                 ]);
               }
               
@@ -4785,19 +6660,20 @@ textarea,
       const isEdit = !!category;
       
       Modal.open(
-        isEdit ? 'Редагувати категорію' : 'Нова категорія',
+        i18n.t(isEdit ? 'modal.editCategory' : 'modal.newCategory'),
         `
           <div class="form-group">
-            <label class="form-label">ID категорії</label>
+            <label class="form-label">${i18n.t('modal.categoryId')}</label>
             <input type="text" class="form-input" id="catId" value="${category ? category.id : ''}" ${isEdit ? 'readonly' : ''} required>
           </div>
           <div class="form-group">
-            <label class="form-label">Назва категорії</label>
-            <input type="text" class="form-input" id="catLabel" value="${category ? category.label : ''}" required>
+            <label class="form-label">${i18n.t('modal.categoryName')}</label>
+            <input type="text" class="form-input" id="catLabel" value="${category ? (category.originalLabel || category.label) : ''}" required>
+            ${category ? `<small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">💡 ${i18n.t('modal.customCategoryNote')}</small>` : ''}
           </div>
           <div class="form-group">
-            <label class="form-label">Іконка (Font Awesome)</label>
-            <input type="text" class="form-input" id="catIcon" value="${category ? category.icon : 'fa-folder'}" placeholder="fa-folder">
+            <label class="form-label">${i18n.t('modal.icon')}</label>
+            <input type="text" class="form-input" id="catIcon" value="${category ? category.icon : 'fa-folder'}" placeholder="${i18n.t('hints.iconPlaceholder')}">
           </div>
         `,
         {
@@ -4808,26 +6684,43 @@ textarea,
             const icon = document.getElementById('catIcon').value.trim() || 'fa-folder';
             
             if (!id || !label) {
-              Toast.show('❌ Заповніть всі поля');
+              Toast.t('messages.fillAllFields', 'error');
               return false;
             }
             
             if (!isEdit && State.config.categories.find(c => c.id === id)) {
-              Toast.show('❌ Категорія з таким ID вже існує');
+              Toast.t('messages.categoryExists', 'error');
               return false;
             }
             
             if (isEdit) {
               const index = State.config.categories.findIndex(c => c.id === categoryId);
-              State.config.categories[index] = {id, label, icon};
+              const existingCategory = State.config.categories[index];
+              
+              // Перевіряємо чи є переклад для цієї категорії (чи це дефолтна категорія)
+              const translationKey = `categories.${id}`;
+              const hasTranslation = i18n.t(translationKey) !== translationKey;
+              
+              State.config.categories[index] = {
+                id, 
+                label, 
+                icon,
+                // Для кастомних категорій оновлюємо originalLabel, для дефолтних - зберігаємо
+                originalLabel: hasTranslation ? existingCategory.originalLabel : label
+              };
             } else {
-              State.config.categories.push({id, label, icon});
+              State.config.categories.push({
+                id, 
+                label, 
+                icon,
+                originalLabel: label // Зберігаємо оригінальну назву для кастомних категорій
+              });
             }
             
             SyncManager.markDirty(); // Позначаємо зміни
             await Storage.save();
             Renderer.renderCategories();
-            Toast.show(isEdit ? '✅ Категорію оновлено' : '✅ Категорію створено');
+            Toast.t(isEdit ? 'messages.categoryUpdated' : 'messages.categoryCreated');
             return true;
           }
         }
@@ -4847,7 +6740,7 @@ textarea,
           <div class="form-group">
             <label class="form-label">${field.label}</label>
             <input type="${field.type}" class="form-input" id="fieldValue" value="${value || ''}">
-            ${field.type === 'text' ? '<small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">💡 Форматування: **жирний**, *курсив*, ~~закреслений~~, [текст](url)<br>🎨 Виділіть текст для швидкого форматування</small>' : ''}
+            ${field.type === 'text' ? `<small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">💡 ${i18n.t('hints.formatting')}<br>🎨 ${i18n.t('hints.selectTextForFormatting')}</small>` : ''}
           </div>
         `;
       } else if (field.type === 'textarea') {
@@ -4855,7 +6748,7 @@ textarea,
           <div class="form-group">
             <label class="form-label">${field.label}</label>
             <textarea class="form-textarea" id="fieldValue">${value || ''}</textarea>
-            <small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">💡 Форматування: **жирний**, *курсив*, ~~закреслений~~, [текст](url)<br>🎨 Виділіть текст для швидкого форматування</small>
+            <small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">💡 ${i18n.t('hints.formatting')}<br>🎨 ${i18n.t('hints.selectTextForFormatting')}</small>
           </div>
         `;
       } else if (field.type === 'tags') {
@@ -4863,8 +6756,8 @@ textarea,
         contentHtml = `
           <div class="form-group">
             <label class="form-label">${field.label}</label>
-            <input type="text" class="form-input" id="fieldValue" value="${tags}" placeholder="тег1, тег2, тег3">
-            <small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">Розділяйте теги комами</small>
+            <input type="text" class="form-input" id="fieldValue" value="${tags}" placeholder="${i18n.t('hints.tagsPlaceholder')}">
+            <small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">${i18n.t('hints.separateTagsWithCommas')}</small>
           </div>
         `;
       } else if (field.type === 'nested') {
@@ -4877,7 +6770,7 @@ textarea,
             contentHtml += `
               <div class="form-group">
                 <label class="form-label">${sub.label}</label>
-                <input type="text" class="form-input" data-cat="${cat.id}" data-sub="${sub.id}" value="${val}" placeholder="значення1, значення2">
+                <input type="text" class="form-input" data-cat="${cat.id}" data-sub="${sub.id}" value="${val}" placeholder="${i18n.t('hints.valuesPlaceholder')}">
               </div>
             `;
           });
@@ -4887,7 +6780,7 @@ textarea,
       }
       
       Modal.open(
-        `Редагувати: ${field.label}`,
+        `${i18n.t('modal.editValue')}: ${field.label}`,
         contentHtml,
         {
           icon: 'fa-edit',
@@ -4920,7 +6813,7 @@ textarea,
             await Storage.save();
             Renderer.renderContent();
             Progress.update();
-            Toast.show('✅ Значення оновлено');
+            Toast.t('messages.valueUpdated');
             return true;
           }
         }
@@ -4967,7 +6860,7 @@ textarea,
     },
     
     async deleteField(fieldId) {
-      if (!confirm('Видалити це поле?')) return;
+      if (!confirmT('messages.confirmDeleteField')) return;
       
       State.config.fields = State.config.fields.filter(f => f.id !== fieldId);
       delete State.values[fieldId];
@@ -4975,7 +6868,7 @@ textarea,
       await Storage.save();
       Renderer.renderContent();
       Progress.update();
-      Toast.show('🗑️ Поле видалено');
+      Toast.t('messages.fieldDeleted');
     },
     
     // Встановлює фільтр заповненості
@@ -4984,12 +6877,12 @@ textarea,
       Renderer.renderContent();
       Progress.update();
       
-      const filterNames = {
-        all: 'всі поля',
-        filled: 'заповнені поля',
-        empty: 'порожні поля'
+      const messageKey = {
+        all: 'messages.showAll',
+        filled: 'messages.showFilled',
+        empty: 'messages.showEmpty'
       };
-      Toast.show(`📊 Показано: ${filterNames[filter]}`);
+      Toast.t(messageKey[filter] || 'messages.showAll');
       
       // Оновлюємо badge
       this.updateFiltersBadge();
@@ -5051,17 +6944,8 @@ textarea,
       Renderer.renderContent();
       Progress.update();
       
-      const importanceNames = {
-        high: 'високі',
-        medium: 'середні',
-        low: 'низькі'
-      };
-      
       if (State.ui.importanceFilters.length === 0) {
-        Toast.show('🔘 Показано поля всіх рівнів важливості');
-      } else {
-        const activeNames = State.ui.importanceFilters.map(i => importanceNames[i]).join(', ');
-        Toast.show(`🎯 Фільтр: ${activeNames}`);
+        Toast.t('messages.allImportance');
       }
       
       // Оновлюємо badge
@@ -5111,7 +6995,7 @@ textarea,
     
     // Відкрити налаштування синхронізації
     openSyncSettings() {
-      Modal.open('Налаштування синхронізації', this.renderSyncSettingsModal(), {
+      Modal.open(i18n.t('modal.syncSettings'), this.renderSyncSettingsModal(), {
         icon: 'fa-sync-alt',
         size: 'large',
         onSave: async () => {
@@ -5166,12 +7050,12 @@ textarea,
         authorizeBtn.addEventListener('click', async () => {
           const clientId = document.getElementById('syncClientId').value.trim();
           if (!clientId) {
-            Toast.show('❌ Введіть Client ID', 'error');
+            Toast.t('messages.enterClientId', 'error');
             return;
           }
           
           try {
-            Toast.show('⏳ Ініціалізація Google API...', 'info');
+            Toast.show('⏳ ' + i18n.t('sync.initializing'), 'info');
             
             // Ініціалізуємо Google API
             await GoogleSheetsSync.initGapi();
@@ -5180,13 +7064,13 @@ textarea,
             // Авторизуємося
             await GoogleSheetsSync.authorize();
             
-            Toast.show('✅ Авторизовано в Google');
+            Toast.show('✅ ' + i18n.t('sync.authorized'));
             
             // Показуємо кнопку створення таблиці
             document.getElementById('btnCreateSpreadsheet').style.display = 'inline-flex';
           } catch (error) {
             console.error('Authorization error:', error);
-            Toast.show('❌ Помилка авторизації: ' + error.message, 'error');
+            Toast.show('❌ ' + i18n.t('sync.errorAuth') + ': ' + error.message, 'error');
           }
         });
       }
@@ -5196,7 +7080,7 @@ textarea,
       if (createSpreadsheetBtn) {
         createSpreadsheetBtn.addEventListener('click', async () => {
           try {
-            Toast.show('⏳ Створення таблиці...', 'info');
+            Toast.show('⏳ ' + i18n.t('sync.createSpreadsheet') + '...', 'info');
             
             const result = await GoogleSheetsSync.createSpreadsheet();
             
@@ -5208,10 +7092,10 @@ textarea,
             document.getElementById('btnOpenSpreadsheet').style.display = 'inline-flex';
             document.getElementById('migrationSection').style.display = 'block';
             
-            Toast.show('✅ Таблицю створено! <a href="' + result.url + '" target="_blank">Відкрити</a>');
+            Toast.show('✅ ' + i18n.t('sync.spreadsheetCreated') + ' <a href="' + result.url + '" target="_blank">' + i18n.t('sync.openLink') + '</a>');
           } catch (error) {
             console.error('Create spreadsheet error:', error);
-            Toast.show('❌ Помилка створення таблиці: ' + error.message, 'error');
+            Toast.show('❌ ' + i18n.t('sync.errorCreateSheet') + ': ' + error.message, 'error');
           }
         });
       }
@@ -5232,12 +7116,12 @@ textarea,
       if (uploadBtn) {
         uploadBtn.addEventListener('click', async () => {
           if (!GoogleSheetsSync.isAuthorized()) {
-            Toast.show('❌ Потрібна авторизація в Google', 'error');
+            Toast.t('messages.needAuth', 'error');
             return;
           }
           
           try {
-            Toast.show('⏳ Завантаження даних...', 'info');
+            Toast.show('⏳ ' + i18n.t('sync.uploadingData'), 'info');
             
             const password = State.sync.googleSheets.encryptionEnabled ? 
               sessionStorage.getItem('encryption_password') : null;
@@ -5247,10 +7131,10 @@ textarea,
             State.sync.googleSheets.lastSync = new Date().toISOString();
             Storage.saveSyncSettings();
             
-            Toast.show('✅ Дані експортовано в Google Sheets');
+            Toast.t('messages.exported');
           } catch (error) {
             console.error('Upload error:', error);
-            Toast.show('❌ Помилка експорту: ' + error.message, 'error');
+            Toast.show('❌ ' + i18n.t('messages.syncError') + ': ' + error.message, 'error');
           }
         });
       }
@@ -5260,12 +7144,12 @@ textarea,
       if (downloadBtn) {
         downloadBtn.addEventListener('click', async () => {
           if (!GoogleSheetsSync.isAuthorized()) {
-            Toast.show('❌ Потрібна авторизація в Google', 'error');
+            Toast.t('messages.needAuth', 'error');
             return;
           }
           
           try {
-            Toast.show('⏳ Завантаження даних...', 'info');
+            Toast.show('⏳ ' + i18n.t('sync.downloadingData'), 'info');
             
             const password = State.sync.googleSheets.encryptionEnabled ? 
               sessionStorage.getItem('encryption_password') : null;
@@ -5286,10 +7170,10 @@ textarea,
             Renderer.renderContent();
             Progress.update();
             
-            Toast.show('✅ Дані імпортовано з Google Sheets');
+            Toast.t('messages.imported');
           } catch (error) {
             console.error('Download error:', error);
-            Toast.show('❌ Помилка імпорту: ' + error.message, 'error');
+            Toast.show('❌ ' + i18n.t('messages.syncError') + ': ' + error.message, 'error');
           }
         });
       }
@@ -5313,31 +7197,31 @@ textarea,
         <div class="settings-section">
           <div class="settings-section-title">
             <i class="fas fa-database"></i>
-            Режим збереження даних
+            ${i18n.t('sync.storageMode')}
           </div>
           
           <div class="radio-group">
             <label class="radio-option">
               <input type="radio" name="storageMode" value="localStorage" ${currentMode === 'localStorage' ? 'checked' : ''}>
               <div class="radio-option-content">
-                <span class="radio-option-label">💾 Local Storage</span>
-                <span class="radio-option-desc">Дані зберігаються тільки в браузері. Швидко та просто, але без синхронізації між пристроями.</span>
+                <span class="radio-option-label">${i18n.t('sync.localMode')}</span>
+                <span class="radio-option-desc">${i18n.t('sync.localModeDesc')}</span>
               </div>
             </label>
             
             <label class="radio-option">
               <input type="radio" name="storageMode" value="googleSheets" ${currentMode === 'googleSheets' ? 'checked' : ''}>
               <div class="radio-option-content">
-                <span class="radio-option-label">☁️ Google Sheets</span>
-                <span class="radio-option-desc">Синхронізація з Google таблицею. Доступ з будь-якого пристрою, автоматичне збереження.</span>
+                <span class="radio-option-label">${i18n.t('sync.googleSheetsMode')}</span>
+                <span class="radio-option-desc">${i18n.t('sync.googleSheetsModeDesc')}</span>
               </div>
             </label>
             
             <label class="radio-option">
               <input type="radio" name="storageMode" value="manual" ${currentMode === 'manual' ? 'checked' : ''}>
               <div class="radio-option-content">
-                <span class="radio-option-label">📁 Ручні файли</span>
-                <span class="radio-option-desc">Імпорт/Експорт JSON файлів. Повний контроль над даними.</span>
+                <span class="radio-option-label">${i18n.t('sync.manualMode')}</span>
+                <span class="radio-option-desc">${i18n.t('sync.manualModeDesc')}</span>
               </div>
             </label>
           </div>
@@ -5347,99 +7231,99 @@ textarea,
         <div class="settings-section" id="googleSheetsSettings" style="display: ${currentMode === 'googleSheets' ? 'block' : 'none'}">
           <div class="settings-section-title">
             <i class="fab fa-google"></i>
-            Google Sheets налаштування
+            ${i18n.t('sync.googleSheetsSettings')}
           </div>
           
           <!-- Інструкція -->
           <div class="instruction-block">
             <div class="instruction-toggle" onclick="this.classList.toggle('expanded'); this.nextElementSibling.classList.toggle('show')">
               <i class="fas fa-chevron-down"></i>
-              <span>Покрокова інструкція налаштування</span>
+              <span>${i18n.t('sync.stepByStepInstructions')}</span>
             </div>
             <div class="instruction-content">
-              <h4>Крок 1: Google Cloud Console</h4>
+              <h4>${i18n.t('sync.step1')}</h4>
               <ol>
-                <li>Перейдіть: <code>https://console.cloud.google.com</code></li>
-                <li>Натисніть "New Project"</li>
-                <li>Назва: "My Dossier" (або будь-яка)</li>
-                <li>Натисніть "Create"</li>
+                <li>${i18n.t('instructions.goTo')}: <code>https://console.cloud.google.com</code></li>
+                <li>${i18n.t('instructions.click')} "New Project"</li>
+                <li>${i18n.t('sync.projectName')}: "My Dossier" (або будь-яка)</li>
+                <li>${i18n.t('instructions.click')} "Create"</li>
               </ol>
               
-              <h4>Крок 2: Увімкнути API</h4>
+              <h4>${i18n.t('sync.step2')}</h4>
               <ol>
                 <li>Меню → "APIs & Services" → "Library"</li>
-                <li>Знайдіть "Google Sheets API"</li>
-                <li>Натисніть "Enable"</li>
+                <li>${i18n.t('instructions.find')} "Google Sheets API"</li>
+                <li>${i18n.t('instructions.click')} "Enable"</li>
               </ol>
               
-              <h4>Крок 3: Створити OAuth Client</h4>
+              <h4>${i18n.t('sync.step3')}</h4>
               <ol>
                 <li>"APIs & Services" → "Credentials"</li>
                 <li>"Create Credentials" → "OAuth client ID"</li>
                 <li>Application type: "Web application"</li>
                 <li>Name: "Love Dossier"</li>
-                <li>Authorized JavaScript origins: ваш домен</li>
-                <li>Натисніть "Create"</li>
-                <li><strong>СКОПІЮЙТЕ Client ID</strong></li>
+                <li>Authorized JavaScript origins: ${i18n.t('instructions.yourDomain')}</li>
+                <li>${i18n.t('instructions.click')} "Create"</li>
+                <li><strong>${i18n.t('instructions.copyClientId')} ${i18n.t('sync.clientId')}</strong></li>
               </ol>
             </div>
           </div>
           
           <div class="sync-settings-group">
             <div class="form-row">
-              <label class="form-label">Client ID:</label>
-              <input type="text" class="form-input" id="syncClientId" value="${gs.clientId || ''}" placeholder="1234567890-abc123...">
+              <label class="form-label">${i18n.t('sync.clientId')}:</label>
+              <input type="text" class="form-input" id="syncClientId" value="${gs.clientId || ''}" placeholder="${i18n.t('hints.clientIdPlaceholder')}">
             </div>
             
             <div class="form-row" id="spreadsheetIdRow" style="display: ${gs.spreadsheetId ? 'flex' : 'none'}">
-              <label class="form-label">Spreadsheet ID:</label>
+              <label class="form-label">${i18n.t('sync.spreadsheetId')}:</label>
               <input type="text" class="form-input" id="syncSpreadsheetId" value="${gs.spreadsheetId || ''}" readonly>
             </div>
             
             <div class="sync-buttons">
               <button class="btn btn-secondary btn-sm" id="btnAuthorizeGoogle" ${!gs.clientId ? 'disabled' : ''}>
-                <i class="fas fa-sign-in-alt"></i> Авторизуватися в Google
+                <i class="fas fa-sign-in-alt"></i> ${i18n.t('sync.authorizeGoogle')}
               </button>
               
               <button class="btn btn-secondary btn-sm" id="btnCreateSpreadsheet" style="display: none">
-                <i class="fas fa-plus"></i> Створити нову таблицю
+                <i class="fas fa-plus"></i> ${i18n.t('sync.createSpreadsheet')}
               </button>
               
               <button class="btn btn-secondary btn-sm" id="btnOpenSpreadsheet" style="display: ${gs.spreadsheetId ? 'inline-flex' : 'none'}">
-                <i class="fas fa-external-link-alt"></i> Відкрити таблицю
+                <i class="fas fa-external-link-alt"></i> ${i18n.t('sync.openSpreadsheet')}
               </button>
             </div>
             
             <div class="form-row">
               <label class="checkbox-label">
                 <input type="checkbox" id="syncAutoSync" ${gs.autoSyncEnabled ? 'checked' : ''}>
-                Автоматична синхронізація
+                ${i18n.t('sync.autoSync')}
               </label>
             </div>
             
             <div class="form-row" id="autoSyncIntervalRow" style="display: ${gs.autoSyncEnabled ? 'flex' : 'none'}">
-              <label class="form-label">Інтервал:</label>
+              <label class="form-label">${i18n.t('sync.interval')}:</label>
               <select class="form-input" id="syncInterval">
-                <option value="1" ${gs.autoSyncInterval === 1 ? 'selected' : ''}>1 хвилина</option>
-                <option value="5" ${gs.autoSyncInterval === 5 ? 'selected' : ''}>5 хвилин</option>
-                <option value="15" ${gs.autoSyncInterval === 15 ? 'selected' : ''}>15 хвилин</option>
-                <option value="30" ${gs.autoSyncInterval === 30 ? 'selected' : ''}>30 хвилин</option>
-                <option value="60" ${gs.autoSyncInterval === 60 ? 'selected' : ''}>1 година</option>
+                <option value="1" ${gs.autoSyncInterval === 1 ? 'selected' : ''}>${i18n.t('sync.minute1')}</option>
+                <option value="5" ${gs.autoSyncInterval === 5 ? 'selected' : ''}>${i18n.t('sync.minutes5')}</option>
+                <option value="15" ${gs.autoSyncInterval === 15 ? 'selected' : ''}>${i18n.t('sync.minutes15')}</option>
+                <option value="30" ${gs.autoSyncInterval === 30 ? 'selected' : ''}>${i18n.t('sync.minutes30')}</option>
+                <option value="60" ${gs.autoSyncInterval === 60 ? 'selected' : ''}>${i18n.t('sync.hour1')}</option>
               </select>
             </div>
             
             <div class="form-row">
               <label class="checkbox-label">
                 <input type="checkbox" id="syncEncryption" ${gs.encryptionEnabled ? 'checked' : ''}>
-                Шифрування даних (рекомендовано)
+                ${i18n.t('sync.encryption')}
               </label>
             </div>
             
             <div id="encryptionPasswordFields" style="display: ${gs.encryptionEnabled ? 'block' : 'none'}">
               <div class="form-row">
-                <label class="form-label">Пароль:</label>
+                <label class="form-label">${i18n.t('modal.password')}:</label>
                 <div class="password-input-group">
-                  <input type="password" class="form-input" id="syncPassword" placeholder="Введіть пароль">
+                  <input type="password" class="form-input" id="syncPassword" placeholder="${i18n.t('modal.enterPassword')}">
                   <button type="button" class="password-toggle" onclick="this.previousElementSibling.type = this.previousElementSibling.type === 'password' ? 'text' : 'password'">
                     <i class="fas fa-eye"></i>
                   </button>
@@ -5447,9 +7331,9 @@ textarea,
               </div>
               
               <div class="form-row">
-                <label class="form-label">Підтвердження:</label>
+                <label class="form-label">${i18n.t('modal.confirmPassword')}:</label>
                 <div class="password-input-group">
-                  <input type="password" class="form-input" id="syncPasswordConfirm" placeholder="Підтвердіть пароль">
+                  <input type="password" class="form-input" id="syncPasswordConfirm" placeholder="${i18n.t('modal.confirmPasswordPlaceholder')}">
                   <button type="button" class="password-toggle" onclick="this.previousElementSibling.type = this.previousElementSibling.type === 'password' ? 'text' : 'password'">
                     <i class="fas fa-eye"></i>
                   </button>
@@ -5457,7 +7341,7 @@ textarea,
               </div>
               
               <p style="font-size: 0.75rem; color: var(--danger); margin-top: 0.5rem;">
-                ⚠️ <strong>Пароль не зберігається!</strong> Запишіть його в безпечному місці.
+                ⚠️ <strong>${i18n.t('messages.passwordNotStored')}</strong> ${i18n.t('messages.writeItDown')}
               </p>
             </div>
           </div>
@@ -5466,14 +7350,14 @@ textarea,
           <div class="security-notice">
             <div class="security-notice-title">
               <i class="fas fa-shield-alt"></i>
-              Про вашу безпеку
+              ${i18n.t('sync.securityTitle')}
             </div>
             <ul>
-              <li>Дані зберігаються у ВАШІЙ Google таблиці</li>
-              <li>Ми НЕ маємо доступу до ваших даних</li>
-              <li>Токени доступу тільки у вашому браузері</li>
-              <li>З шифруванням дані нечитабельні без пароля</li>
-              <li>Ви можете відкликати доступ будь-коли</li>
+              <li>${i18n.t('sync.securityItem1')}</li>
+              <li>${i18n.t('sync.securityItem2')}</li>
+              <li>${i18n.t('sync.securityItem3')}</li>
+              <li>${i18n.t('sync.securityItem4')}</li>
+              <li>${i18n.t('sync.securityItem5')}</li>
             </ul>
           </div>
         </div>
@@ -5482,31 +7366,31 @@ textarea,
         <div class="settings-section" id="migrationSection" style="display: ${gs.spreadsheetId ? 'block' : 'none'}">
           <div class="settings-section-title">
             <i class="fas fa-exchange-alt"></i>
-            Міграція та статистика
+            ${i18n.t('sync.migrationAndStats')}
           </div>
           
           <div class="sync-buttons">
             <button class="btn btn-secondary btn-sm" id="btnUploadToSheets">
-              <i class="fas fa-cloud-upload-alt"></i> Експорт Local → Google Sheets
+              <i class="fas fa-cloud-upload-alt"></i> ${i18n.t('sync.exportToSheets')}
             </button>
             
             <button class="btn btn-secondary btn-sm" id="btnDownloadFromSheets">
-              <i class="fas fa-cloud-download-alt"></i> Імпорт Google Sheets → Local
+              <i class="fas fa-cloud-download-alt"></i> ${i18n.t('sync.importFromSheets')}
             </button>
             
             <button class="btn btn-primary btn-sm" id="btnSyncNow">
-              <i class="fas fa-sync-alt"></i> Синхронізувати зараз
+              <i class="fas fa-sync-alt"></i> ${i18n.t('sync.syncNow')}
             </button>
           </div>
           
           <div class="sync-stats">
             <div class="sync-stat-item">
-              <div class="sync-stat-label">Полів заповнено</div>
+              <div class="sync-stat-label">${i18n.t('sync.fieldsFilled')}</div>
               <div class="sync-stat-value">${Object.keys(State.values).length}</div>
             </div>
             <div class="sync-stat-item">
-              <div class="sync-stat-label">Остання синхронізація</div>
-              <div class="sync-stat-value">${gs.lastSync ? new Date(gs.lastSync).toLocaleString('uk-UA') : 'Ніколи'}</div>
+              <div class="sync-stat-label">${i18n.t('sync.lastSync')}</div>
+              <div class="sync-stat-value">${gs.lastSync ? new Date(gs.lastSync).toLocaleString(i18n.currentLang === 'uk' ? 'uk-UA' : i18n.currentLang === 'ru' ? 'ru-RU' : i18n.currentLang === 'pl' ? 'pl-PL' : 'en-US') : i18n.t('sync.never')}</div>
             </div>
           </div>
         </div>
@@ -5527,7 +7411,7 @@ textarea,
         const encryption = document.getElementById('syncEncryption')?.checked;
         
         if (!clientId) {
-          Toast.show('❌ Введіть Client ID', 'error');
+          Toast.t('messages.enterClientId', 'error');
           return false;
         }
         
@@ -5542,12 +7426,12 @@ textarea,
           const passwordConfirm = document.getElementById('syncPasswordConfirm')?.value;
           
           if (!password || password.length < 6) {
-            Toast.show('❌ Пароль повинен містити мінімум 6 символів', 'error');
+            Toast.t('messages.passwordMinLength', 'error');
             return false;
           }
           
           if (password !== passwordConfirm) {
-            Toast.show('❌ Паролі не співпадають', 'error');
+            Toast.t('messages.passwordsNotMatch', 'error');
             return false;
           }
           
@@ -5571,7 +7455,7 @@ textarea,
       } else {
         State.sync.googleSheets.enabled = false;
         SyncManager.stopAutoSync();
-        SyncManager.updateStatus('local', 'Local режим');
+        SyncManager.updateStatus('local', i18n.t('ui.localMode'));
       }
       
       // Зберігаємо налаштування
@@ -5582,7 +7466,7 @@ textarea,
         // TODO: показати діалог міграції
       }
       
-      Toast.show('✅ Налаштування збережено');
+      Toast.t('messages.settingsSaved');
       return true;
     },
     
