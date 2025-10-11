@@ -2801,7 +2801,9 @@ textarea,
         of: 'з',
         fields: 'полів',
         filledProgress: 'Заповнено',
-        inCategory: 'у категорії'
+        inCategory: 'у категорії',
+        manageCategories: 'Керувати категоріями',
+        values: 'Значення'
       },
       format: {
         bold: 'Жирний (Ctrl+B)',
@@ -2966,6 +2968,7 @@ textarea,
         settingsSaved: 'Налаштування збережено',
         passwordNotStored: 'Пароль не зберігається!',
         writeItDown: 'Запишіть його в безпечному місці.',
+        noNestedCategories: 'Немає вкладених категорій',
         errorNotAuthorized: 'Не авторизовано',
         errorSpreadsheetIdNotSet: 'Spreadsheet ID не встановлено',
         errorDataNotFound: 'Дані не знайдено',
@@ -3080,11 +3083,12 @@ textarea,
         never: 'Ніколи'
       },
       hints: {
-        formatting: 'Форматування: **жирний**, *курсив*, ~~закреслений~~, [текст](url)',
+        formatting: 'Підтримується Markdown форматування: **жирний**, *курсив*, ~~закреслений~~',
         selectTextForFormatting: 'Виділіть текст для швидкого форматування',
+        nestedCategories: 'Створіть категорії та підкатегорії для структурованого зберігання даних',
         separateTagsWithCommas: 'Розділяйте теги комами',
         tagsPlaceholder: 'тег1, тег2, тег3',
-        valuesPlaceholder: 'значення1, значення2',
+        valuesPlaceholder: 'Значення через кому',
         iconPlaceholder: 'fa-folder',
         clientIdPlaceholder: '1234567890-abc123...'
       },
@@ -3148,7 +3152,9 @@ textarea,
         of: 'of',
         fields: 'fields',
         filledProgress: 'Filled',
-        inCategory: 'in category'
+        inCategory: 'in category',
+        manageCategories: 'Manage Categories',
+        values: 'Values'
       },
       format: {
         bold: 'Bold (Ctrl+B)',
@@ -3313,6 +3319,7 @@ textarea,
         settingsSaved: 'Settings saved',
         passwordNotStored: 'Password is not stored!',
         writeItDown: 'Write it down in a safe place.',
+        noNestedCategories: 'No nested categories',
         errorNotAuthorized: 'Not authorized',
         errorSpreadsheetIdNotSet: 'Spreadsheet ID not set',
         errorDataNotFound: 'Data not found',
@@ -3427,13 +3434,14 @@ textarea,
         never: 'Never'
       },
       hints: {
-        formatting: 'Formatting: **bold**, *italic*, ~~strikethrough~~, [text](url)',
+        formatting: 'Markdown formatting supported: **bold**, *italic*, ~~strikethrough~~',
         selectTextForFormatting: 'Select text for quick formatting',
         separateTagsWithCommas: 'Separate tags with commas',
         tagsPlaceholder: 'tag1, tag2, tag3',
-        valuesPlaceholder: 'value1, value2',
+        valuesPlaceholder: 'Values separated by comma',
         iconPlaceholder: 'fa-folder',
-        clientIdPlaceholder: '1234567890-abc123...'
+        clientIdPlaceholder: '1234567890-abc123...',
+        nestedCategories: 'Create categories and subcategories for structured data storage'
       },
       emptyStates: {
         noFieldsInCategory: 'No fields in this category',
@@ -3495,7 +3503,9 @@ textarea,
         of: 'из',
         fields: 'полей',
         filledProgress: 'Заполнено',
-        inCategory: 'в категории'
+        inCategory: 'в категории',
+        manageCategories: 'Управлять категориями',
+        values: 'Значения'
       },
       format: {
         bold: 'Жирный (Ctrl+B)',
@@ -3660,6 +3670,7 @@ textarea,
         noFieldsWithImportance: 'Нет полей с выбранными уровнями важности',
         passwordNotStored: 'Пароль не сохраняется!',
         writeItDown: 'Запишите его в безопасном месте.',
+        noNestedCategories: 'Нет вложенных категорий',
         errorNotAuthorized: 'Не авторизовано',
         errorSpreadsheetIdNotSet: 'Spreadsheet ID не установлен',
         errorDataNotFound: 'Данные не найдены',
@@ -3776,6 +3787,7 @@ textarea,
       hints: {
         formatting: 'Форматирование: **жирный**, *курсив*, ~~зачёркнутый~~, [текст](url)',
         selectTextForFormatting: 'Выделите текст для быстрого форматирования',
+        nestedCategories: 'Создайте категории и подкатегории для структурированного хранения данных',
         separateTagsWithCommas: 'Разделяйте теги запятыми',
         tagsPlaceholder: 'тег1, тег2, тег3',
         valuesPlaceholder: 'значение1, значение2',
@@ -3842,7 +3854,9 @@ textarea,
         of: 'z',
         fields: 'pól',
         filledProgress: 'Wypełniono',
-        inCategory: 'w kategorii'
+        inCategory: 'w kategorii',
+        manageCategories: 'Zarządzaj kategoriami',
+        values: 'Wartości'
       },
       format: {
         bold: 'Pogrubienie (Ctrl+B)',
@@ -4004,6 +4018,7 @@ textarea,
         fieldDeleted: 'Pole usunięte',
         passwordNotStored: 'Hasło nie jest przechowywane!',
         writeItDown: 'Zapisz je w bezpiecznym miejscu.',
+        noNestedCategories: 'Brak zagnieżdżonych kategorii',
         syncError: 'Błąd synchronizacji',
         syncComplete: 'Synchronizacja zakończona',
         needAuth: 'Wymagana autoryzacja Google',
@@ -4123,6 +4138,7 @@ textarea,
       hints: {
         formatting: 'Formatowanie: **pogrubienie**, *kursywa*, ~~przekreślenie~~, [tekst](url)',
         selectTextForFormatting: 'Zaznacz tekst, aby szybko formatować',
+        nestedCategories: 'Utwórz kategorie i podkategorie do uporządkowanego przechowywania danych',
         separateTagsWithCommas: 'Rozdziel tagi przecinkami',
         tagsPlaceholder: 'tag1, tag2, tag3',
         valuesPlaceholder: 'wartość1, wartość2',
@@ -7305,70 +7321,365 @@ textarea,
       );
     },
     
+    // Відкриває редактор nested categories в окремому модальному вікні
+    openNestedCategoriesEditor(field) {
+      return new Promise((resolve) => {
+        let tempNestedCategories = [];
+        if (field && field.nestedCategories) {
+          try {
+            tempNestedCategories = JSON.parse(JSON.stringify(field.nestedCategories));
+          } catch (e) {
+            Debug.error('Error copying nestedCategories:', e);
+            tempNestedCategories = [];
+          }
+        }
+        
+        const contentHtml = `
+          <div style="margin-bottom: 1rem;">
+            <p style="color: var(--text-muted); margin-bottom: 0.75rem;">
+              ${i18n.t('hints.nestedCategories') || 'Створіть категорії та підкатегорії для структурованого зберігання даних'}
+            </p>
+            <button type="button" class="btn btn-primary" id="btnAddNestedCategory">
+              <i class="fas fa-plus"></i> ${i18n.t('ui.addCategory') || 'Додати категорію'}
+            </button>
+          </div>
+          <div id="nestedCategoriesList" style="max-height: 400px; overflow-y: auto;"></div>
+        `;
+        
+        Modal.open(
+          `${i18n.t('ui.manageCategories') || 'Керувати категоріями'}: ${field.label}`,
+          contentHtml,
+          {
+            icon: 'fa-layer-group',
+            size: 'large',
+            onSave: () => {
+              // Зберігаємо зміни в поле
+              field.nestedCategories = tempNestedCategories;
+              Storage.save();
+              resolve(tempNestedCategories);
+              return true;
+            },
+            onOpen: () => {
+              const renderNestedCategories = () => {
+                const nestedCategoriesList = document.getElementById('nestedCategoriesList');
+                
+                if (tempNestedCategories.length === 0) {
+                  nestedCategoriesList.innerHTML = '<div style="color: var(--text-muted); padding: 1rem; text-align: center;">Немає вкладених категорій. Додайте першу категорію.</div>';
+                } else {
+                  nestedCategoriesList.innerHTML = tempNestedCategories.map((cat, catIndex) => `
+                    <div class="nested-cat-item" data-cat-id="${Sanitizer.escapeHtml(cat.id)}" style="margin-bottom: 1rem; padding: 1rem; background: var(--bg-primary); border-radius: 6px;">
+                      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <strong class="nested-cat-label">${Sanitizer.escapeHtml(cat.label)}</strong>
+                        <div>
+                          <button type="button" class="btn btn-sm btn-add-subcat-shortcut" data-cat-index="${catIndex}" style="padding: 0.25rem 0.5rem; margin-right: 0.25rem;">
+                            <i class="fas fa-plus"></i>
+                          </button>
+                          <button type="button" class="btn btn-sm btn-edit-nested-cat" data-cat-index="${catIndex}" style="padding: 0.25rem 0.5rem; margin-right: 0.25rem;">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button type="button" class="btn btn-sm btn-danger btn-delete-nested-cat" data-cat-index="${catIndex}" style="padding: 0.25rem 0.5rem;">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                      <div class="nested-subcats-list" style="margin-left: 1rem;">
+                        ${(cat.subcategories || []).map((sub, subIndex) => `
+                          <div class="nested-subcat-item" data-sub-id="${Sanitizer.escapeHtml(sub.id)}" style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; margin-bottom: 0.25rem; background: var(--bg-secondary); border-radius: 4px;">
+                            <span class="nested-subcat-label">${Sanitizer.escapeHtml(sub.label)}</span>
+                            <div>
+                              <button type="button" class="btn btn-sm btn-edit-nested-subcat" data-cat-index="${catIndex}" data-sub-index="${subIndex}" style="padding: 0.25rem 0.5rem; margin-right: 0.25rem;">
+                                <i class="fas fa-edit"></i>
+                              </button>
+                              <button type="button" class="btn btn-sm btn-danger btn-delete-nested-subcat" data-cat-index="${catIndex}" data-sub-index="${subIndex}" style="padding: 0.25rem 0.5rem;">
+                                <i class="fas fa-trash"></i>
+                              </button>
+                            </div>
+                          </div>
+                        `).join('')}
+                      </div>
+                      <button type="button" class="btn btn-sm nested-subcat-add-btn" data-cat-index="${catIndex}" style="margin-top: 0.5rem; padding: 0.25rem 0.5rem;">
+                        <i class="fas fa-plus"></i> Додати підкатегорію
+                      </button>
+                    </div>
+                  `).join('');
+                }
+              };
+              
+              renderNestedCategories();
+              
+              document.getElementById('btnAddNestedCategory').addEventListener('click', async () => {
+                const catId = await Modal.prompt('Введіть ID категорії', 'тільки латиниця, цифри, _, -');
+                if (!catId) return;
+                
+                if (!validateId(catId)) {
+                  await Modal.confirm('Некоректний ID! Використовуйте тільки латинські букви, цифри, підкреслення та дефіс.', 'Помилка');
+                  return;
+                }
+                
+                const catLabel = await Modal.prompt('Введіть назву категорії');
+                if (!catLabel) return;
+                
+                if (tempNestedCategories.find(c => c.id === catId)) {
+                  await Modal.confirm('Категорія з таким ID вже існує!', 'Помилка');
+                  return;
+                }
+                
+                tempNestedCategories.push({id: catId, label: catLabel, subcategories: []});
+                renderNestedCategories();
+              });
+              
+              const nestedCategoriesList = document.getElementById('nestedCategoriesList');
+              
+              if (nestedCategoriesList._nestedClickHandler) {
+                nestedCategoriesList.removeEventListener('click', nestedCategoriesList._nestedClickHandler);
+              }
+              
+              nestedCategoriesList._nestedClickHandler = async (e) => {
+                if (e.target.closest('.btn-add-subcat-shortcut')) {
+                  const catIndex = parseInt(e.target.closest('.btn-add-subcat-shortcut').dataset.catIndex);
+                  const addBtn = nestedCategoriesList.querySelector(`.nested-subcat-add-btn[data-cat-index="${catIndex}"]`);
+                  if (addBtn) addBtn.click();
+                  return;
+                }
+                
+                if (e.target.closest('.btn-edit-nested-cat')) {
+                  const catIndex = parseInt(e.target.closest('.btn-edit-nested-cat').dataset.catIndex);
+                  const cat = tempNestedCategories[catIndex];
+                  
+                  const newLabel = await Modal.prompt('Введіть нову назву категорії', '', cat.label);
+                  if (newLabel && newLabel !== cat.label) {
+                    cat.label = newLabel;
+                    renderNestedCategories();
+                  }
+                }
+                
+                else if (e.target.closest('.btn-delete-nested-cat')) {
+                  const confirmed = await Modal.confirm('Видалити цю категорію?');
+                  if (!confirmed) return;
+                  
+                  const catIndex = parseInt(e.target.closest('.btn-delete-nested-cat').dataset.catIndex);
+                  tempNestedCategories.splice(catIndex, 1);
+                  renderNestedCategories();
+                }
+                
+                else if (e.target.closest('.nested-subcat-add-btn')) {
+                  const catIndex = parseInt(e.target.closest('.nested-subcat-add-btn').dataset.catIndex);
+                  const cat = tempNestedCategories[catIndex];
+                  
+                  const subId = await Modal.prompt('Введіть ID підкатегорії', 'тільки латиниця, цифри, _, -');
+                  if (!subId) return;
+                  
+                  if (!validateId(subId)) {
+                    await Modal.confirm('Некоректний ID! Використовуйте тільки латинські букви, цифри, підкреслення та дефіс.', 'Помилка');
+                    return;
+                  }
+                  
+                  const subLabel = await Modal.prompt('Введіть назву підкатегорії');
+                  if (!subLabel) return;
+                  
+                  if (!cat.subcategories) cat.subcategories = [];
+                  
+                  if (cat.subcategories.find(s => s.id === subId)) {
+                    await Modal.confirm('Підкатегорія з таким ID вже існує!', 'Помилка');
+                    return;
+                  }
+                  
+                  cat.subcategories.push({id: subId, label: subLabel});
+                  renderNestedCategories();
+                }
+                
+                else if (e.target.closest('.btn-edit-nested-subcat')) {
+                  const btn = e.target.closest('.btn-edit-nested-subcat');
+                  const catIndex = parseInt(btn.dataset.catIndex);
+                  const subIndex = parseInt(btn.dataset.subIndex);
+                  const sub = tempNestedCategories[catIndex].subcategories[subIndex];
+                  
+                  const newLabel = await Modal.prompt('Введіть нову назву підкатегорії', '', sub.label);
+                  if (newLabel && newLabel !== sub.label) {
+                    sub.label = newLabel;
+                    renderNestedCategories();
+                  }
+                }
+                
+                else if (e.target.closest('.btn-delete-nested-subcat')) {
+                  const confirmed = await Modal.confirm('Видалити цю підкатегорію?');
+                  if (!confirmed) return;
+                  
+                  const btn = e.target.closest('.btn-delete-nested-subcat');
+                  const catIndex = parseInt(btn.dataset.catIndex);
+                  const subIndex = parseInt(btn.dataset.subIndex);
+                  tempNestedCategories[catIndex].subcategories.splice(subIndex, 1);
+                  renderNestedCategories();
+                }
+              };
+              
+              nestedCategoriesList.addEventListener('click', nestedCategoriesList._nestedClickHandler);
+            }
+          }
+        );
+      });
+    },
+    
     editFieldValue(fieldId) {
       const field = State.config.fields.find(f => f.id === fieldId);
       if (!field) return;
       
-      const value = State.values[fieldId];
-      
-      let contentHtml = '';
-      
-      if (field.type === 'text' || field.type === 'date') {
-        contentHtml = `
-          <div class="form-group">
-            <label class="form-label">${field.label}</label>
-            <input type="${field.type}" class="form-input" id="fieldValue" value="${value || ''}">
-            ${field.type === 'text' ? `<small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">💡 ${i18n.t('hints.formatting')}<br>🎨 ${i18n.t('hints.selectTextForFormatting')}</small>` : ''}
-          </div>
-        `;
-      } else if (field.type === 'textarea') {
-        contentHtml = `
-          <div class="form-group">
-            <label class="form-label">${field.label}</label>
-            <textarea class="form-textarea" id="fieldValue">${value || ''}</textarea>
-            <small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">💡 ${i18n.t('hints.formatting')}<br>🎨 ${i18n.t('hints.selectTextForFormatting')}</small>
-          </div>
-        `;
-      } else if (field.type === 'tags') {
-        const tags = Array.isArray(value) ? value.join(', ') : (value || '');
-        contentHtml = `
-          <div class="form-group">
-            <label class="form-label">${field.label}</label>
-            <input type="text" class="form-input" id="fieldValue" value="${tags}" placeholder="${i18n.t('hints.tagsPlaceholder')}">
-            <small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">${i18n.t('hints.separateTagsWithCommas')}</small>
-          </div>
-        `;
-      } else if (field.type === 'nested') {
-        contentHtml = '<div>';
-        (field.nestedCategories || []).forEach(cat => {
-          contentHtml += `<div style="margin-bottom: 1.5rem;">
-            <div style="font-weight: 600; margin-bottom: 0.75rem;">${cat.label}</div>`;
-          (cat.subcategories || []).forEach(sub => {
-            const val = (value && value[cat.id] && value[cat.id][sub.id]) ? value[cat.id][sub.id].join(', ') : '';
-            contentHtml += `
-              <div class="form-group">
-                <label class="form-label">${sub.label}</label>
-                <input type="text" class="form-input" data-cat="${cat.id}" data-sub="${sub.id}" value="${val}" placeholder="${i18n.t('hints.valuesPlaceholder')}">
+      // Функція для генерації контенту (щоб можна було оновити динамічно)
+      // ВАЖЛИВО: завжди отримуємо актуальний field зі State, а не використовуємо замикання
+      const generateContent = () => {
+        const currentField = State.config.fields.find(f => f.id === fieldId) || field;
+        const value = State.values[fieldId];
+        let contentHtml = '';
+        
+        if (currentField.type === 'text' || currentField.type === 'date') {
+          contentHtml = `
+            <div class="form-group">
+              <label class="form-label">${currentField.label}</label>
+              <input type="${currentField.type}" class="form-input" id="fieldValue" value="${value || ''}">
+              ${currentField.type === 'text' ? `<small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">💡 ${i18n.t('hints.formatting')}<br>🎨 ${i18n.t('hints.selectTextForFormatting')}</small>` : ''}
+            </div>
+          `;
+        } else if (currentField.type === 'textarea') {
+          contentHtml = `
+            <div class="form-group">
+              <label class="form-label">${currentField.label}</label>
+              <textarea class="form-textarea" id="fieldValue">${value || ''}</textarea>
+              <small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">💡 ${i18n.t('hints.formatting')}<br>🎨 ${i18n.t('hints.selectTextForFormatting')}</small>
+            </div>
+          `;
+        } else if (currentField.type === 'tags') {
+          const tags = Array.isArray(value) ? value.join(', ') : (value || '');
+          contentHtml = `
+            <div class="form-group">
+              <label class="form-label">${currentField.label}</label>
+              <input type="text" class="form-input" id="fieldValue" value="${tags}" placeholder="${i18n.t('hints.tagsPlaceholder')}">
+              <small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">${i18n.t('hints.separateTagsWithCommas')}</small>
+            </div>
+          `;
+        } else if (currentField.type === 'nested') {
+          const hasCategories = currentField.nestedCategories && currentField.nestedCategories.length > 0;
+          
+          if (!hasCategories) {
+            // Якщо немає категорій - показуємо повідомлення
+            contentHtml = `
+              <div style="padding: 2rem; text-align: center; color: var(--text-muted);">
+                <i class="fas fa-folder-open" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                <p style="margin-bottom: 1rem;">${i18n.t('messages.noNestedCategories') || 'Немає вкладених категорій'}</p>
+                <button type="button" class="btn btn-primary" id="btnEditNestedCategories">
+                  <i class="fas fa-cog"></i> ${i18n.t('ui.manageCategories') || 'Керувати категоріями'}
+                </button>
               </div>
             `;
-          });
-          contentHtml += '</div>';
-        });
-        contentHtml += '</div>';
-      }
+          } else {
+            // Якщо є категорії - показуємо форму + кнопку редагування
+            contentHtml = '<div>';
+            contentHtml += `
+              <div style="margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 600; color: var(--text-muted);">${i18n.t('ui.values') || 'Значення'}</span>
+                <button type="button" class="btn btn-secondary btn-sm" id="btnEditNestedCategories">
+                  <i class="fas fa-cog"></i> ${i18n.t('ui.manageCategories') || 'Керувати категоріями'}
+                </button>
+              </div>
+            `;
+            
+            (currentField.nestedCategories || []).forEach(cat => {
+              contentHtml += `<div style="margin-bottom: 1.5rem;">
+                <div style="font-weight: 600; margin-bottom: 0.75rem;">${cat.label}</div>`;
+              (cat.subcategories || []).forEach(sub => {
+                const val = (value && value[cat.id] && value[cat.id][sub.id]) ? value[cat.id][sub.id].join(', ') : '';
+                contentHtml += `
+                  <div class="form-group">
+                    <label class="form-label">${sub.label}</label>
+                    <input type="text" class="form-input" data-cat="${cat.id}" data-sub="${sub.id}" value="${val}" placeholder="${i18n.t('hints.valuesPlaceholder')}">
+                  </div>
+                `;
+              });
+              contentHtml += '</div>';
+            });
+            contentHtml += '</div>';
+          }
+        }
+        
+        return contentHtml;
+      };
+      
+      // Функція для ініціалізації обробника кнопки
+      const initEditCategoriesButton = () => {
+        const btnEditCategories = document.getElementById('btnEditNestedCategories');
+        if (btnEditCategories) {
+          btnEditCategories.onclick = async () => {
+            // Зберігаємо посилання на поточне модальне вікно (editFieldValue) ДО відкриття редактора
+            const currentModal = Modal.modalStack[Modal.modalStack.length - 1];
+            
+            // Відкриваємо інтерфейс редагування nested categories
+            await this.openNestedCategoriesEditor(field);
+            
+            // Невелика затримка, щоб модалка редактора встигла закритись (анімація 200ms)
+            await new Promise(resolve => setTimeout(resolve, 250));
+            
+            Debug.log('Оновлюємо контент editFieldValue після редагування категорій');
+            const updatedField = State.config.fields.find(f => f.id === fieldId);
+            Debug.log('Кількість категорій:', updatedField && updatedField.nestedCategories ? updatedField.nestedCategories.length : 0);
+            if (updatedField && updatedField.nestedCategories) {
+              Debug.log('Категорії:', updatedField.nestedCategories.map(c => c.label).join(', '));
+            }
+            
+            // Після закриття редактора - оновлюємо контент ДИНАМІЧНО
+            // Використовуємо збережене посилання на модалку editFieldValue
+            let modalBody;
+            
+            if (currentModal.isMain) {
+              // Якщо основне модальне вікно - використовуємо Modal.body
+              modalBody = Modal.body;
+              Debug.log('Оновлення основного модального вікна');
+            } else {
+              // Якщо overlay модальне вікно - шукаємо в його backdrop
+              modalBody = currentModal.backdrop.querySelector('.modal-body');
+              Debug.log('Оновлення overlay модального вікна');
+            }
+            
+            if (modalBody) {
+              const newContent = generateContent();
+              Debug.log('Новий контент згенеровано, довжина HTML:', newContent.length);
+              modalBody.innerHTML = newContent;
+              // Переініціалізуємо обробник кнопки після оновлення контенту
+              initEditCategoriesButton();
+              Debug.log('Контент оновлено успішно');
+            } else {
+              Debug.error('modalBody не знайдено!');
+            }
+          };
+        }
+      };
       
       Modal.open(
         `${i18n.t('modal.editValue')}: ${field.label}`,
-        contentHtml,
+        generateContent(),
         {
           icon: 'fa-edit',
+          onOpen: () => {
+            // Ініціалізуємо обробник кнопки "Керувати категоріями"
+            initEditCategoriesButton();
+          },
           onSave: async () => {
-            if (field.type === 'nested') {
+            // Отримуємо актуальний field зі State
+            const currentField = State.config.fields.find(f => f.id === fieldId) || field;
+            
+            if (currentField.type === 'nested') {
               const newValue = {};
-              (field.nestedCategories || []).forEach(cat => {
+              (currentField.nestedCategories || []).forEach(cat => {
                 newValue[cat.id] = {};
                 (cat.subcategories || []).forEach(sub => {
-                  const input = Modal.body.querySelector(`[data-cat="${cat.id}"][data-sub="${sub.id}"]`);
+                  // Шукаємо input в поточній модалці (може бути основною або overlay)
+                  const topModal = Modal.modalStack[Modal.modalStack.length - 1];
+                  let container;
+                  if (topModal.isMain) {
+                    container = Modal.body;
+                  } else {
+                    container = topModal.backdrop;
+                  }
+                  
+                  const input = container.querySelector(`[data-cat="${cat.id}"][data-sub="${sub.id}"]`);
                   if (input && input.value) {
                     newValue[cat.id][sub.id] = input.value.split(',').map(v => v.trim()).filter(Boolean);
                   } else {
@@ -7377,7 +7688,7 @@ textarea,
                 });
               });
               State.values[fieldId] = newValue;
-            } else if (field.type === 'tags') {
+            } else if (currentField.type === 'tags') {
               const input = document.getElementById('fieldValue');
               State.values[fieldId] = input.value.split(',').map(v => v.trim()).filter(Boolean);
             } else {
