@@ -2707,6 +2707,17 @@ textarea,
 (function() {
   'use strict';
 
+  // ============= CONSTANTS =============
+  const DELAYS = {
+    MODAL_INIT: 100,        // Час на ініціалізацію DOM перед додаванням listeners
+    TOAST_SHOW: 10,         // Затримка для trigger CSS transition
+    TOAST_REMOVE: 300,      // Час анімації зникнення toast
+    SELECTION_DETECT: 10,   // Час для детекції виділення тексту на мобільних
+    DROPDOWN_CLOSE: 0,      // Затримка для уникнення immediate trigger
+    DROPDOWN_ANIMATION: 200, // Час анімації закриття dropdown
+    THROTTLE_SCROLL: 16     // ~60fps для throttling scroll/resize
+  };
+
   // ============= STATE =============
   const State = {
     config: {
@@ -5075,25 +5086,25 @@ textarea,
         return;
       }
       
-      console.log(`🔄 Auto-sync: кожні ${intervalMinutes} хв (тільки якщо є зміни)`);
+      Debug.log(`🔄 Auto-sync: кожні ${intervalMinutes} хв (тільки якщо є зміни)`);
       
       this.autoSyncInterval = setInterval(async () => {
         // Перевіряємо чи є незбережені зміни
         if (!this.hasUnsyncedChanges) {
-          console.log('⏭️ Auto-sync: немає змін, пропускаємо');
+          Debug.log('⏭️ Auto-sync: немає змін, пропускаємо');
           return;
         }
         
         if (navigator.onLine && GoogleSheetsSync.isAuthorized()) {
           try {
-            console.log('🔄 Auto-sync: синхронізація...');
+            Debug.log('🔄 Auto-sync: синхронізація...');
             await Storage.save();
             this.hasUnsyncedChanges = false;
           } catch (error) {
-            console.error('Auto-sync failed:', error);
+            Debug.error('Auto-sync failed:', error);
           }
         } else {
-          console.log('⚠️ Auto-sync: offline або не авторизовано');
+          Debug.log('⚠️ Auto-sync: offline або не авторизовано');
         }
       }, intervalMinutes * 60 * 1000);
     },
@@ -5103,7 +5114,7 @@ textarea,
       if (this.autoSyncInterval) {
         clearInterval(this.autoSyncInterval);
         this.autoSyncInterval = null;
-        console.log('Auto-sync stopped');
+        Debug.log('Auto-sync stopped');
       }
     },
     
@@ -5396,20 +5407,20 @@ textarea,
       this.container.appendChild(toast);
       
       // Анімація появи
-      setTimeout(() => toast.classList.add('show'), 10);
+      setTimeout(() => toast.classList.add('show'), DELAYS.TOAST_SHOW);
       
       // Автоматичне приховування
       setTimeout(() => {
         toast.classList.remove('show');
         toast.classList.add('removing');
-        setTimeout(() => toast.remove(), 300);
+        setTimeout(() => toast.remove(), DELAYS.TOAST_REMOVE);
       }, settings.duration);
       
       // Закриття по кліку
       toast.addEventListener('click', () => {
         toast.classList.remove('show');
         toast.classList.add('removing');
-        setTimeout(() => toast.remove(), 300);
+        setTimeout(() => toast.remove(), DELAYS.TOAST_REMOVE);
       });
     }
   };
@@ -5425,6 +5436,26 @@ textarea,
   window.promptT = function(messageKey, defaultValue = '') {
     const message = i18n.t(messageKey);
     return prompt(message, defaultValue);
+  };
+  
+  // Валідація ID (тільки букви, цифри, _, -)
+  window.validateId = function(id) {
+    if (!id) return false;
+    const regex = /^[a-z0-9_-]+$/i;
+    return regex.test(id);
+  };
+  
+  // ============= DEBUG =============
+  const Debug = {
+    enabled: localStorage.getItem('debug') === 'true',
+    log(...args) {
+      if (this.enabled) {
+        console.log(...args);
+      }
+    },
+    error(...args) {
+      console.error(...args); // Помилки завжди показуємо
+    }
   };
 
   // ============= MODAL =============
@@ -5479,7 +5510,7 @@ textarea,
       
       // Викликаємо callback після відкриття (для ініціалізації event listeners)
       if (onOpen) {
-        setTimeout(() => onOpen(), 0);
+        setTimeout(() => onOpen(), DELAYS.DROPDOWN_CLOSE);
       }
     },
     
@@ -5507,6 +5538,8 @@ textarea,
 
   // ============= CUSTOM SELECT =============
   const CustomSelect = {
+    activeSelect: null, // Зберігаємо посилання на активний select
+    
     init(selectElement, options) {
       const container = document.createElement('div');
       container.className = 'custom-select';
@@ -5592,38 +5625,50 @@ textarea,
         e.stopPropagation();
         const wasActive = container.classList.contains('active');
         
-        // Close other selects
-        document.querySelectorAll('.custom-select.active').forEach(s => {
-          s.classList.remove('active');
-        });
-        document.querySelectorAll('.custom-select-dropdown.active').forEach(d => {
-          d.classList.remove('active');
-        });
+        // Close previously active select
+        if (CustomSelect.activeSelect && CustomSelect.activeSelect !== container) {
+          CustomSelect.activeSelect.classList.remove('active');
+          CustomSelect.activeSelect.querySelector('.custom-select-dropdown')?.classList.remove('active');
+        }
         
         if (!wasActive) {
           container.classList.add('active');
           dropdown.classList.add('active');
+          CustomSelect.activeSelect = container;
           positionDropdown();
+        } else {
+          CustomSelect.activeSelect = null;
         }
       };
       
-      // Reposition on scroll/resize
+      // Reposition on scroll/resize with throttling
+      let scrollTimeout;
       window.addEventListener('scroll', () => {
-        if (container.classList.contains('active')) {
+        if (!container.classList.contains('active')) return;
+        
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
           positionDropdown();
-        }
+        }, DELAYS.THROTTLE_SCROLL);
       }, true);
       
+      let resizeTimeout;
       window.addEventListener('resize', () => {
-        if (container.classList.contains('active')) {
+        if (!container.classList.contains('active')) return;
+        
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
           positionDropdown();
-        }
+        }, DELAYS.THROTTLE_SCROLL);
       });
       
       // Close on outside click
       document.addEventListener('click', () => {
-        container.classList.remove('active');
-        dropdown.classList.remove('active');
+        if (CustomSelect.activeSelect === container) {
+          container.classList.remove('active');
+          dropdown.classList.remove('active');
+          CustomSelect.activeSelect = null;
+        }
       });
       
       container.appendChild(trigger);
@@ -6651,7 +6696,16 @@ textarea,
           },
           onOpen: () => {
             // Local variable to store nested categories during editing
-            let tempNestedCategories = field && field.nestedCategories ? JSON.parse(JSON.stringify(field.nestedCategories)) : [];
+            let tempNestedCategories = [];
+            if (field && field.nestedCategories) {
+              try {
+                tempNestedCategories = JSON.parse(JSON.stringify(field.nestedCategories));
+              } catch (e) {
+                Debug.error('Error copying nestedCategories:', e);
+                Toast.t('messages.errorLoadingData', 'error');
+                tempNestedCategories = [];
+              }
+            }
             
             // Initialize custom selects
             setTimeout(() => {
@@ -6746,8 +6800,13 @@ textarea,
               
               // Add nested category button
               document.getElementById('btnAddNestedCategory').addEventListener('click', () => {
-                const catId = prompt('Введіть ID категорії:');
+                const catId = prompt('Введіть ID категорії (тільки латиниця, цифри, _, -):');
                 if (!catId) return;
+                
+                if (!validateId(catId)) {
+                  alert('Некоректний ID! Використовуйте тільки латинські букви, цифри, підкреслення та дефіс.');
+                  return;
+                }
                 
                 const catLabel = prompt('Введіть назву категорії:');
                 if (!catLabel) return;
@@ -6760,97 +6819,96 @@ textarea,
                 tempNestedCategories.push({id: catId, label: catLabel, subcategories: []});
                 
                 renderNestedCategories();
-                attachNestedEventHandlers();
               });
               
-              // Function to attach event handlers
-              const attachNestedEventHandlers = () => {
+              // Event delegation - один listener замість багатьох
+              const nestedCategoriesList = document.getElementById('nestedCategoriesList');
+              
+              // Видаляємо старий listener якщо він існує
+              if (nestedCategoriesList._nestedClickHandler) {
+                nestedCategoriesList.removeEventListener('click', nestedCategoriesList._nestedClickHandler);
+              }
+              
+              // Створюємо новий handler
+              nestedCategoriesList._nestedClickHandler = (e) => {
                 // Edit category
-                document.querySelectorAll('.btn-edit-nested-cat').forEach(btn => {
-                  btn.addEventListener('click', () => {
-                    const catIndex = parseInt(btn.dataset.catIndex);
-                    const cat = tempNestedCategories[catIndex];
-                    
-                    const newLabel = prompt('Введіть нову назву категорії:', cat.label);
-                    if (newLabel && newLabel !== cat.label) {
-                      cat.label = newLabel;
-                      renderNestedCategories();
-                      attachNestedEventHandlers();
-                    }
-                  });
-                });
+                if (e.target.closest('.btn-edit-nested-cat')) {
+                  const catIndex = parseInt(e.target.closest('.btn-edit-nested-cat').dataset.catIndex);
+                  const cat = tempNestedCategories[catIndex];
+                  
+                  const newLabel = prompt('Введіть нову назву категорії:', cat.label);
+                  if (newLabel && newLabel !== cat.label) {
+                    cat.label = newLabel;
+                    renderNestedCategories();
+                  }
+                }
                 
                 // Delete category
-                document.querySelectorAll('.btn-delete-nested-cat').forEach(btn => {
-                  btn.addEventListener('click', () => {
-                    if (!confirm('Видалити цю категорію?')) return;
-                    
-                    const catIndex = parseInt(btn.dataset.catIndex);
-                    tempNestedCategories.splice(catIndex, 1);
-                    
-                    renderNestedCategories();
-                    attachNestedEventHandlers();
-                  });
-                });
+                else if (e.target.closest('.btn-delete-nested-cat')) {
+                  if (!confirm('Видалити цю категорію?')) return;
+                  
+                  const catIndex = parseInt(e.target.closest('.btn-delete-nested-cat').dataset.catIndex);
+                  tempNestedCategories.splice(catIndex, 1);
+                  
+                  renderNestedCategories();
+                }
                 
                 // Add subcategory
-                document.querySelectorAll('.nested-subcat-add-btn').forEach(btn => {
-                  btn.addEventListener('click', () => {
-                    const catIndex = parseInt(btn.dataset.catIndex);
-                    const cat = tempNestedCategories[catIndex];
-                    
-                    const subId = prompt('Введіть ID підкатегорії:');
-                    if (!subId) return;
-                    
-                    const subLabel = prompt('Введіть назву підкатегорії:');
-                    if (!subLabel) return;
-                    
-                    if (!cat.subcategories) cat.subcategories = [];
-                    
-                    if (cat.subcategories.find(s => s.id === subId)) {
-                      alert('Підкатегорія з таким ID вже існує!');
-                      return;
-                    }
-                    
-                    cat.subcategories.push({id: subId, label: subLabel});
-                    renderNestedCategories();
-                    attachNestedEventHandlers();
-                  });
-                });
+                else if (e.target.closest('.nested-subcat-add-btn')) {
+                  const catIndex = parseInt(e.target.closest('.nested-subcat-add-btn').dataset.catIndex);
+                  const cat = tempNestedCategories[catIndex];
+                  
+                  const subId = prompt('Введіть ID підкатегорії (тільки латиниця, цифри, _, -):');
+                  if (!subId) return;
+                  
+                  if (!validateId(subId)) {
+                    alert('Некоректний ID! Використовуйте тільки латинські букви, цифри, підкреслення та дефіс.');
+                    return;
+                  }
+                  
+                  const subLabel = prompt('Введіть назву підкатегорії:');
+                  if (!subLabel) return;
+                  
+                  if (!cat.subcategories) cat.subcategories = [];
+                  
+                  if (cat.subcategories.find(s => s.id === subId)) {
+                    alert('Підкатегорія з таким ID вже існує!');
+                    return;
+                  }
+                  
+                  cat.subcategories.push({id: subId, label: subLabel});
+                  renderNestedCategories();
+                }
                 
                 // Edit subcategory
-                document.querySelectorAll('.btn-edit-nested-subcat').forEach(btn => {
-                  btn.addEventListener('click', () => {
-                    const catIndex = parseInt(btn.dataset.catIndex);
-                    const subIndex = parseInt(btn.dataset.subIndex);
-                    const sub = tempNestedCategories[catIndex].subcategories[subIndex];
-                    
-                    const newLabel = prompt('Введіть нову назву підкатегорії:', sub.label);
-                    if (newLabel && newLabel !== sub.label) {
-                      sub.label = newLabel;
-                      renderNestedCategories();
-                      attachNestedEventHandlers();
-                    }
-                  });
-                });
+                else if (e.target.closest('.btn-edit-nested-subcat')) {
+                  const btn = e.target.closest('.btn-edit-nested-subcat');
+                  const catIndex = parseInt(btn.dataset.catIndex);
+                  const subIndex = parseInt(btn.dataset.subIndex);
+                  const sub = tempNestedCategories[catIndex].subcategories[subIndex];
+                  
+                  const newLabel = prompt('Введіть нову назву підкатегорії:', sub.label);
+                  if (newLabel && newLabel !== sub.label) {
+                    sub.label = newLabel;
+                    renderNestedCategories();
+                  }
+                }
                 
                 // Delete subcategory
-                document.querySelectorAll('.btn-delete-nested-subcat').forEach(btn => {
-                  btn.addEventListener('click', () => {
-                    if (!confirm('Видалити цю підкатегорію?')) return;
-                    
-                    const catIndex = parseInt(btn.dataset.catIndex);
-                    const subIndex = parseInt(btn.dataset.subIndex);
-                    tempNestedCategories[catIndex].subcategories.splice(subIndex, 1);
-                    
-                    renderNestedCategories();
-                    attachNestedEventHandlers();
-                  });
-                });
+                else if (e.target.closest('.btn-delete-nested-subcat')) {
+                  if (!confirm('Видалити цю підкатегорію?')) return;
+                  
+                  const btn = e.target.closest('.btn-delete-nested-subcat');
+                  const catIndex = parseInt(btn.dataset.catIndex);
+                  const subIndex = parseInt(btn.dataset.subIndex);
+                  tempNestedCategories[catIndex].subcategories.splice(subIndex, 1);
+                  
+                  renderNestedCategories();
+                }
               };
               
-              // Attach event handlers initially
-              attachNestedEventHandlers();
+              // Додаємо listener один раз
+              nestedCategoriesList.addEventListener('click', nestedCategoriesList._nestedClickHandler);
               
             }, 100);
           }
@@ -7091,10 +7149,10 @@ textarea,
       this.updateFiltersBadge();
     },
     
-    // Toggle filters dropdown
-    toggleFiltersDropdown() {
-      const dropdown = document.getElementById('filtersDropdown');
-      const toggleBtn = document.getElementById('filtersToggleBtn');
+    // Універсальна функція для toggle dropdown
+    toggleDropdown(dropdownId, buttonId) {
+      const dropdown = document.getElementById(dropdownId);
+      const toggleBtn = document.getElementById(buttonId);
       
       if (!dropdown || !toggleBtn) return;
       
@@ -7108,7 +7166,7 @@ textarea,
         
         setTimeout(() => {
           dropdown.classList.remove('closing');
-        }, 200);
+        }, DELAYS.DROPDOWN_ANIMATION);
       } else {
         // Відкриваємо
         dropdown.classList.add('active');
@@ -7125,11 +7183,16 @@ textarea,
               
               setTimeout(() => {
                 dropdown.classList.remove('closing');
-              }, 200);
+              }, DELAYS.DROPDOWN_ANIMATION);
             }
           });
         }, 0);
       }
+    },
+    
+    // Toggle filters dropdown
+    toggleFiltersDropdown() {
+      this.toggleDropdown('filtersDropdown', 'filtersToggleBtn');
     },
     
     // Toggle фільтр важливості (множинний вибір)
@@ -7157,43 +7220,7 @@ textarea,
     
     // Toggle header menu dropdown
     toggleHeaderMenu() {
-      const dropdown = document.getElementById('headerMenuDropdown');
-      const toggleBtn = document.getElementById('headerMenuBtn');
-      
-      if (!dropdown || !toggleBtn) return;
-      
-      const isActive = dropdown.classList.contains('active');
-      
-      if (isActive) {
-        // Закриваємо з анімацією
-        dropdown.classList.remove('active');
-        dropdown.classList.add('closing');
-        toggleBtn.classList.remove('active');
-        
-        setTimeout(() => {
-          dropdown.classList.remove('closing');
-        }, 200);
-      } else {
-        // Відкриваємо
-        dropdown.classList.add('active');
-        toggleBtn.classList.add('active');
-        
-        // Закриваємо dropdown при кліку поза ним
-        setTimeout(() => {
-          document.addEventListener('click', function closeDropdown(e) {
-            if (!dropdown.contains(e.target) && !toggleBtn.contains(e.target)) {
-              dropdown.classList.remove('active');
-              dropdown.classList.add('closing');
-              toggleBtn.classList.remove('active');
-              document.removeEventListener('click', closeDropdown);
-              
-              setTimeout(() => {
-                dropdown.classList.remove('closing');
-              }, 200);
-            }
-          });
-        }, 0);
-      }
+      this.toggleDropdown('headerMenuDropdown', 'headerMenuBtn');
     },
     
     // Відкрити налаштування синхронізації
