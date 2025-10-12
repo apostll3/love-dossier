@@ -2479,38 +2479,135 @@ textarea,
 }
 
 .footer-stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .footer-stat {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 1rem;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(99, 102, 241, 0.02) 100%);
+  border-left: 3px solid var(--primary);
+  border-radius: var(--radius-sm);
   transition: all 0.3s ease;
 }
 
 .footer-stat:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-color: var(--primary);
+  transform: translateX(4px);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(99, 102, 241, 0.05) 100%);
+  border-left-color: var(--primary);
+}
+
+.footer-stat-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary);
+  color: white;
+  border-radius: var(--radius-sm);
+  font-size: 1.125rem;
+  flex-shrink: 0;
+}
+
+.footer-stat-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .footer-stat-value {
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--primary);
-  margin-bottom: 0.25rem;
+  line-height: 1;
 }
 
 .footer-stat-label {
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  margin-top: 0.25rem;
+}
+
+/* Footer Author */
+.footer-author {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.footer-author-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.footer-author-name {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.footer-author-desc {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.footer-social {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.footer-social-link {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--primary) 0%, #7c3aed 100%);
+  color: white;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  font-size: 1.125rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.footer-social-link::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.footer-social-link:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 16px rgba(99, 102, 241, 0.3);
+}
+
+.footer-social-link:hover::before {
+  opacity: 1;
+}
+
+.footer-social-link i {
+  position: relative;
+  z-index: 1;
 }
 
 .footer-bottom {
@@ -2568,6 +2665,91 @@ textarea,
   box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
 }
 
+.footer-language-selector {
+  position: relative;
+  width: auto;
+}
+
+.footer-language-trigger {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 2px solid var(--border);
+  border-radius: 50%;
+  background: var(--card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.footer-language-trigger::after {
+  display: none;
+}
+
+.footer-language-trigger:hover {
+  border-color: var(--primary);
+  background: rgba(99, 102, 241, 0.05);
+  transform: scale(1.05);
+}
+
+.footer-language-selector.active .footer-language-trigger {
+  border-color: var(--primary);
+  background: rgba(99, 102, 241, 0.1);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+.footer-language-dropdown {
+  position: absolute;
+  bottom: calc(100% + 0.5rem);
+  right: 0;
+  background: white;
+  border: 2px solid var(--primary);
+  border-radius: var(--radius);
+  box-shadow: 0 -20px 40px rgba(0, 0, 0, 0.15);
+  padding: 0.5rem;
+  z-index: 1000;
+  min-width: 200px;
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.footer-language-dropdown.active {
+  display: flex;
+  animation: dropdownSlideUp 0.2s ease;
+}
+
+.footer-language-dropdown.closing {
+  display: flex;
+  animation: dropdownSlideDown 0.2s ease forwards;
+  pointer-events: none;
+}
+
+@keyframes dropdownSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dropdownSlideDown {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
 /* Mobile Footer Styles */
 @media (max-width: 768px) {
   .app-footer {
@@ -2581,8 +2763,22 @@ textarea,
     padding: 0 1.5rem 1.5rem;
   }
   
-  .footer-stats {
-    grid-template-columns: 1fr;
+  .footer-stat {
+    padding: 0.625rem;
+  }
+  
+  .footer-stat-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
+  
+  .footer-stat-value {
+    font-size: 1.25rem;
+  }
+  
+  .footer-social {
+    justify-content: flex-start;
   }
   
   .footer-bottom-content {
@@ -3503,48 +3699,54 @@ textarea,
       <h4 class="footer-title" data-i18n="footer.stats">Статистика</h4>
       <div class="footer-stats">
         <div class="footer-stat">
-          <div class="footer-stat-value" id="footerTotalFields">0</div>
-          <div class="footer-stat-label" data-i18n="footer.totalFields">Всього полів</div>
+          <div class="footer-stat-icon">
+            <i class="fas fa-list"></i>
+          </div>
+          <div class="footer-stat-content">
+            <div class="footer-stat-value" id="footerTotalFields">0</div>
+            <div class="footer-stat-label" data-i18n="footer.totalFields">Всього полів</div>
+          </div>
         </div>
         <div class="footer-stat">
-          <div class="footer-stat-value" id="footerFilledFields">0</div>
-          <div class="footer-stat-label" data-i18n="footer.filledFields">Заповнено</div>
+          <div class="footer-stat-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <div class="footer-stat-content">
+            <div class="footer-stat-value" id="footerFilledFields">0</div>
+            <div class="footer-stat-label" data-i18n="footer.filledFields">Заповнено</div>
+          </div>
         </div>
         <div class="footer-stat">
-          <div class="footer-stat-value" id="footerProgress">0%</div>
-          <div class="footer-stat-label" data-i18n="footer.progress">Прогрес</div>
+          <div class="footer-stat-icon">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <div class="footer-stat-content">
+            <div class="footer-stat-value" id="footerProgress">0%</div>
+            <div class="footer-stat-label" data-i18n="footer.progress">Прогрес</div>
+          </div>
         </div>
       </div>
     </div>
     
     <div class="footer-section">
-      <h4 class="footer-title" data-i18n="footer.support">Підтримка</h4>
-      <ul class="footer-links">
-        <li>
-          <a href="#" onclick="App.showAbout(); return false;">
-            <i class="fas fa-info-circle"></i>
-            <span data-i18n="footer.about">Про додаток</span>
+      <h4 class="footer-title" data-i18n="footer.author">Автор</h4>
+      <div class="footer-author">
+        <div class="footer-author-info">
+          <div class="footer-author-name">@apostll3</div>
+          <p class="footer-author-desc" data-i18n="footer.authorDesc">Створено з любов'ю для тих, хто цінує деталі</p>
+        </div>
+        <div class="footer-social">
+          <a href="https://t.me/apostll3" target="_blank" rel="noopener noreferrer" class="footer-social-link" title="Telegram">
+            <i class="fab fa-telegram"></i>
           </a>
-        </li>
-        <li>
-          <a href="#" onclick="App.showHelp(); return false;">
-            <i class="fas fa-question-circle"></i>
-            <span data-i18n="footer.help">Довідка</span>
+          <a href="https://t.me/lovedossier" target="_blank" rel="noopener noreferrer" class="footer-social-link" title="Telegram Group">
+            <i class="fas fa-users"></i>
           </a>
-        </li>
-        <li>
-          <a href="#" onclick="App.showPrivacy(); return false;">
-            <i class="fas fa-shield-alt"></i>
-            <span data-i18n="footer.privacy">Конфіденційність</span>
+          <a href="https://instagram.com/apostll3" target="_blank" rel="noopener noreferrer" class="footer-social-link" title="Instagram">
+            <i class="fab fa-instagram"></i>
           </a>
-        </li>
-        <li>
-          <a href="#" onclick="TestRunner.runAll(); return false;">
-            <i class="fas fa-vial"></i>
-            <span data-i18n="footer.tests">Тести</span>
-          </a>
-        </li>
-      </ul>
+        </div>
+      </div>
     </div>
   </div>
   
@@ -3556,11 +3758,87 @@ textarea,
         <i class="fas fa-heart" style="color: var(--danger);"></i>
         <span data-i18n="footer.forLove">для кохання</span>
       </p>
-      <div class="footer-languages">
-        <button class="footer-lang-btn" onclick="i18n.setLanguage('uk')" title="Українська">🇺🇦</button>
-        <button class="footer-lang-btn" onclick="i18n.setLanguage('en')" title="English">🇬🇧</button>
-        <button class="footer-lang-btn" onclick="i18n.setLanguage('ru')" title="Русский">🇷🇺</button>
-        <button class="footer-lang-btn" onclick="i18n.setLanguage('pl')" title="Polski">🇵🇱</button>
+      <div class="footer-language-selector" id="footerLanguageSelector">
+        <div class="footer-language-trigger" id="footerLanguageTrigger" data-i18n-title="tooltips.changeLanguage">
+          <span class="language-flag" id="footerCurrentLanguage">
+            <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+              <rect width="800" height="600" fill="#0057B7" rx="50"/>
+              <rect y="300" width="800" height="300" fill="#FFD700"/>
+            </svg>
+          </span>
+        </div>
+        <div class="footer-language-dropdown" id="footerLanguageDropdown">
+          <div class="language-option" data-lang="uk">
+            <span class="language-flag">
+              <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+                <rect width="800" height="600" fill="#0057B7" rx="50"/>
+                <rect y="300" width="800" height="300" fill="#FFD700"/>
+              </svg>
+            </span>
+            <span class="language-name">Українська</span>
+            <i class="fas fa-check language-check" style="visibility: visible;"></i>
+          </div>
+          <div class="language-option" data-lang="en">
+            <span class="language-flag">
+              <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+                <rect width="800" height="600" fill="#f0f0f0" rx="50"/>
+                <g fill="#B22234">
+                  <rect width="800" height="46.15"/>
+                  <rect y="92.31" width="800" height="46.15"/>
+                  <rect y="184.62" width="800" height="46.15"/>
+                  <rect y="276.92" width="800" height="46.15"/>
+                  <rect y="369.23" width="800" height="46.15"/>
+                  <rect y="461.54" width="800" height="46.15"/>
+                  <rect y="553.85" width="800" height="46.15"/>
+                </g>
+                <rect width="342.86" height="323.08" fill="#3C3B6E"/>
+                <g fill="#fff">
+                  <circle cx="57.14" cy="40" r="15"/>
+                  <circle cx="128.57" cy="40" r="15"/>
+                  <circle cx="200" cy="40" r="15"/>
+                  <circle cx="271.43" cy="40" r="15"/>
+                  <circle cx="92.86" cy="100" r="15"/>
+                  <circle cx="164.29" cy="100" r="15"/>
+                  <circle cx="235.71" cy="100" r="15"/>
+                  <circle cx="57.14" cy="160" r="15"/>
+                  <circle cx="128.57" cy="160" r="15"/>
+                  <circle cx="200" cy="160" r="15"/>
+                  <circle cx="271.43" cy="160" r="15"/>
+                  <circle cx="92.86" cy="220" r="15"/>
+                  <circle cx="164.29" cy="220" r="15"/>
+                  <circle cx="235.71" cy="220" r="15"/>
+                  <circle cx="57.14" cy="280" r="15"/>
+                  <circle cx="128.57" cy="280" r="15"/>
+                  <circle cx="200" cy="280" r="15"/>
+                  <circle cx="271.43" cy="280" r="15"/>
+                </g>
+              </svg>
+            </span>
+            <span class="language-name">English</span>
+            <i class="fas fa-check language-check"></i>
+          </div>
+          <div class="language-option" data-lang="ru">
+            <span class="language-flag">
+              <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+                <rect width="800" height="600" fill="white" rx="50"/>
+                <rect y="200" width="800" height="200" fill="#0039A6"/>
+                <rect y="400" width="800" height="200" fill="#D52B1E"/>
+              </svg>
+            </span>
+            <span class="language-name">Русский</span>
+            <i class="fas fa-check language-check"></i>
+          </div>
+          <div class="language-option" data-lang="pl">
+            <span class="language-flag">
+              <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+                <rect width="800" height="600" fill="white" rx="50"/>
+                <rect y="300" width="800" height="300" fill="#DC143C"/>
+              </svg>
+            </span>
+            <span class="language-name">Polski</span>
+            <i class="fas fa-check language-check"></i>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -3820,6 +4098,8 @@ textarea,
         totalFields: 'Всього полів',
         filledFields: 'Заповнено',
         progress: 'Прогрес',
+        author: 'Автор',
+        authorDesc: 'Створено з любов\'ю для тих, хто цінує деталі',
         support: 'Підтримка',
         about: 'Про додаток',
         help: 'Довідка',
@@ -4209,6 +4489,8 @@ textarea,
         totalFields: 'Total fields',
         filledFields: 'Filled',
         progress: 'Progress',
+        author: 'Author',
+        authorDesc: 'Created with love for those who value details',
         support: 'Support',
         about: 'About',
         help: 'Help',
@@ -4598,6 +4880,8 @@ textarea,
         totalFields: 'Всего полей',
         filledFields: 'Заполнено',
         progress: 'Прогресс',
+        author: 'Автор',
+        authorDesc: 'Создано с любовью для тех, кто ценит детали',
         support: 'Поддержка',
         about: 'О приложении',
         help: 'Справка',
@@ -4987,6 +5271,8 @@ textarea,
         totalFields: 'Wszystkie pola',
         filledFields: 'Wypełnione',
         progress: 'Postęp',
+        author: 'Autor',
+        authorDesc: 'Stworzone z miłością dla tych, którzy cenią szczegóły',
         support: 'Wsparcie',
         about: 'O aplikacji',
         help: 'Pomoc',
@@ -5318,18 +5604,43 @@ textarea,
     
     // Update language selector UI
     updateLanguageUI() {
-      // Update checkmarks and find current language flag
+      // Update header language selector
       document.querySelectorAll('#languageDropdown .language-option').forEach(opt => {
         const lang = opt.getAttribute('data-lang');
         const check = opt.querySelector('.language-check');
-        check.style.visibility = lang === this.currentLang ? 'visible' : 'hidden';
+        if (check) {
+          check.style.visibility = lang === this.currentLang ? 'visible' : 'hidden';
+        }
         if (lang === this.currentLang) {
           opt.classList.add('selected');
           // Update current language flag SVG
-          const flagSVG = opt.querySelector('.language-flag svg').cloneNode(true);
+          const flagSVG = opt.querySelector('.language-flag svg');
           const currentLangElement = document.getElementById('currentLanguage');
-          currentLangElement.innerHTML = '';
-          currentLangElement.appendChild(flagSVG);
+          if (flagSVG && currentLangElement) {
+            currentLangElement.innerHTML = '';
+            currentLangElement.appendChild(flagSVG.cloneNode(true));
+          }
+        } else {
+          opt.classList.remove('selected');
+        }
+      });
+      
+      // Update footer language selector
+      document.querySelectorAll('#footerLanguageDropdown .language-option').forEach(opt => {
+        const lang = opt.getAttribute('data-lang');
+        const check = opt.querySelector('.language-check');
+        if (check) {
+          check.style.visibility = lang === this.currentLang ? 'visible' : 'hidden';
+        }
+        if (lang === this.currentLang) {
+          opt.classList.add('selected');
+          // Update footer current language flag SVG
+          const flagSVG = opt.querySelector('.language-flag svg');
+          const footerCurrentLangElement = document.getElementById('footerCurrentLanguage');
+          if (flagSVG && footerCurrentLangElement) {
+            footerCurrentLangElement.innerHTML = '';
+            footerCurrentLangElement.appendChild(flagSVG.cloneNode(true));
+          }
         } else {
           opt.classList.remove('selected');
         }
@@ -9684,6 +9995,39 @@ const TelegramWebApp = {
           languageDropdown.classList.remove('active');
         }
       });
+      
+      // ============= FOOTER LANGUAGE SELECTOR =============
+      const footerLanguageSelector = document.getElementById('footerLanguageSelector');
+      const footerLanguageTrigger = document.getElementById('footerLanguageTrigger');
+      const footerLanguageDropdown = document.getElementById('footerLanguageDropdown');
+      
+      if (footerLanguageSelector && footerLanguageTrigger && footerLanguageDropdown) {
+        // Toggle dropdown
+        footerLanguageTrigger.addEventListener('click', (e) => {
+          e.stopPropagation();
+          footerLanguageSelector.classList.toggle('active');
+          footerLanguageDropdown.classList.toggle('active');
+        });
+        
+        // Language selection
+        footerLanguageDropdown.querySelectorAll('.language-option').forEach(option => {
+          option.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const lang = option.getAttribute('data-lang');
+            i18n.setLanguage(lang);
+            footerLanguageSelector.classList.remove('active');
+            footerLanguageDropdown.classList.remove('active');
+          });
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+          if (!footerLanguageSelector.contains(e.target)) {
+            footerLanguageSelector.classList.remove('active');
+            footerLanguageDropdown.classList.remove('active');
+          }
+        });
+      }
       
       // ============= GLOBAL EVENT DELEGATION =============
       // Password toggle
