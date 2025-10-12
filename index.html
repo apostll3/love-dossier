@@ -2365,6 +2365,238 @@ textarea,
   font-size: 0.875rem;
 }
 
+/* ============= APP FOOTER ============= */
+.app-footer {
+  background: linear-gradient(135deg, var(--card) 0%, var(--bg) 100%);
+  border-top: 2px solid var(--border);
+  margin-top: 4rem;
+  padding: 3rem 0 0;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.footer-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 3rem;
+}
+
+.footer-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+}
+
+.footer-logo i {
+  font-size: 1.75rem;
+  animation: heartbeat 2s ease-in-out infinite;
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  10%, 30% { transform: scale(1.1); }
+  20%, 40% { transform: scale(1); }
+}
+
+.footer-tagline {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.footer-version {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  width: fit-content;
+}
+
+.footer-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 0.75rem 0;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.footer-links li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.footer-links li i {
+  color: var(--primary);
+  font-size: 0.875rem;
+  width: 16px;
+}
+
+.footer-links a {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-links a:hover {
+  color: var(--primary);
+}
+
+.footer-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.footer-stat {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.footer-stat:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: var(--primary);
+}
+
+.footer-stat-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 0.25rem;
+}
+
+.footer-stat-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.footer-bottom {
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  padding: 1.5rem 0;
+}
+
+.footer-bottom-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.footer-copyright {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.footer-copyright i {
+  font-size: 1rem;
+}
+
+.footer-languages {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.footer-lang-btn {
+  width: 36px;
+  height: 36px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer-lang-btn:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
+/* Mobile Footer Styles */
+@media (max-width: 768px) {
+  .app-footer {
+    margin-top: 2rem;
+    padding: 2rem 0 0;
+  }
+  
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 0 1.5rem 1.5rem;
+  }
+  
+  .footer-stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .footer-bottom-content {
+    flex-direction: column;
+    text-align: center;
+    padding: 0 1.5rem;
+  }
+  
+  .footer-copyright {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
 /* Sync Status */
 .sync-status {
   display: inline-flex;
@@ -3243,6 +3475,97 @@ textarea,
   </button>
 </div>
 
+<footer class="app-footer">
+  <div class="footer-content">
+    <div class="footer-section">
+      <div class="footer-logo">
+        <i class="fas fa-heart"></i>
+        <span>Love Dossier</span>
+      </div>
+      <p class="footer-tagline" data-i18n="footer.tagline">Зберігай найважливіше про найдорожчу людину</p>
+      <div class="footer-version">
+        <i class="fas fa-code-branch"></i>
+        <span>v2.0.0</span>
+      </div>
+    </div>
+    
+    <div class="footer-section">
+      <h4 class="footer-title" data-i18n="footer.features">Можливості</h4>
+      <ul class="footer-links">
+        <li><i class="fas fa-check"></i> <span data-i18n="footer.feature1">16 категорій інформації</span></li>
+        <li><i class="fas fa-check"></i> <span data-i18n="footer.feature2">Markdown форматування</span></li>
+        <li><i class="fas fa-check"></i> <span data-i18n="footer.feature3">Google Sheets синхронізація</span></li>
+        <li><i class="fas fa-check"></i> <span data-i18n="footer.feature4">AES-256 шифрування</span></li>
+      </ul>
+    </div>
+    
+    <div class="footer-section">
+      <h4 class="footer-title" data-i18n="footer.stats">Статистика</h4>
+      <div class="footer-stats">
+        <div class="footer-stat">
+          <div class="footer-stat-value" id="footerTotalFields">0</div>
+          <div class="footer-stat-label" data-i18n="footer.totalFields">Всього полів</div>
+        </div>
+        <div class="footer-stat">
+          <div class="footer-stat-value" id="footerFilledFields">0</div>
+          <div class="footer-stat-label" data-i18n="footer.filledFields">Заповнено</div>
+        </div>
+        <div class="footer-stat">
+          <div class="footer-stat-value" id="footerProgress">0%</div>
+          <div class="footer-stat-label" data-i18n="footer.progress">Прогрес</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer-section">
+      <h4 class="footer-title" data-i18n="footer.support">Підтримка</h4>
+      <ul class="footer-links">
+        <li>
+          <a href="#" onclick="App.showAbout(); return false;">
+            <i class="fas fa-info-circle"></i>
+            <span data-i18n="footer.about">Про додаток</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" onclick="App.showHelp(); return false;">
+            <i class="fas fa-question-circle"></i>
+            <span data-i18n="footer.help">Довідка</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" onclick="App.showPrivacy(); return false;">
+            <i class="fas fa-shield-alt"></i>
+            <span data-i18n="footer.privacy">Конфіденційність</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" onclick="TestRunner.runAll(); return false;">
+            <i class="fas fa-vial"></i>
+            <span data-i18n="footer.tests">Тести</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  
+  <div class="footer-bottom">
+    <div class="footer-bottom-content">
+      <p class="footer-copyright">
+        <i class="fas fa-code"></i>
+        <span data-i18n="footer.madeWith">Зроблено з</span>
+        <i class="fas fa-heart" style="color: var(--danger);"></i>
+        <span data-i18n="footer.forLove">для кохання</span>
+      </p>
+      <div class="footer-languages">
+        <button class="footer-lang-btn" onclick="i18n.setLanguage('uk')" title="Українська">🇺🇦</button>
+        <button class="footer-lang-btn" onclick="i18n.setLanguage('en')" title="English">🇬🇧</button>
+        <button class="footer-lang-btn" onclick="i18n.setLanguage('ru')" title="Русский">🇷🇺</button>
+        <button class="footer-lang-btn" onclick="i18n.setLanguage('pl')" title="Polski">🇵🇱</button>
+      </div>
+    </div>
+  </div>
+</footer>
+
 <script>
 (function() {
   'use strict';
@@ -3485,6 +3808,25 @@ textarea,
         subtitle: 'Оберіть категорії, які хочете використовувати',
         saveChanges: 'Зберегти зміни',
         availableCategories: 'Доступні категорії'
+      },
+      footer: {
+        tagline: 'Зберігай найважливіше про найдорожчу людину',
+        features: 'Можливості',
+        feature1: '16 категорій інформації',
+        feature2: 'Markdown форматування',
+        feature3: 'Google Sheets синхронізація',
+        feature4: 'AES-256 шифрування',
+        stats: 'Статистика',
+        totalFields: 'Всього полів',
+        filledFields: 'Заповнено',
+        progress: 'Прогрес',
+        support: 'Підтримка',
+        about: 'Про додаток',
+        help: 'Довідка',
+        privacy: 'Конфіденційність',
+        tests: 'Тести',
+        madeWith: 'Зроблено з',
+        forLove: 'для кохання'
       },
       messages: {
         dataSaved: 'Дані збережено',
@@ -3856,6 +4198,25 @@ textarea,
         saveChanges: 'Save changes',
         availableCategories: 'Available categories'
       },
+      footer: {
+        tagline: 'Keep what matters most about the person you love',
+        features: 'Features',
+        feature1: '16 information categories',
+        feature2: 'Markdown formatting',
+        feature3: 'Google Sheets sync',
+        feature4: 'AES-256 encryption',
+        stats: 'Statistics',
+        totalFields: 'Total fields',
+        filledFields: 'Filled',
+        progress: 'Progress',
+        support: 'Support',
+        about: 'About',
+        help: 'Help',
+        privacy: 'Privacy',
+        tests: 'Tests',
+        madeWith: 'Made with',
+        forLove: 'for love'
+      },
       messages: {
         dataSaved: 'Data saved',
         exported: 'Exported',
@@ -4226,6 +4587,25 @@ textarea,
         saveChanges: 'Сохранить изменения',
         availableCategories: 'Доступные категории'
       },
+      footer: {
+        tagline: 'Храни самое важное о самом дорогом человеке',
+        features: 'Возможности',
+        feature1: '16 категорий информации',
+        feature2: 'Markdown форматирование',
+        feature3: 'Синхронизация с Google Sheets',
+        feature4: 'AES-256 шифрование',
+        stats: 'Статистика',
+        totalFields: 'Всего полей',
+        filledFields: 'Заполнено',
+        progress: 'Прогресс',
+        support: 'Поддержка',
+        about: 'О приложении',
+        help: 'Справка',
+        privacy: 'Конфиденциальность',
+        tests: 'Тесты',
+        madeWith: 'Сделано с',
+        forLove: 'для любви'
+      },
       messages: {
         dataSaved: 'Данные сохранены',
         exported: 'Экспортировано',
@@ -4595,6 +4975,25 @@ textarea,
         subtitle: 'Wybierz kategorie, których chcesz używać',
         saveChanges: 'Zapisz zmiany',
         availableCategories: 'Dostępne kategorie'
+      },
+      footer: {
+        tagline: 'Przechowuj najważniejsze o najdroższej osobie',
+        features: 'Funkcje',
+        feature1: '16 kategorii informacji',
+        feature2: 'Formatowanie Markdown',
+        feature3: 'Synchronizacja z Google Sheets',
+        feature4: 'Szyfrowanie AES-256',
+        stats: 'Statystyki',
+        totalFields: 'Wszystkie pola',
+        filledFields: 'Wypełnione',
+        progress: 'Postęp',
+        support: 'Wsparcie',
+        about: 'O aplikacji',
+        help: 'Pomoc',
+        privacy: 'Prywatność',
+        tests: 'Testy',
+        madeWith: 'Stworzone z',
+        forLove: 'dla miłości'
       },
       messages: {
         dataSaved: 'Dane zapisane',
@@ -5699,6 +6098,8 @@ textarea,
     autoSyncInterval: null,
     hasUnsyncedChanges: false, // Флаг незбережених змін
     lastSyncData: null, // Останні синхронізовані дані
+    lastSyncTime: 0, // Час останньої синхронізації (для rate limiting)
+    syncCooldown: 2000, // Мінімальний інтервал між синхронізаціями (2 сек)
     
     // Позначити що є незбережені зміни
     markDirty() {
@@ -5772,16 +6173,28 @@ textarea,
       }
     },
     
-    // Ручна синхронізація
+    // Ручна синхронізація (з rate limiting)
     async manualSync() {
       if (!GoogleSheetsSync.isAuthorized()) {
         Toast.t('messages.needAuth', 'error');
         return;
       }
       
+      // Rate limiting: перевіряємо чи минув cooldown період
+      const now = Date.now();
+      const timeSinceLastSync = now - this.lastSyncTime;
+      
+      if (timeSinceLastSync < this.syncCooldown) {
+        const remainingTime = Math.ceil((this.syncCooldown - timeSinceLastSync) / 1000);
+        Toast.show(`⏳ Зачекайте ${remainingTime} сек перед наступною синхронізацією`, 'warning');
+        Debug.log(`Rate limit: ${remainingTime}s remaining`);
+        return;
+      }
+      
       try {
         this.updateStatus('syncing', i18n.t('messages.syncing'));
         await Storage.save();
+        this.lastSyncTime = Date.now(); // Оновлюємо час останньої синхронізації
         Toast.t('messages.syncComplete');
       } catch (error) {
         console.error('Manual sync error:', error);
@@ -5879,6 +6292,9 @@ const TelegramWebApp = {
         isAtTop = window.scrollY === 0;
       }, { passive: true });
 
+      // ВАЖЛИВО: passive: false потрібен для виклику e.preventDefault()
+      // Це навмисно для блокування pull-to-refresh в Telegram WebApp
+      // Може трохи вплинути на продуктивність скролу, але це необхідно
       document.addEventListener('touchmove', (e) => {
         if (isAtTop && e.touches[0].clientY > startY) {
           e.preventDefault();
@@ -9073,6 +9489,7 @@ const TelegramWebApp = {
       Renderer.renderCategories();
       Renderer.renderContent();
       Progress.update(); // Оновлюємо прогрес при ініціалізації
+      App.updateFooterStats(); // Оновлюємо статистику футера
     },
     
     bindEvents() {
@@ -9150,6 +9567,8 @@ const TelegramWebApp = {
               await Storage.save();
               Renderer.renderCategories();
               Renderer.renderContent();
+              Progress.update();
+              App.updateFooterStats();
               Toast.t('messages.imported');
             } else {
               Toast.t('messages.invalidFile', 'error');
@@ -9446,11 +9865,13 @@ const TelegramWebApp = {
             await Storage.save();
             Renderer.renderContent();
             Progress.update();
+            App.updateFooterStats();
             Toast.t(isEdit ? 'messages.fieldUpdated' : 'messages.fieldCreated');
             return true;
           },
           onOpen: () => {
             // Local variable to store nested categories during editing
+
             let tempNestedCategories = [];
             if (field && field.nestedCategories) {
               try {
@@ -10100,6 +10521,7 @@ const TelegramWebApp = {
             await Storage.save();
             Renderer.renderContent();
             Progress.update();
+            App.updateFooterStats();
             Toast.t('messages.valueUpdated');
             return true;
           }
@@ -10722,7 +11144,36 @@ const TelegramWebApp = {
       
       // Якщо режим змінився, запитати про міграцію
       if (oldMode !== mode && oldMode !== 'localStorage') {
-        // TODO: показати діалог міграції
+        const migrationMessage = mode === 'googleSheets' 
+          ? i18n.t('sync.exportToSheets') + '?'
+          : i18n.t('sync.importFromSheets') + '?';
+        
+        if (confirm(migrationMessage)) {
+          setTimeout(async () => {
+            try {
+              if (mode === 'googleSheets') {
+                // Міграція localStorage → Google Sheets
+                await Storage.save(); // Автоматично синхронізує з Google Sheets
+                Toast.show('✅ ' + i18n.t('messages.exported'), 'success');
+              } else {
+                // Міграція Google Sheets → localStorage
+                const result = await Storage.load();
+                if (result) {
+                  State.config = result.config;
+                  State.values = result.values;
+                  await Storage.save();
+                  Renderer.renderCategories();
+                  Renderer.renderContent();
+                  Progress.update();
+                  Toast.show('✅ ' + i18n.t('messages.imported'), 'success');
+                }
+              }
+            } catch (error) {
+              Debug.error('Migration error:', error);
+              Toast.show('❌ ' + i18n.t('messages.syncError') + ': ' + error.message, 'error');
+            }
+          }, 500);
+        }
       }
       
       Toast.t('messages.settingsSaved');
@@ -10752,6 +11203,135 @@ const TelegramWebApp = {
           badge.remove();
         }
       }
+    },
+    
+    // Оновлює статистику у футері
+    updateFooterStats() {
+      const totalFields = State.config.fields.length;
+      const filledFields = Object.keys(State.values).filter(fieldId => {
+        const field = State.config.fields.find(f => f.id === fieldId);
+        return field && Progress.isFieldFilled(fieldId);
+      }).length;
+      const progress = totalFields > 0 ? Math.round((filledFields / totalFields) * 100) : 0;
+      
+      const totalEl = document.getElementById('footerTotalFields');
+      const filledEl = document.getElementById('footerFilledFields');
+      const progressEl = document.getElementById('footerProgress');
+      
+      if (totalEl) totalEl.textContent = totalFields;
+      if (filledEl) filledEl.textContent = filledFields;
+      if (progressEl) progressEl.textContent = progress + '%';
+    },
+    
+    // Показати модалку "Про додаток"
+    showAbout() {
+      Modal.open(
+        i18n.t('footer.about'),
+        `
+          <div style="text-align: center; padding: 2rem 0;">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">
+              <i class="fas fa-heart" style="color: var(--primary);"></i>
+            </div>
+            <h2 style="margin-bottom: 0.5rem;">Love Dossier v2.0.0</h2>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">${i18n.t('footer.tagline')}</p>
+            
+            <div style="text-align: left; max-width: 500px; margin: 0 auto;">
+              <h3 style="margin-bottom: 1rem;">${i18n.t('footer.features')}</h3>
+              <ul style="list-style: none; padding: 0;">
+                <li style="padding: 0.5rem 0; display: flex; align-items: center; gap: 0.75rem;">
+                  <i class="fas fa-check" style="color: var(--success);"></i>
+                  <span>${i18n.t('footer.feature1')}</span>
+                </li>
+                <li style="padding: 0.5rem 0; display: flex; align-items: center; gap: 0.75rem;">
+                  <i class="fas fa-check" style="color: var(--success);"></i>
+                  <span>${i18n.t('footer.feature2')}</span>
+                </li>
+                <li style="padding: 0.5rem 0; display: flex; align-items: center; gap: 0.75rem;">
+                  <i class="fas fa-check" style="color: var(--success);"></i>
+                  <span>${i18n.t('footer.feature3')}</span>
+                </li>
+                <li style="padding: 0.5rem 0; display: flex; align-items: center; gap: 0.75rem;">
+                  <i class="fas fa-check" style="color: var(--success);"></i>
+                  <span>${i18n.t('footer.feature4')}</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        `,
+        null,
+        null,
+        false
+      );
+    },
+    
+    // Показати довідку
+    showHelp() {
+      Modal.open(
+        i18n.t('footer.help'),
+        `
+          <div style="padding: 1rem 0;">
+            <h3 style="margin-bottom: 1rem;">📝 ${i18n.t('format.bold').split('(')[0]}</h3>
+            <p style="margin-bottom: 1rem;">${i18n.t('hints.formatting')}</p>
+            <p style="color: var(--text-muted); font-size: 0.875rem;">${i18n.t('hints.selectTextForFormatting')}</p>
+            
+            <hr style="margin: 2rem 0; border: none; border-top: 1px solid var(--border);">
+            
+            <h3 style="margin-bottom: 1rem;">☁️ ${i18n.t('sync.googleSheetsMode')}</h3>
+            <p style="margin-bottom: 1rem;">${i18n.t('sync.googleSheetsModeDesc')}</p>
+            
+            <hr style="margin: 2rem 0; border: none; border-top: 1px solid var(--border);">
+            
+            <h3 style="margin-bottom: 1rem;">🔒 ${i18n.t('sync.encryption')}</h3>
+            <p style="margin-bottom: 1rem;">${i18n.t('sync.securityItem4')}</p>
+          </div>
+        `,
+        null,
+        null,
+        false
+      );
+    },
+    
+    // Показати політику конфіденційності
+    showPrivacy() {
+      Modal.open(
+        i18n.t('footer.privacy'),
+        `
+          <div style="padding: 1rem 0;">
+            <h3 style="margin-bottom: 1rem;">🔒 ${i18n.t('sync.securityTitle')}</h3>
+            <ul style="list-style: none; padding: 0;">
+              <li style="padding: 0.75rem 0; display: flex; gap: 0.75rem;">
+                <i class="fas fa-shield-alt" style="color: var(--success); margin-top: 0.25rem;"></i>
+                <span>${i18n.t('sync.securityItem1')}</span>
+              </li>
+              <li style="padding: 0.75rem 0; display: flex; gap: 0.75rem;">
+                <i class="fas fa-shield-alt" style="color: var(--success); margin-top: 0.25rem;"></i>
+                <span>${i18n.t('sync.securityItem2')}</span>
+              </li>
+              <li style="padding: 0.75rem 0; display: flex; gap: 0.75rem;">
+                <i class="fas fa-shield-alt" style="color: var(--success); margin-top: 0.25rem;"></i>
+                <span>${i18n.t('sync.securityItem3')}</span>
+              </li>
+              <li style="padding: 0.75rem 0; display: flex; gap: 0.75rem;">
+                <i class="fas fa-shield-alt" style="color: var(--success); margin-top: 0.25rem;"></i>
+                <span>${i18n.t('sync.securityItem4')}</span>
+              </li>
+              <li style="padding: 0.75rem 0; display: flex; gap: 0.75rem;">
+                <i class="fas fa-shield-alt" style="color: var(--success); margin-top: 0.25rem;"></i>
+                <span>${i18n.t('sync.securityItem5')}</span>
+              </li>
+            </ul>
+            
+            <hr style="margin: 2rem 0; border: none; border-top: 1px solid var(--border);">
+            
+            <p style="color: var(--text-muted); font-size: 0.875rem; text-align: center;">
+              ${i18n.t('footer.madeWith')} <i class="fas fa-heart" style="color: var(--danger);"></i> ${i18n.t('footer.forLove')}
+            </p>
+          </div>
+        `,
+        null,
+        null,
+        false
+      );
     }
   };
 
