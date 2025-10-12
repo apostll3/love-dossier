@@ -4900,7 +4900,11 @@ textarea,
       if (TRANSLATIONS[lang]) {
         this.currentLang = lang;
         State.language = lang;
-        localStorage.setItem('app_language', lang);
+        try {
+          localStorage.setItem('app_language', lang);
+        } catch (e) {
+          Debug.error('localStorage error:', e);
+        }
         this.applyTranslations();
         
         // Update language selector UI
@@ -5533,11 +5537,20 @@ textarea,
       const mode = State.sync.mode;
       
       // Завжди зберігаємо в localStorage як backup
-      localStorage.setItem(this.key, JSON.stringify({
-        config: State.config,
-        values: State.values,
-        savedAt: new Date().toISOString()
-      }));
+      try {
+        localStorage.setItem(this.key, JSON.stringify({
+          config: State.config,
+          values: State.values,
+          savedAt: new Date().toISOString()
+        }));
+      } catch (e) {
+        if (e.name === 'QuotaExceededError') {
+          Toast.show('❌ Сховище переповнене! Видаліть старі дані або експортуйте в Google Sheets', 'error');
+          throw new Error('Storage quota exceeded');
+        }
+        Debug.error('localStorage save error:', e);
+        throw e;
+      }
       
       // Якщо Google Sheets режим - синхронізуємо
       if (mode === 'googleSheets' && State.sync.googleSheets.enabled) {
@@ -5614,19 +5627,23 @@ textarea,
     
     // Збереження налаштувань синхронізації
     saveSyncSettings() {
-      localStorage.setItem(this.syncKey, JSON.stringify({
-        mode: State.sync.mode,
-        googleSheets: {
-          enabled: State.sync.googleSheets.enabled,
-          clientId: State.sync.googleSheets.clientId,
-          spreadsheetId: State.sync.googleSheets.spreadsheetId,
-          lastSync: State.sync.googleSheets.lastSync,
-          autoSyncEnabled: State.sync.googleSheets.autoSyncEnabled,
-          autoSyncInterval: State.sync.googleSheets.autoSyncInterval,
-          encryptionEnabled: State.sync.googleSheets.encryptionEnabled,
-          encryptionPasswordHash: State.sync.googleSheets.encryptionPasswordHash
-        }
-      }));
+      try {
+        localStorage.setItem(this.syncKey, JSON.stringify({
+          mode: State.sync.mode,
+          googleSheets: {
+            enabled: State.sync.googleSheets.enabled,
+            clientId: State.sync.googleSheets.clientId,
+            spreadsheetId: State.sync.googleSheets.spreadsheetId,
+            lastSync: State.sync.googleSheets.lastSync,
+            autoSyncEnabled: State.sync.googleSheets.autoSyncEnabled,
+            autoSyncInterval: State.sync.googleSheets.autoSyncInterval,
+            encryptionEnabled: State.sync.googleSheets.encryptionEnabled,
+            encryptionPasswordHash: State.sync.googleSheets.encryptionPasswordHash
+          }
+        }));
+      } catch (e) {
+        Debug.error('localStorage saveSyncSettings error:', e);
+      }
     },
     
     // Завантаження налаштувань синхронізації
@@ -8004,7 +8021,11 @@ const TelegramWebApp = {
       
       // Зберігаємо вибрану мову
       State.language = this.selectedLanguage;
-      localStorage.setItem('app_language', this.selectedLanguage);
+      try {
+        localStorage.setItem('app_language', this.selectedLanguage);
+      } catch (e) {
+        Debug.error('localStorage error:', e);
+      }
       i18n.setLanguage(this.selectedLanguage);
       
       // Фільтруємо категорії та поля згідно вибору користувача
@@ -8029,7 +8050,11 @@ const TelegramWebApp = {
       await Storage.save();
       
       // Встановлюємо прапорець, що onboarding пройдено
-      localStorage.setItem('onboarding_completed', 'true');
+      try {
+        localStorage.setItem('onboarding_completed', 'true');
+      } catch (e) {
+        Debug.error('localStorage error:', e);
+      }
       
       // Закриваємо модалку
       this.close();
