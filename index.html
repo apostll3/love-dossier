@@ -1496,14 +1496,13 @@ i[class*="fa-"] svg {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 1rem;
   border-radius: var(--radius-sm);
   border: none;
   font-weight: 600;
-  font-size: 0.875rem;
   cursor: pointer;
   transition: all 0.2s;
   white-space: nowrap;
+  padding: 0;
 }
 
 .btn-primary {
@@ -2136,6 +2135,16 @@ i[class*="fa-"] svg {
   font-size: 1rem;
   color: var(--primary);
   flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.custom-select-icon svg {
+  width: 100%;
+  height: 100%;
 }
 
 .custom-select-text {
@@ -2219,8 +2228,16 @@ i[class*="fa-"] svg {
   font-size: 1rem;
   color: var(--primary);
   flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 1.25rem;
-  text-align: center;
+  height: 1.25rem;
+}
+
+.custom-select-option-icon svg {
+  width: 100%;
+  height: 100%;
 }
 
 .custom-select-option-text {
@@ -2986,6 +3003,7 @@ i[class*="fa-"] svg {
 .footer-language-selector {
   position: relative;
   width: auto;
+  margin-left: auto;
 }
 
 .footer-language-trigger {
@@ -3074,6 +3092,9 @@ i[class*="fa-"] svg {
     margin-top: 1rem;
     padding: 1rem 0 0;
   }
+  .footer-bottom {
+    padding: 1rem 0 1rem;
+  }
   
   .footer-content {
     grid-template-columns: 1fr;
@@ -3103,6 +3124,7 @@ i[class*="fa-"] svg {
     flex-direction: row;
     text-align: center;
     padding: 0 1rem;
+    gap: 0.5rem;
   }
   
   .footer-copyright {
@@ -3110,6 +3132,16 @@ i[class*="fa-"] svg {
     justify-content: center;
     font-size: 12px;
   }
+}
+
+@media (max-width: 385px) {
+  .footer-bottom-content{
+        justify-content: center;
+  }
+  .footer-language-selector {
+    display: none;
+  }
+ 
 }
 
 /* Sync Status */
@@ -3901,13 +3933,13 @@ i[class*="fa-"] svg {
         <div class="sidebar-title" data-i18n="ui.categories">Категорії</div>
         <div class="sidebar-actions">
           <button class="btn btn-reorder" id="btnReorderCategories" title="Змінити порядок категорій">
-            <i class="fas fa-arrows-alt-v"></i>
+            <i class="fa-arrows-alt-v">${getIcon('arrows-alt-v')}</i>
           </button>
           <button class="btn btn-settings" id="btnCategorySettings" title="Налаштування категорій">
-            <i class="fas fa-cog"></i>
+            <i class="fa-cog">${getIcon('cog')}</i>
           </button>
           <button class="btn btn-add-category" id="btnAddCategory" title="Додати категорію">
-            <i class="fas fa-folder-plus"></i>
+            <i class="fa-folder-plus">${getIcon('folder-plus')}</i>
           </button>
         </div>
       </div>
@@ -3920,7 +3952,7 @@ i[class*="fa-"] svg {
     <main class="content">
       <div class="content-header">
         <div class="content-title" id="contentTitle">
-          <i class="fas fa-folder"></i>
+          <i class="fa-folder">${getIcon('folder')}</i>
           <span data-i18n="ui.selectCategory">Оберіть категорію</span>
         </div>
         <div class="content-actions" id="contentActions">
@@ -4201,6 +4233,10 @@ i[class*="fa-"] svg {
     'strikethrough': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 5c-1.67-1.5-4.83-2-7.5-2s-5.83.5-7.5 2M3 12h18M6.5 19c1.67 1.5 4.83 2 7.5 2s5.83-.5 7.5-2"></path></svg>',
     'link': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>',
     'tag': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>',
+    'tags': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line><path d="M23 7l-7 7"></path></svg>',
+    'font': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3M9 20h6M12 4v16"></path></svg>',
+    'align-left': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="17" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="17" y1="18" x2="3" y2="18"></line></svg>',
+    'calendar': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>',
     
     // Іконки з кружками
     'check-circle': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="9 12 11 14 15 10"></polyline></svg>',
@@ -4209,6 +4245,7 @@ i[class*="fa-"] svg {
     'exclamation-triangle': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>',
     'question-circle': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>',
     'plus-circle': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>',
+    'minus-circle': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="8" y1="12" x2="16" y2="12"></line></svg>',
     'user-circle': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="10" r="3"></circle><path d="M6.168 18.849A4 4 0 0 1 10 16h4a4 4 0 0 1 3.834 2.855"></path></svg>',
     
     // Категорії іконки
@@ -7905,7 +7942,7 @@ i[class*="fa-"] svg {
       const trigger = document.createElement('div');
       trigger.className = 'custom-select-trigger';
       trigger.innerHTML = `
-        ${selectedOption.icon ? `<i class="fas ${selectedOption.icon} custom-select-icon"></i>` : ''}
+        ${selectedOption.icon ? `<i class="${selectedOption.icon} custom-select-icon">${getIcon(selectedOption.icon)}</i>` : ''}
         <span class="custom-select-text">${selectedOption.label}</span>
       `;
       
@@ -7919,14 +7956,14 @@ i[class*="fa-"] svg {
         if (opt.value === selectedOption.value) option.classList.add('selected');
         option.dataset.value = opt.value;
         option.innerHTML = `
-          ${opt.icon ? `<i class="fas ${opt.icon} custom-select-option-icon"></i>` : ''}
+          ${opt.icon ? `<i class="${opt.icon} custom-select-option-icon">${getIcon(opt.icon)}</i>` : ''}
           <span class="custom-select-option-text">${opt.label}</span>
         `;
         
         option.onclick = () => {
           // Update trigger
           trigger.innerHTML = `
-            ${opt.icon ? `<i class="fas ${opt.icon} custom-select-icon"></i>` : ''}
+            ${opt.icon ? `<i class="${opt.icon} custom-select-icon">${getIcon(opt.icon)}</i>` : ''}
             <span class="custom-select-text">${opt.label}</span>
           `;
           
