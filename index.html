@@ -5565,6 +5565,11 @@ textarea,
             cat.originalLabel = cat.label;
           }
           
+          // Якщо користувач встановив кастомну назву - не перезаписуємо її
+          if (cat.customLabel) {
+            return cat;
+          }
+          
           // Перевіряємо чи є переклад для цієї категорії
           const translationKey = `categories.${cat.id}`;
           const translated = this.t(translationKey);
@@ -5586,6 +5591,31 @@ textarea,
           // Зберігаємо оригінальну назву при першому завантаженні
           if (!field.originalLabel) {
             field.originalLabel = field.label;
+          }
+          
+          // Якщо користувач встановив кастомну назву - не перезаписуємо її
+          if (field.customLabel) {
+            // Але все одно перекладаємо nested categories якщо вони є
+            if (field.type === 'nested' && field.nestedCategories) {
+              field.nestedCategories = field.nestedCategories.map(nestedCat => {
+                const nestedTranslated = this.t(`nested.${nestedCat.id}`);
+                const nestedLabel = nestedTranslated === `nested.${nestedCat.id}` ? nestedCat.label : nestedTranslated;
+                
+                return {
+                  ...nestedCat,
+                  label: nestedLabel,
+                  subcategories: nestedCat.subcategories ? nestedCat.subcategories.map(sub => {
+                    const subTranslated = this.t(`nested.${sub.id}`);
+                    const subLabel = subTranslated === `nested.${sub.id}` ? sub.label : subTranslated;
+                    return {
+                      ...sub,
+                      label: subLabel
+                    };
+                  }) : []
+                };
+              });
+            }
+            return field;
           }
           
           // Перевіряємо чи є переклад для цього поля
@@ -10293,9 +10323,28 @@ const TelegramWebApp = {
             
             if (isEdit) {
               const index = State.config.fields.findIndex(f => f.id === fieldId);
-              State.config.fields[index] = fieldData;
+              const existingField = State.config.fields[index];
+              
+              // Перевіряємо чи є переклад для цього поля (чи це дефолтне поле)
+              const translationKey = `fields.${id}`;
+              const hasTranslation = i18n.t(translationKey) !== translationKey;
+              
+              // Перевіряємо чи змінилась назва
+              const labelChanged = hasTranslation && label !== i18n.t(translationKey);
+              
+              State.config.fields[index] = {
+                ...fieldData,
+                // Для кастомних полів оновлюємо originalLabel, для дефолтних - зберігаємо
+                originalLabel: hasTranslation ? existingField.originalLabel : label,
+                // Якщо користувач змінив назву дефолтного поля - встановлюємо прапорець
+                customLabel: labelChanged || existingField.customLabel || false
+              };
             } else {
-              State.config.fields.push(fieldData);
+              State.config.fields.push({
+                ...fieldData,
+                originalLabel: label, // Зберігаємо оригінальну назву для кастомних полів
+                customLabel: false // Нове поле не має кастомної назви
+              });
             }
             
             SyncManager.markDirty(); // Позначаємо зміни
@@ -10531,7 +10580,7 @@ const TelegramWebApp = {
           ${isEdit ? `<input type="hidden" id="catId" value="${category.id}">` : ''}
           <div class="form-group">
             <label class="form-label">${i18n.t('modal.categoryName')}</label>
-            <input type="text" class="form-input" id="catLabel" value="${category ? (category.originalLabel || category.label) : ''}" required>
+            <input type="text" class="form-input" id="catLabel" value="${category ? category.label : ''}" required>
             ${category ? `<small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">${i18n.t('modal.customCategoryNote')}</small>` : ''}
             ${!isEdit ? `<small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">${i18n.t('hints.autoIdGeneration') || 'ID буде згенеровано автоматично'}</small>` : ''}
           </div>
@@ -10569,25 +10618,32 @@ const TelegramWebApp = {
               const translationKey = `categories.${id}`;
               const hasTranslation = i18n.t(translationKey) !== translationKey;
               
+              // Перевіряємо чи змінилась назва
+              const labelChanged = hasTranslation && label !== i18n.t(translationKey);
+              
               State.config.categories[index] = {
                 id, 
                 label, 
                 icon,
                 // Для кастомних категорій оновлюємо originalLabel, для дефолтних - зберігаємо
-                originalLabel: hasTranslation ? existingCategory.originalLabel : label
+                originalLabel: hasTranslation ? existingCategory.originalLabel : label,
+                // Якщо користувач змінив назву дефолтної категорії - встановлюємо прапорець
+                customLabel: labelChanged || existingCategory.customLabel || false
               };
             } else {
               State.config.categories.push({
                 id, 
                 label, 
                 icon,
-                originalLabel: label // Зберігаємо оригінальну назву для кастомних категорій
+                originalLabel: label, // Зберігаємо оригінальну назву для кастомних категорій
+                customLabel: false // Нова категорія не має кастомної назви
               });
             }
             
             SyncManager.markDirty(); // Позначаємо зміни
             await Storage.save();
             Renderer.renderCategories();
+            Renderer.renderContent(); // Оновлюємо контент щоб заголовок оновився
             Toast.t(isEdit ? 'messages.categoryUpdated' : 'messages.categoryCreated');
             return true;
           }
