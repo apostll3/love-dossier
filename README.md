@@ -1,165 +1,435 @@
-# 💝 Досьє коханої людини | Love Dossier v2.0
+# 💝 Love Dossier
 
-> **Повнофункціональний веб-додаток для збереження, систематизації та шифрування важливих деталей про вашу кохану людину. Працює повністю офлайн з можливістю синхронізації.**
-> 
-> **Full-featured web app for saving, organizing, and encrypting important details about your loved one. Works completely offline with sync capabilities.**
+> **A privacy-focused web application for organizing and remembering everything important about your loved one**
+
+[![Live Demo](https://img.shields.io/badge/demo-live-success?style=for-the-badge)](https://apostll3.github.io/love-dossier)
+[![Version](https://img.shields.io/badge/version-2.0_BETA-blue?style=for-the-badge)](https://github.com/apostll3/love-dossier)
+[![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)](LICENSE)
 
 ![Preview](./preview.png)
 
-🌍 **Мультимовний додаток** | **Multilingual Application**  
-Доступні мови: Українська 🇺🇦 | English 🇬🇧 | Русский 🇷🇺 | Polski 🇵🇱
+## 🌍 Translations
+
+- **English** (you are here)
+- [Українська](./readmeTranslate/README_uk.md) 🇺🇦
+- [Русский](./readmeTranslate/README_ru.md) 🇷🇺
+- [Polski](./readmeTranslate/README_pl.md) 🇵🇱
 
 ---
 
-## 🌐 Live Demo
+## 📖 Table of Contents
 
-👉 [Відкрити сайт](https://apostll3.github.io/love-dossier)
-
----
-
-## 🎯 Що це?
-
-**"Досьє коханої людини"** — це цифровий щоденник-органайзер, який допомагає зберігати всі важливі дрібниці про вашу половинку:
-- улюблені речі, смаки, звички;
-- психологічні особливості, тригери, мотиватори;
-- подарунки, цілі, побутові деталі;
-- усе в одному місці — красиво, зручно, приватно.
+- [What is Love Dossier?](#-what-is-love-dossier)
+- [Key Features](#-key-features)
+- [Quick Start](#-quick-start)
+- [Technology Stack](#-technology-stack)
+- [Security & Privacy](#-security--privacy)
+- [Use Cases](#-use-cases)
+- [Documentation](#-documentation)
+- [Contributing](#-contributing)
+- [License](#-license)
 
 ---
 
-## ✨ Основні можливості
+## 🎯 What is Love Dossier?
 
-### 🌍 Мультимовність
-- **4 мови інтерфейсу**: Українська, English, Русский, Polski
-- Миттєве перемикання мов через зручний селектор
-- Автоматичне збереження обраної мови
-- Повна локалізація всіх елементів інтерфейсу
+**Love Dossier** is a comprehensive web application designed to help you remember and organize all the important details about your loved one. From their favorite foods and gift preferences to psychological traits and intimate moments — everything in one beautiful, private, and secure place.
 
-### 🧭 16 категорій + 64 поля
-Від **базової інформації** до **інтимних моментів**, з можливістю створення власних категорій та полів. Швидкий пошук, фільтрація, підтримка вкладених підкатегорій.
+### Why Love Dossier?
 
-### 🧠 Інтелектуальне форматування
-- `**жирний**`, `_курсив_`, `~~закреслений~~`, `[посилання](url)`
-- контекстне меню при редагуванні полів
-- підтримка гарячих клавіш (`Ctrl+B`, `Ctrl+I`, `Ctrl+K`)
-- форматування працює в усіх типах полів: text, textarea, tags, nested
-
-### 🔍 Потужний пошук і фільтри
-- пошук у всіх полях, категоріях і тегах
-- фільтрація за заповненістю та пріоритетом
-- підсвічування результатів
-
-### 📊 Прогрес-заповнення
-- прогрес-бар заповненості категорій
-- статистика з відсотком завершення
-
-### ☁️ Синхронізація
-- **Local** — збереження у браузері  
-- **Google Sheets** — синхронізація між пристроями  
-- **File backup** — ручний експорт / імпорт  
-- **AES-GCM 256-bit** шифрування (повна конфіденційність)
-
-### 📱 Повна адаптивність
-- інтерфейс під мобільні, планшети, десктопи  
-- динамічні елементи, плавні переходи  
-- робота офлайн після першого запуску
-- оптимізовані dropdown меню для мобільних пристроїв
-- адаптивна сітка полів та категорій  
+- **Remember what matters** — Never forget important details about your partner
+- **Be more thoughtful** — Use stored information to plan better dates, gifts, and support
+- **Strengthen your relationship** — Show that you truly care by remembering the little things
+- **Stay organized** — Systematic approach to relationship knowledge management
+- **Complete privacy** — All data stays on your device or encrypted in your Google Sheets
 
 ---
 
-## 🚀 Як запустити
+## ✨ Key Features
 
-### 🔹 Варіант 1 — Онлайн (GitHub Pages)
-1. Перейдіть за посиланням:  
-   [https://apostll3.github.io/love-dossier](https://apostll3.github.io/love-dossier)
-2. Готово! Програма працює прямо у браузері.
+### 🌍 **Multilingual Interface**
+- **4 languages supported**: English, Ukrainian, Russian, Polish
+- Instant language switching with persistent preferences
+- Full localization of all UI elements and messages
+- Automatic translation of default categories and fields
 
-### 🔹 Варіант 2 — Локально
+### 📂 **16 Categories & 64+ Fields**
+Comprehensive information structure covering:
+- **Base Info**: Name, birthday, contacts, location
+- **Character**: Personality traits, attachment style, humor
+- **Preferences**: Favorite foods, activities, aesthetics, colors
+- **Anti-preferences**: Dislikes, triggers, allergies, uncomfortable situations
+- **Gifts**: Wishlist, sizes, favorite brands, gift history
+- **Psychology**: Love language, core values, conflict style
+- **Psych Details**: Anxiety triggers, motivators, calming words
+- **Logistics**: Favorite places, social circle, daily routines
+- **Goals**: Short-term and long-term aspirations, bucket list
+- **Communication**: Communication style, preferred topics
+- **Finance**: Financial habits, attitudes, shared goals
+- **Intimacy**: Intimate preferences and boundaries (private category)
+- **Family**: Family information, important people, traditions
+- **Career**: Professional goals, work schedule, dreams
+- **Culture**: Religious views, political beliefs, principles
+- **Custom**: Personal notes and custom fields
+
+### ✏️ **Rich Text Formatting**
+- **Markdown-like syntax**: `**bold**`, `*italic*`, `~~strikethrough~~`, `[link](url)`
+- **Context menu**: Select text to see formatting toolbar
+- **Keyboard shortcuts**: `Ctrl+B` (bold), `Ctrl+I` (italic), `Ctrl+K` (link)
+- **Works everywhere**: All field types support formatting
+
+### 🔍 **Powerful Search & Filters**
+- **Global search**: Search across all fields, categories, and tags
+- **Smart filtering**: Filter by completion status (filled/empty/all)
+- **Importance levels**: Filter by high/medium/low priority
+- **Real-time results**: Instant search with highlighted matches
+- **Search statistics**: See how many results found
+
+### 📊 **Progress Tracking**
+- **Visual progress bars**: See completion percentage for each category
+- **Overall statistics**: Total fields, filled fields, completion rate
+- **Category-specific progress**: Track progress per category
+- **Motivational feedback**: Visual encouragement to fill more fields
+
+### ☁️ **Flexible Sync Options**
+Three storage modes to fit your needs:
+
+1. **💾 Local Storage** (Default)
+   - Data stored in browser's localStorage
+   - Fast and private
+   - Works completely offline
+   - Accessible only from this device
+
+2. **☁️ Google Sheets Sync**
+   - Sync data across multiple devices
+   - Automatic background synchronization
+   - Configurable sync intervals (1-60 minutes)
+   - Optional AES-256 encryption
+   - Rate limiting to prevent API quota issues
+   - Your data, your Google account
+
+3. **📁 Manual File Backup**
+   - Export data as JSON file
+   - Import from previously exported files
+   - Full control over backups
+   - Easy data migration
+
+### 🔐 **Enterprise-Grade Security**
+- **AES-GCM 256-bit encryption** for Google Sheets sync
+- **Password-based encryption** (password never stored)
+- **PBKDF2 key derivation** (100,000 iterations)
+- **Session-only tokens** (cleared on browser close)
+- **No backend servers** (client-side only)
+- **No analytics or tracking**
+
+### 📱 **Fully Responsive Design**
+- **Mobile-first approach**: Optimized for smartphones
+- **Tablet support**: Perfect layout for tablets
+- **Desktop experience**: Full-featured desktop interface
+- **Touch-friendly**: Large tap targets, swipe gestures
+- **Adaptive layouts**: Dynamic grid system
+- **Smooth animations**: CSS transitions for all interactions
+- **PWA-ready**: Works offline after first load
+
+### 🎨 **Modern UI/UX**
+- **Beautiful gradients**: Eye-catching color schemes
+- **Smooth animations**: Polished user experience
+- **Custom components**: Dropdowns, modals, toasts, selectors
+- **Dark mode ready**: Prepared for dark theme implementation
+- **Accessibility**: Keyboard navigation, ARIA labels
+- **Intuitive navigation**: Easy category switching
+
+### 🧪 **Built-in Testing**
+- **Test Drive feature**: 40+ automated tests
+- **Component testing**: Tests for all major features
+- **Copy logs**: Easy bug reporting with log export
+- **Real-time feedback**: Visual test results
+
+---
+
+## 🚀 Quick Start
+
+### Option 1: Online (Recommended)
+
+Visit the live demo: **[https://apostll3.github.io/love-dossier](https://apostll3.github.io/love-dossier)**
+
+That's it! The app runs entirely in your browser.
+
+### Option 2: Local Installation
+
 ```bash
+# Clone the repository
 git clone https://github.com/apostll3/love-dossier.git
+
+# Navigate to the directory
 cd love-dossier
-# Відкрийте index.html (повна версія) або clear.html (мініфікована)
+
+# Open in browser
 open index.html
+# or
+start index.html  # Windows
+xdg-open index.html  # Linux
 ```
 
-**Примітка**: `clear.html` - це стиснута версія для продакшену (213KB), `index.html` - повна версія з коментарями для розробки (342KB).
+**No build process required!** Just open `index.html` in any modern browser.
+
+### First Time Setup
+
+1. **Choose your language** from the welcome screen
+2. **Select categories** you want to use (you can change this later)
+3. **Start filling in information** about your loved one
+4. **Optional**: Set up Google Sheets sync for cross-device access
 
 ---
 
-## 🔒 Безпека та приватність
+## 🛠 Technology Stack
 
-- 🔐 **AES-GCM 256-bit** шифрування для Google Sheets  
-- 🧩 **Жодного бекенду** — усі дані лише у вашому браузері  
-- 🗑️ **Миттєве видалення** всіх даних у налаштуваннях  
-- 🚫 **Без збору аналітики** або сторонніх запитів  
+### Core Technologies
+- **HTML5** — Semantic markup
+- **CSS3** — Modern styling with CSS Grid, Flexbox, Variables
+- **Vanilla JavaScript (ES6+)** — No frameworks, pure JS
 
----
+### Architecture
+- **Single-file application** — Everything in `index.html` (11,767 lines)
+- **Modular code structure** — Logically separated sections
+- **State management** — Centralized `State` object
+- **Event delegation** — Efficient event handling
+- **Local-first** — Works offline by default
 
-## 🧭 Приклади використання
+### External Dependencies
+- **Font Awesome 6.5.0** — Icons
+- **Google API** — Optional, for Sheets sync only
+- **Google Identity Services** — OAuth authentication
 
-### 🎁 Підготовка до свята
-- Перегляньте список бажань у «Подарунки»
-- Перевірте розміри одягу
-- Подивіться історію попередніх подарунків
+### File Structure
+```
+love-dossier/
+├── index.html          # Main application (432KB, development version)
+├── LoveDossier.ico     # Favicon
+├── preview.png         # Screenshot
+├── README.md           # This file
+├── DEVELOPER_GUIDE.md  # Technical documentation
+├── AI_PROMPT.md        # AI assistant instructions
+└── readmeTranslate/    # Translated README files
+    ├── README_uk.md    # Ukrainian
+    ├── README_ru.md    # Russian
+    └── README_pl.md    # Polish
+```
 
-### ❤️ Планування побачення
-- «Вподобання» → улюблені страви, напої
-- «Антивподобання» → тригери чи алергії
-- «Логістика» → комфортні місця чи маршрути
-
-### 🧘 Підтримка у важкий момент
-- «Психологічні особливості» → тригери тривоги  
-- «Слова підтримки» → що заспокоює партнера  
-
----
-
-## 💡 Поради
-
-1. Заповнюйте поступово — не все одразу.  
-2. Використовуйте теги для швидкого пошуку.  
-3. Додавайте контекст до нотаток.  
-4. Робіть резервні копії (файли або Sheets).  
-5. Використовуйте шифрування для конфіденційності.  
-
----
-
-## 🛠️ Для розробників
-
-**Стек**:  
-`HTML` + `CSS` + `Vanilla JS` (один файл `index.html` - 9372 рядки, 342KB)  
-Без фреймворків або серверної частини.  
-Google API використовується лише для синхронізації з таблицями.
-
-**Архітектура**:
-- **Єдиний файл** — весь код у `index.html` (HTML + CSS + JavaScript)
-- **Модульна структура** — логічно розділені секції коду
-- **State Management** — централізоване керування станом додатку
-- **i18n система** — повна підтримка 4 мов з автоперекладом
-- **Encryption** — AES-GCM 256-bit для захисту даних
+### Code Statistics
+- **Total lines**: 11,767
+- **HTML**: ~500 lines
+- **CSS**: ~2,700 lines
+- **JavaScript**: ~8,500 lines
+- **File size**: 432KB (uncompressed)
 
 ---
 
-## 🤝 Контриб’юція
+## 🔒 Security & Privacy
 
-Будь ласка, створюйте **issue** або **pull request**, якщо маєте:
-- ідеї нових функцій;
-- покращення UI/UX;
-- оптимізації або рефакторинг.
+### Data Storage
+- **Default**: All data stored in browser's `localStorage`
+- **Your device only**: Data never leaves your device unless you enable sync
+- **No backend**: No servers, no databases, no data collection
 
+### Google Sheets Sync (Optional)
+- **Your Google account**: Data stored in YOUR Google Sheets
+- **We don't see your data**: No access to your information
+- **Encrypted option**: AES-256 encryption with your password
+- **Revocable access**: You can revoke access anytime from Google settings
+
+### Encryption Details
+When encryption is enabled:
+- **Algorithm**: AES-GCM (Galois/Counter Mode)
+- **Key size**: 256 bits
+- **Key derivation**: PBKDF2 with SHA-256
+- **Iterations**: 100,000
+- **Salt**: Random 16-byte salt per encryption
+- **IV**: Random 12-byte initialization vector per encryption
+
+### Best Practices
+1. **Use encryption** if syncing to Google Sheets
+2. **Choose strong password** (min. 6 characters, but longer is better)
+3. **Write down your password** — it's never stored and can't be recovered
+4. **Regular backups**: Export JSON files periodically
+5. **Clear data** when using shared devices
+
+---
+
+## 💡 Use Cases
+
+### 🎁 Gift Planning
+- Check wishlist in "Gifts" category
+- Review clothing sizes
+- See gift history to avoid duplicates
+- Note favorite brands and stores
+
+### ❤️ Date Planning
+- "Preferences" → favorite foods, drinks, activities
+- "Anti-preferences" → allergies, dislikes, triggers
+- "Logistics" → favorite places, peak activity hours
+- "Goals" → ideal cozy evening ideas
+
+### 🧘 Emotional Support
+- "Psych" → anxiety triggers, stress relief methods
+- "Psychology" → conflict style, love language
+- "Communication" → calming words and phrases
+- "Character" → personal boundaries
+
+### 🎂 Special Occasions
+- "Base" → birthday, anniversary dates
+- "Gifts" → wishlist and gift ideas
+- "Goals" → dreams and aspirations
+- "Family" → important people and traditions
+
+### 🗣️ Better Communication
+- "Communication" → preferred topics, communication style
+- "Anti-preferences" → uncomfortable topics
+- "Psychology" → how they like to receive compliments
+- "Character" → humor style
+
+---
+
+## 📚 Documentation
+
+### For Users
+- **README.md** (this file) — Overview and quick start
+- **In-app help** — Tooltips and hints throughout the interface
+- **Welcome modal** — First-time setup guide
+
+### For Developers
+- **[DEVELOPER_GUIDE.md](./DEVELOPER_GUIDE.md)** — Technical documentation
+  - Architecture overview
+  - Code structure
+  - Component details
+  - Extension guide
+  - Best practices
+
+- **[AI_PROMPT.md](./AI_PROMPT.md)** — AI assistant instructions
+  - Project context
+  - Code conventions
+  - Common patterns
+  - Development workflow
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Here's how you can help:
+
+### Reporting Issues
+1. Check if the issue already exists
+2. Create a new issue with:
+   - Clear description
+   - Steps to reproduce
+   - Expected vs actual behavior
+   - Screenshots if applicable
+   - Browser and OS information
+
+### Suggesting Features
+1. Open an issue with `[Feature Request]` prefix
+2. Describe the feature and its benefits
+3. Provide use cases
+4. Consider implementation complexity
+
+### Submitting Pull Requests
 ```bash
-git checkout -b feature/new-feature
-git commit -m "Added: new feature"
-git push origin feature/new-feature
+# Fork the repository
+# Create a feature branch
+git checkout -b feature/amazing-feature
+
+# Make your changes
+# Test thoroughly
+
+# Commit with clear message
+git commit -m "Add: amazing feature description"
+
+# Push to your fork
+git push origin feature/amazing-feature
+
+# Open a Pull Request
 ```
 
----
-
-## 📄 Ліцензія
-
-Цей проєкт — **open-source** і безкоштовний  
-для особистого використання.
-
-> 💌 Зроблено з любов’ю — [apostll3](https://github.com/apostll3)
+### Development Guidelines
+- Follow existing code style
+- Add comments in English
+- Test on mobile and desktop
+- Ensure no breaking changes
+- Update documentation if needed
 
 ---
+
+## 🌟 Roadmap
+
+### Planned Features
+- [ ] Dark mode theme
+- [ ] Export to PDF
+- [ ] Import from other formats
+- [ ] More field types (number, rating, checklist)
+- [ ] Field templates
+- [ ] Reminders and notifications
+- [ ] Photo attachments
+- [ ] Timeline view
+- [ ] Relationship milestones tracker
+
+### Under Consideration
+- [ ] Mobile app (React Native)
+- [ ] Browser extension
+- [ ] Telegram bot integration
+- [ ] Shared dossiers (for couples)
+- [ ] AI-powered suggestions
+
+---
+
+## 📄 License
+
+This project is open-source and available under the **MIT License**.
+
+You are free to:
+- ✅ Use for personal purposes
+- ✅ Modify and adapt
+- ✅ Share with others
+- ✅ Use commercially (with attribution)
+
+See [LICENSE](LICENSE) file for details.
+
+---
+
+## 💌 Author
+
+**Created with love by [apostll3](https://github.com/apostll3)**
+
+### Connect
+- 📧 Telegram: [@apostll3](https://t.me/apostll3)
+- 👥 Community: [@apostlenote](https://t.me/apostlenote)
+- 📷 Instagram: [@apostll3](https://instagram.com/apostll3)
+- 💻 GitHub: [@apostll3](https://github.com/apostll3)
+
+---
+
+## ⭐ Show Your Support
+
+If you find Love Dossier useful, please consider:
+- ⭐ **Starring the repository** on GitHub
+- 🐛 **Reporting bugs** and suggesting features
+- 📢 **Sharing with friends** who might benefit
+- 💝 **Contributing** to the project
+
+---
+
+## 🙏 Acknowledgments
+
+- Font Awesome for beautiful icons
+- Google for Sheets API
+- All contributors and users
+- Everyone who believes in the power of remembering
+
+---
+
+<div align="center">
+
+**Made with 💝 for those who care about the details**
+
+[⬆ Back to Top](#-love-dossier)
+
+</div>
