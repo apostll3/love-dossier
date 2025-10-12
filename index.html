@@ -563,7 +563,7 @@ textarea,
   padding: 1.5rem;
   box-shadow: var(--shadow-lg);
   position: sticky;
-  top: 0.4rem;
+  top: 0rem;
   max-height: calc(100vh - 3rem);
   overflow-y: auto;
   transition: all 0.3s ease;
@@ -7070,6 +7070,11 @@ const TelegramWebApp = {
         // Видаляємо closing якщо він залишився
         this.backdrop.classList.remove('closing');
         
+        // ВАЖЛИВО: Завжди показуємо кнопки при відкритті нової модалки
+        // (на випадок якщо попередня модалка їх приховала, наприклад TestDrive)
+        this.saveBtn.style.display = '';
+        this.cancelBtn.textContent = i18n.t('ui.cancel');
+        
         // Показуємо backdrop без анімації
         this.backdrop.style.display = 'flex';
         
@@ -9163,6 +9168,11 @@ const TelegramWebApp = {
       setTimeout(() => {
         const saveBtn = document.getElementById('modalSave');
         const cancelBtn = document.getElementById('modalCancel');
+        
+        // Зберігаємо оригінальні значення для відновлення
+        const originalSaveDisplay = saveBtn ? saveBtn.style.display : '';
+        const originalCancelText = cancelBtn ? cancelBtn.textContent : '';
+        
         if (saveBtn) saveBtn.style.display = 'none';
         if (cancelBtn) cancelBtn.textContent = 'Закрити';
         
@@ -9170,6 +9180,18 @@ const TelegramWebApp = {
         const btnCopyLogs = document.getElementById('btnCopyLogs');
         if (btnCopyLogs) {
           btnCopyLogs.onclick = () => this.copyLogsToClipboard();
+        }
+        
+        // Відновлюємо оригінальні значення при закритті модалки
+        const modalOverlay = document.querySelector('.modal-overlay');
+        if (modalOverlay) {
+          const originalRemove = modalOverlay.remove.bind(modalOverlay);
+          modalOverlay.remove = function() {
+            // Відновлюємо кнопки перед видаленням модалки
+            if (saveBtn) saveBtn.style.display = originalSaveDisplay;
+            if (cancelBtn) cancelBtn.textContent = originalCancelText;
+            originalRemove();
+          };
         }
       }, 100);
     },
