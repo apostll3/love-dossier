@@ -8565,6 +8565,9 @@ i[class*="fa-"] svg {
         
         nav.appendChild(item);
       });
+      
+      // Оновлюємо іконки після рендерингу
+      refreshIcons();
     },
     
     // Функція для зміни порядку категорій
@@ -8802,6 +8805,9 @@ i[class*="fa-"] svg {
           this.renderContent();
         };
       }
+      
+      // Оновлюємо іконки після рендерингу
+      refreshIcons();
     },
     
     renderField(field, showCategory = false, fieldIndex = 0) {
