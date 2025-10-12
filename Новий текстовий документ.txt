@@ -1,0 +1,1 @@
+openNestedCategoriesEditor index.html:11255  Uncaught SyntaxError: Unexpected identifier 'openNestedCategoriesEditor' (at index.html:11255:5)
