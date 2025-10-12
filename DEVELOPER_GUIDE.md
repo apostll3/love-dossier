@@ -5,7 +5,11 @@
 This document provides a technical overview of the **"Love Dossier"** web application v2.0.  
 It is intended for developers who wish to understand, maintain, or extend the project.
 
-The app is a **single-file HTML + CSS + JavaScript** web application (9245 lines, 338KB) that runs entirely in the browser — no server or database is required.
+The app is a **single-file HTML + CSS + JavaScript** web application that runs entirely in the browser — no server or database is required.
+
+**Files**:
+- `index.html` — Full development version (9372 lines, 342KB) with comments and formatting
+- `clear.html` — Minified production version (254 lines, 213KB) for deployment
 
 ---
 
@@ -14,6 +18,10 @@ The app is a **single-file HTML + CSS + JavaScript** web application (9245 lines
 Він призначений для розробників, які хочуть зрозуміти, підтримувати або розширювати проект.
 
 Додаток є **автономним HTML + CSS + JavaScript** рішенням, що повністю працює у браузері — без серверної частини чи бази даних.
+
+**Файли**:
+- `index.html` — Повна версія для розробки (9372 рядки, 342KB) з коментарями та форматуванням
+- `clear.html` — Мініфікована продакшн версія (254 рядки, 213KB) для деплою
 
 ---
 

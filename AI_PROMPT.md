@@ -9,7 +9,9 @@ You are an elite AI developer assistant working on **"Love Dossier" (Досьє 
 
 ### 🏗️ TECHNICAL ARCHITECTURE
 - **Tech Stack**: Pure HTML + CSS + Vanilla JavaScript (NO frameworks)
-- **File Structure**: Single `index.html` file (9245 lines, 338KB)
+- **File Structure**: 
+  - `index.html` — Development version (9372 lines, 342KB) with comments
+  - `clear.html` — Production minified version (254 lines, 213KB)
 - **Storage**: LocalStorage (primary), Google Sheets sync (optional), File export/import
 - **Security**: AES-GCM 256-bit encryption for cloud sync
 - **Design**: Modern, responsive, mobile-first design with gradient backgrounds
@@ -17,13 +19,14 @@ You are an elite AI developer assistant working on **"Love Dossier" (Досьє 
 - **Version**: 2.0 (BETA status)
 
 ### 📦 KEY FEATURES
-1. **16 Categories**: Base info, preferences, dislikes, psychology, gifts, goals, habits, logistics, health, communication, family, intimate, conflicts, important dates, observations, notes
-2. **Rich Text Formatting**: Markdown-like syntax (`**bold**`, `*italic*`, `~~strike~~`, `[link](url)`) with context menu and hotkeys
-3. **Smart Search & Filters**: Search across all fields, filter by completion/importance
-4. **Progress Tracking**: Visual progress bars for category completion
-5. **Sync Modes**: Local storage, Google Sheets, manual file backup
-6. **Custom UI Components**: Dropdowns, modals, toasts, format menus, custom selects
-7. **Responsive Design**: Fully adaptive for mobile, tablet, desktop
+1. **16 Categories**: Base info, character, preferences, antipreferences, gifts, psychology, psych, logistics, goals, custom, communication, finance, intimacy, family, career, culture
+2. **64+ Default Fields**: Comprehensive field set covering all aspects of relationship knowledge (text, textarea, tags, date, nested types)
+3. **Rich Text Formatting**: Markdown-like syntax (`**bold**`, `*italic*`, `~~strike~~`, `[link](url)`) with context menu and hotkeys
+4. **Smart Search & Filters**: Search across all fields, filter by completion/importance
+5. **Progress Tracking**: Visual progress bars for category completion
+6. **Sync Modes**: Local storage, Google Sheets, manual file backup
+7. **Custom UI Components**: Dropdowns, modals, toasts, format menus, custom selects
+8. **Responsive Design**: Fully adaptive for mobile, tablet, desktop
 
 ---
 
@@ -32,10 +35,10 @@ You are an elite AI developer assistant working on **"Love Dossier" (Досьє 
 ### 📂 Architecture (in single index.html)
 ```
 LINE RANGES (current):
-1-30      → HTML head, meta tags, title, Font Awesome
-30-2450   → <style> section (all CSS)
-2450-2730 → HTML body structure (header, sidebar, content, modals)
-2730-9245 → <script> section (all JavaScript logic)
+1-33      → HTML head, meta tags, title, Font Awesome, Google API
+34-2755   → <style> section (all CSS)
+2756-3028 → HTML body structure (header, sidebar, content, modals, format menu)
+3029-9372 → <script> section (all JavaScript logic)
 ```
 
 ### 🎨 CSS CONVENTIONS
@@ -57,10 +60,10 @@ LINE RANGES (current):
 - **Version**: Data format version 2.0 with migration support
 
 ### 🔧 KEY COMPONENTS TO KNOW
-1. **Custom Select** (`CustomSelect` class) - dropdown UI component
+1. **Custom Select** (`CustomSelect` object) - dropdown UI component with `init()` method
 2. **Language Selector** - special handling for language dropdown positioning
 3. **Modal System** - overlay + modal content pattern
-4. **Toast Notifications** - `showToast(message, type)` function
+4. **Toast Notifications** - `Toast.show(message, type)` or `Toast.t(key, type)` methods
 5. **Format Menu** - contextual formatting toolbar for text inputs
 6. **Search & Filter** - real-time filtering with highlight
 
@@ -177,8 +180,10 @@ document.body.appendChild(modal);
 
 ### Toast Notification Pattern
 ```javascript
-showToast('Успішно збережено!', 'success');
-// Types: 'success', 'error', 'info'
+Toast.show('Успішно збережено!', 'success');
+// Or with translation key:
+Toast.t('messages.saved', 'success');
+// Types: 'success', 'error', 'warning', 'info'
 ```
 
 ### Dropdown Positioning Pattern (Mobile-Safe)
@@ -195,16 +200,11 @@ dropdown.style.left = `${left}px`;
 
 ### Custom Select Usage
 ```javascript
-new CustomSelect(selectElement, {
-  value: currentValue,
-  options: [
-    { value: 'option1', text: 'Опція 1', icon: '🔵' },
-    { value: 'option2', text: 'Опція 2', icon: '🟢' }
-  ],
-  onChange: (value) => {
-    // Handle change
-  }
-});
+CustomSelect.init(selectElement, [
+  { value: 'option1', label: 'Опція 1', icon: 'fa-circle', selected: true },
+  { value: 'option2', label: 'Опція 2', icon: 'fa-square' }
+]);
+// Note: CustomSelect is an object, not a class. Use CustomSelect.init()
 ```
 
 ---
