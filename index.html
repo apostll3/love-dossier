@@ -3106,6 +3106,9 @@ textarea,
           <button class="btn danger" id="btnClear">
             <i class="fas fa-trash-alt"></i> <span data-i18n="ui.clear">Очистити</span>
           </button>
+          <button class="btn" id="btnTestDrive" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+            <i class="fas fa-flask"></i> <span>🧪 Test Drive</span>
+          </button>
         </div>
       </div>
     </div>
@@ -8275,6 +8278,352 @@ const TelegramWebApp = {
         document.body.classList.remove('modal-open');
         setTimeout(() => backdrop.remove(), 300);
       }
+    }
+  };
+
+  // ============= TEST DRIVE =============
+  const TestDrive = {
+    tests: [],
+    currentTest: 0,
+    passed: 0,
+    failed: 0,
+    logContainer: null,
+    
+    async run() {
+      this.tests = [];
+      this.currentTest = 0;
+      this.passed = 0;
+      this.failed = 0;
+      
+      // Показуємо модальне вікно з логом
+      Modal.open(
+        '🧪 Test Drive - Автоматичне тестування',
+        `
+          <div style="font-family: monospace; background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 8px; max-height: 400px; overflow-y: auto;" id="testDriveLog">
+            <div style="color: #4ec9b0;">🚀 Ініціалізація тестів...</div>
+          </div>
+          <div style="margin-top: 1rem; display: flex; gap: 1rem; justify-content: space-between;">
+            <div style="flex: 1; padding: 0.75rem; background: var(--bg-secondary); border-radius: 6px; text-align: center;">
+              <div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.25rem;">Пройдено</div>
+              <div style="font-size: 1.5rem; font-weight: bold; color: var(--success);" id="testPassedCount">0</div>
+            </div>
+            <div style="flex: 1; padding: 0.75rem; background: var(--bg-secondary); border-radius: 6px; text-align: center;">
+              <div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.25rem;">Провалено</div>
+              <div style="font-size: 1.5rem; font-weight: bold; color: var(--error);" id="testFailedCount">0</div>
+            </div>
+            <div style="flex: 1; padding: 0.75rem; background: var(--bg-secondary); border-radius: 6px; text-align: center;">
+              <div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.25rem;">Всього</div>
+              <div style="font-size: 1.5rem; font-weight: bold; color: var(--primary);" id="testTotalCount">0</div>
+            </div>
+          </div>
+        `,
+        {
+          icon: 'fa-flask',
+          size: 'large',
+          onSave: () => {
+            return true;
+          },
+          onOpen: () => {
+            this.logContainer = document.getElementById('testDriveLog');
+            setTimeout(() => this.runTests(), 500);
+          }
+        }
+      );
+      
+      // Ховаємо кнопку Save, показуємо тільки Cancel
+      setTimeout(() => {
+        const saveBtn = document.getElementById('modalSave');
+        const cancelBtn = document.getElementById('modalCancel');
+        if (saveBtn) saveBtn.style.display = 'none';
+        if (cancelBtn) cancelBtn.textContent = 'Закрити';
+      }, 100);
+    },
+    
+    async runTests() {
+      this.log('🎯 Початок тестування функціоналу...', 'info');
+      
+      // Реєструємо всі тести
+      this.registerTests();
+      
+      document.getElementById('testTotalCount').textContent = this.tests.length;
+      
+      // Запускаємо тести послідовно
+      for (let i = 0; i < this.tests.length; i++) {
+        this.currentTest = i + 1;
+        const test = this.tests[i];
+        
+        this.log(`\n📋 Тест ${this.currentTest}/${this.tests.length}: ${test.name}`, 'test');
+        
+        try {
+          await test.fn();
+          this.passed++;
+          this.log(`✅ PASS: ${test.name}`, 'success');
+          document.getElementById('testPassedCount').textContent = this.passed;
+        } catch (error) {
+          this.failed++;
+          this.log(`❌ FAIL: ${test.name}`, 'error');
+          this.log(`   Помилка: ${error.message}`, 'error');
+          document.getElementById('testFailedCount').textContent = this.failed;
+        }
+        
+        // Невелика затримка між тестами для візуалізації
+        await this.delay(300);
+      }
+      
+      // Фінальний звіт
+      this.log('\n' + '='.repeat(50), 'info');
+      this.log(`🏁 Тестування завершено!`, 'info');
+      this.log(`✅ Пройдено: ${this.passed}`, 'success');
+      this.log(`❌ Провалено: ${this.failed}`, 'error');
+      this.log(`📊 Всього: ${this.tests.length}`, 'info');
+      this.log(`📈 Успішність: ${Math.round((this.passed / this.tests.length) * 100)}%`, 'info');
+      
+      if (this.failed === 0) {
+        this.log('\n🎉 Всі тести пройдено успішно!', 'success');
+      } else {
+        this.log(`\n⚠️ Є проблеми, потрібна увага!`, 'warning');
+      }
+    },
+    
+    registerTests() {
+      // Тест 1: Перевірка State
+      this.tests.push({
+        name: 'State ініціалізація',
+        fn: async () => {
+          this.assert(State !== undefined, 'State має існувати');
+          this.assert(State.config !== undefined, 'State.config має існувати');
+          this.assert(State.values !== undefined, 'State.values має існувати');
+          this.assert(Array.isArray(State.config.categories), 'categories має бути масивом');
+          this.assert(Array.isArray(State.config.fields), 'fields має бути масивом');
+        }
+      });
+      
+      // Тест 2: Перевірка Storage
+      this.tests.push({
+        name: 'Storage функціонал',
+        fn: async () => {
+          this.assert(typeof Storage.save === 'function', 'Storage.save має бути функцією');
+          this.assert(typeof Storage.load === 'function', 'Storage.load має бути функцією');
+          
+          // Тестуємо збереження
+          const testData = {test: 'value'};
+          State.testData = testData;
+          await Storage.save();
+          this.log('   💾 Дані збережено', 'info');
+          
+          delete State.testData;
+        }
+      });
+      
+      // Тест 3: Перевірка i18n
+      this.tests.push({
+        name: 'i18n система перекладів',
+        fn: async () => {
+          this.assert(typeof i18n.t === 'function', 'i18n.t має бути функцією');
+          this.assert(typeof i18n.setLanguage === 'function', 'i18n.setLanguage має бути функцією');
+          
+          const translation = i18n.t('ui.save');
+          this.assert(translation !== 'ui.save', 'Переклад має працювати');
+          this.log(`   🌐 Переклад "ui.save": "${translation}"`, 'info');
+        }
+      });
+      
+      // Тест 4: Перевірка Modal
+      this.tests.push({
+        name: 'Modal система',
+        fn: async () => {
+          this.assert(typeof Modal.open === 'function', 'Modal.open має бути функцією');
+          this.assert(typeof Modal.close === 'function', 'Modal.close має бути функцією');
+          this.assert(typeof Modal.confirm === 'function', 'Modal.confirm має бути функцією');
+          this.assert(typeof Modal.prompt === 'function', 'Modal.prompt має бути функцією');
+        }
+      });
+      
+      // Тест 5: Перевірка Toast
+      this.tests.push({
+        name: 'Toast повідомлення',
+        fn: async () => {
+          this.assert(typeof Toast.show === 'function', 'Toast.show має бути функцією');
+          this.assert(typeof Toast.t === 'function', 'Toast.t має бути функцією');
+          
+          // Показуємо тестове повідомлення
+          Toast.show('🧪 Test Drive тест', 'info');
+          this.log('   📢 Toast показано', 'info');
+        }
+      });
+      
+      // Тест 6: Перевірка Renderer
+      this.tests.push({
+        name: 'Renderer рендеринг',
+        fn: async () => {
+          this.assert(typeof Renderer.renderCategories === 'function', 'Renderer.renderCategories має бути функцією');
+          this.assert(typeof Renderer.renderContent === 'function', 'Renderer.renderContent має бути функцією');
+          
+          // Перевіряємо чи категорії рендеряться
+          const categoryNav = document.getElementById('categoryNav');
+          this.assert(categoryNav !== null, 'categoryNav має існувати');
+        }
+      });
+      
+      // Тест 7: Перевірка Progress
+      this.tests.push({
+        name: 'Progress bar',
+        fn: async () => {
+          this.assert(typeof Progress.update === 'function', 'Progress.update має бути функцією');
+          this.assert(typeof Progress.calculate === 'function', 'Progress.calculate має бути функцією');
+          
+          const progressBar = document.getElementById('progressBarFill');
+          this.assert(progressBar !== null, 'Progress bar має існувати');
+        }
+      });
+      
+      // Тест 8: Перевірка generateId
+      this.tests.push({
+        name: 'generateId автогенерація',
+        fn: async () => {
+          this.assert(typeof generateId === 'function', 'generateId має бути функцією');
+          
+          const id1 = generateId('Тестова категорія', [], 'cat');
+          this.assert(id1 === 'cat_testova_katehoriya', `ID має бути "cat_testova_katehoriya", отримано "${id1}"`);
+          this.log(`   🔑 Згенеровано ID: "${id1}"`, 'info');
+          
+          const id2 = generateId('Test Field', [], 'field');
+          this.assert(id2 === 'field_test_field', `ID має бути "field_test_field", отримано "${id2}"`);
+          this.log(`   🔑 Згенеровано ID: "${id2}"`, 'info');
+        }
+      });
+      
+      // Тест 9: Перевірка Sanitizer
+      this.tests.push({
+        name: 'Sanitizer безпека',
+        fn: async () => {
+          this.assert(typeof Sanitizer.escapeHtml === 'function', 'Sanitizer.escapeHtml має бути функцією');
+          this.assert(typeof Sanitizer.sanitize === 'function', 'Sanitizer.sanitize має бути функцією');
+          
+          const dangerous = `<script>alert("xss")</script>`;
+          const safe = Sanitizer.sanitize(dangerous);
+          this.assert(!safe.includes('<script>'), 'Небезпечний код має бути видалено');
+          this.log('   🛡️ XSS захист працює', 'info');
+        }
+      });
+      
+      // Тест 10: Перевірка FormatMenu
+      this.tests.push({
+        name: 'FormatMenu форматування',
+        fn: async () => {
+          this.assert(typeof FormatMenu.init === 'function', 'FormatMenu.init має бути функцією');
+          this.assert(typeof FormatMenu.applyFormat === 'function', 'FormatMenu.applyFormat має бути функцією');
+          
+          const formatMenu = document.getElementById('formatMenu');
+          this.assert(formatMenu !== null, 'Format menu має існувати');
+        }
+      });
+      
+      // Тест 11: Перевірка CustomSelect
+      this.tests.push({
+        name: 'CustomSelect компонент',
+        fn: async () => {
+          this.assert(typeof CustomSelect.init === 'function', 'CustomSelect.init має бути функцією');
+          this.assert(typeof CustomSelect.destroy === 'function', 'CustomSelect.destroy має бути функцією');
+        }
+      });
+      
+      // Тест 12: Перевірка SyncManager
+      this.tests.push({
+        name: 'SyncManager синхронізація',
+        fn: async () => {
+          this.assert(typeof SyncManager.init === 'function', 'SyncManager.init має бути функцією');
+          this.assert(typeof SyncManager.markDirty === 'function', 'SyncManager.markDirty має бути функцією');
+          this.assert(State.sync !== undefined, 'State.sync має існувати');
+        }
+      });
+      
+      // Тест 13: Створення тестової категорії
+      this.tests.push({
+        name: 'Створення категорії',
+        fn: async () => {
+          const initialCount = State.config.categories.length;
+          
+          State.config.categories.push({
+            id: 'test_category',
+            label: 'Test Category',
+            icon: 'fa-test'
+          });
+          
+          this.assert(State.config.categories.length === initialCount + 1, 'Категорія має бути додана');
+          this.log('   📁 Категорія створена', 'info');
+          
+          // Видаляємо тестову категорію
+          State.config.categories = State.config.categories.filter(c => c.id !== 'test_category');
+        }
+      });
+      
+      // Тест 14: Створення тестового поля
+      this.tests.push({
+        name: 'Створення поля',
+        fn: async () => {
+          const initialCount = State.config.fields.length;
+          
+          State.config.fields.push({
+            id: 'test_field',
+            label: 'Test Field',
+            type: 'text',
+            category: State.config.categories[0]?.id || 'base',
+            importance: 'medium'
+          });
+          
+          this.assert(State.config.fields.length === initialCount + 1, 'Поле має бути додано');
+          this.log('   📝 Поле створене', 'info');
+          
+          // Видаляємо тестове поле
+          State.config.fields = State.config.fields.filter(f => f.id !== 'test_field');
+        }
+      });
+      
+      // Тест 15: Збереження та завантаження значень
+      this.tests.push({
+        name: 'Збереження значень',
+        fn: async () => {
+          State.values['test_field_value'] = 'Test Value 123';
+          await Storage.save();
+          
+          this.assert(State.values['test_field_value'] === 'Test Value 123', 'Значення має зберігатися');
+          this.log('   💾 Значення збережено', 'info');
+          
+          delete State.values['test_field_value'];
+        }
+      });
+    },
+    
+    assert(condition, message) {
+      if (!condition) {
+        throw new Error(message);
+      }
+    },
+    
+    log(message, type = 'info') {
+      if (!this.logContainer) return;
+      
+      const colors = {
+        info: '#4ec9b0',
+        success: '#4ec9b0',
+        error: '#f48771',
+        warning: '#dcdcaa',
+        test: '#569cd6'
+      };
+      
+      const color = colors[type] || colors.info;
+      
+      const line = document.createElement('div');
+      line.style.color = color;
+      line.textContent = message;
+      
+      this.logContainer.appendChild(line);
+      this.logContainer.scrollTop = this.logContainer.scrollHeight;
+    },
+    
+    delay(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
     }
   };
 
