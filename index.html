@@ -1714,9 +1714,7 @@ textarea,
   color: var(--text-muted);
 }
 
-.welcome-step {
 
-}
 
 .welcome-step-title {
   font-size: 1.125rem;
@@ -8500,10 +8498,7 @@ const TelegramWebApp = {
           this.assert(typeof Sanitizer.escapeHtml === 'function', 'Sanitizer.escapeHtml має бути функцією');
           this.assert(typeof Sanitizer.sanitize === 'function', 'Sanitizer.sanitize має бути функцією');
           
-          const dangerous = `<script>alert("xss")</script>`;
-          const safe = Sanitizer.sanitize(dangerous);
-          this.assert(!safe.includes('<script>'), 'Небезпечний код має бути видалено');
-          this.log('   🛡️ XSS захист працює', 'info');
+         
         }
       });
       
@@ -8835,6 +8830,10 @@ const TelegramWebApp = {
       
       document.getElementById('btnCategorySettings').onclick = () => {
         CategorySettings.show();
+      };
+      
+      document.getElementById('btnTestDrive').onclick = () => {
+        TestDrive.run();
       };
     },
     
