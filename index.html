@@ -4287,9 +4287,12 @@ i[class*="fa-"] svg {
   
   // Функція для заміни Font Awesome іконок на SVG
   function replaceIconsWithSVG(container = document.body) {
-    const iconElements = container.querySelectorAll('i[class*="fa-"], i[class*="fas "], i[class*="fab "]');
+    const iconElements = container.querySelectorAll('i[class*="fa"]');
     
     iconElements.forEach(icon => {
+      // Пропускаємо іконки що вже мають SVG
+      if (icon.querySelector('svg')) return;
+      
       // Знаходимо клас з іконкою
       const classes = Array.from(icon.classList);
       const iconClass = classes.find(cls => cls.startsWith('fa-'));
@@ -4301,9 +4304,9 @@ i[class*="fa-"] svg {
         // Замінюємо вміст
         icon.innerHTML = svgContent;
         
-        // Зберігаємо інші класи, але видаляємо fas/fab
+        // Зберігаємо інші класи, але видаляємо fas/fab/far
         icon.className = classes
-          .filter(cls => !cls.startsWith('fas') && !cls.startsWith('fab'))
+          .filter(cls => !cls.startsWith('fas') && !cls.startsWith('fab') && !cls.startsWith('far'))
           .join(' ');
       }
     });
