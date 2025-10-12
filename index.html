@@ -8297,8 +8297,16 @@ const TelegramWebApp = {
       Modal.open(
         '🧪 Test Drive - Автоматичне тестування',
         `
-          <div style="font-family: monospace; background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 8px; max-height: 400px; overflow-y: auto;" id="testDriveLog">
-            <div style="color: #4ec9b0;">🚀 Ініціалізація тестів...</div>
+          <div style="position: relative;">
+            <button 
+              id="btnCopyLogs" 
+              style="position: absolute; top: 0; right: 0; padding: 0.5rem 1rem; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.875rem; display: flex; align-items: center; gap: 0.5rem; z-index: 10;"
+              title="Копіювати логи">
+              <i class="fas fa-copy"></i> Копіювати логи
+            </button>
+            <div style="font-family: monospace; background: #1e1e1e; color: #d4d4d4; padding: 1rem; padding-top: 3rem; border-radius: 8px; max-height: 400px; overflow-y: auto;" id="testDriveLog">
+              <div style="color: #4ec9b0;">🚀 Ініціалізація тестів...</div>
+            </div>
           </div>
           <div style="margin-top: 1rem; display: flex; gap: 1rem; justify-content: space-between;">
             <div style="flex: 1; padding: 0.75rem; background: var(--bg-secondary); border-radius: 6px; text-align: center;">
@@ -8334,7 +8342,40 @@ const TelegramWebApp = {
         const cancelBtn = document.getElementById('modalCancel');
         if (saveBtn) saveBtn.style.display = 'none';
         if (cancelBtn) cancelBtn.textContent = 'Закрити';
+        
+        // Додаємо обробник для кнопки копіювання логів
+        const btnCopyLogs = document.getElementById('btnCopyLogs');
+        if (btnCopyLogs) {
+          btnCopyLogs.onclick = () => this.copyLogsToClipboard();
+        }
       }, 100);
+    },
+    
+    copyLogsToClipboard() {
+      const logContainer = document.getElementById('testDriveLog');
+      if (!logContainer) return;
+      
+      // Отримуємо текст з усіх логів
+      const logText = logContainer.innerText;
+      
+      // Копіюємо в буфер обміну
+      navigator.clipboard.writeText(logText).then(() => {
+        const btn = document.getElementById('btnCopyLogs');
+        if (btn) {
+          const originalHTML = btn.innerHTML;
+          btn.innerHTML = '<i class="fas fa-check"></i> Скопійовано!';
+          btn.style.background = 'var(--success)';
+          
+          setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            btn.style.background = 'var(--primary)';
+          }, 2000);
+        }
+        Toast.show('📋 Логи скопійовано в буфер обміну', 'success');
+      }).catch(err => {
+        console.error('Помилка копіювання:', err);
+        Toast.show('❌ Помилка копіювання логів', 'error');
+      });
     },
     
     async runTests() {
@@ -8479,8 +8520,15 @@ const TelegramWebApp = {
       this.tests.push({
         name: 'generateId автогенерація',
         fn: async () => {
-          const formatMenu = document.getElementById('formatMenu');
-          this.assert(formatMenu !== null, 'Format menu має існувати');
+          this.assert(typeof generateId === 'function', 'generateId має бути функцією');
+          
+          const id1 = generateId('Тестова категорія', [], 'cat');
+          this.assert(id1 === 'cat_testova_katehoriya', `ID має бути "cat_testova_katehoriya", отримано "${id1}"`);
+          this.log(`   🔑 Згенеровано ID: "${id1}"`, 'info');
+          
+          const id2 = generateId('Test Field', [], 'field');
+          this.assert(id2 === 'field_test_field', `ID має бути "field_test_field", отримано "${id2}"`);
+          this.log(`   🔑 Згенеровано ID: "${id2}"`, 'info');
         }
       });
 
@@ -8557,6 +8605,336 @@ const TelegramWebApp = {
           this.log('   💾 Значення збережено', 'info');
           
           delete State.values['test_field_value'];
+        }
+      });
+      
+      // Тест 16: Перевірка Search
+      this.tests.push({
+        name: 'Search пошук',
+        fn: async () => {
+          this.assert(typeof Search.init === 'function', 'Search.init має бути функцією');
+          this.assert(typeof Search.performSearch === 'function', 'Search.performSearch має бути функцією');
+          this.log('   🔍 Пошук ініціалізовано', 'info');
+        }
+      });
+      
+      // Тест 17: Перевірка Sanitizer
+      this.tests.push({
+        name: 'Sanitizer безпека',
+        fn: async () => {
+          this.assert(typeof Sanitizer.escapeHtml === 'function', 'Sanitizer.escapeHtml має бути функцією');
+          this.assert(typeof Sanitizer.sanitize === 'function', 'Sanitizer.sanitize має бути функцією');
+          
+          const html = '<p>Test</p>';
+          const escaped = Sanitizer.escapeHtml(html);
+          this.assert(escaped.includes('&lt;'), 'HTML має бути екранований');
+          this.log('   🛡️ HTML екранування працює', 'info');
+        }
+      });
+      
+      // Тест 18: Перевірка FormatMenu
+      this.tests.push({
+        name: 'FormatMenu форматування',
+        fn: async () => {
+          this.assert(typeof FormatMenu.init === 'function', 'FormatMenu.init має бути функцією');
+          this.assert(typeof FormatMenu.applyFormat === 'function', 'FormatMenu.applyFormat має бути функцією');
+          
+          const formatMenu = document.getElementById('formatMenu');
+          this.assert(formatMenu !== null, 'Format menu має існувати');
+          this.log('   ✏️ Форматування доступне', 'info');
+        }
+      });
+      
+      // Тест 19: Перевірка Progress розрахунків
+      this.tests.push({
+        name: 'Progress розрахунки',
+        fn: async () => {
+          const categoryId = State.config.categories[0]?.id;
+          if (categoryId) {
+            const progress = Progress.calculateProgress(categoryId);
+            this.assert(typeof progress === 'object', 'Progress має повертати об\'єкт');
+            this.assert(progress.hasOwnProperty('percentage'), 'Progress має містити percentage');
+            this.log(`   📊 Прогрес розраховано: ${progress.percentage}%`, 'info');
+          }
+        }
+      });
+      
+      // Тест 20: Перевірка Debug режиму
+      this.tests.push({
+        name: 'Debug система',
+        fn: async () => {
+          this.assert(typeof Debug === 'object', 'Debug має існувати');
+          this.assert(typeof Debug.log === 'function', 'Debug.log має бути функцією');
+          this.log('   🐛 Debug режим доступний', 'info');
+        }
+      });
+      
+      // Тест 21: Перевірка TelegramWebApp
+      this.tests.push({
+        name: 'Telegram WebApp',
+        fn: async () => {
+          this.assert(typeof TelegramWebApp === 'object', 'TelegramWebApp має існувати');
+          this.assert(typeof TelegramWebApp.init === 'function', 'TelegramWebApp.init має бути функцією');
+          this.log('   📱 Telegram інтеграція готова', 'info');
+        }
+      });
+      
+      // Тест 22: Перевірка WelcomeModal
+      this.tests.push({
+        name: 'Welcome Modal',
+        fn: async () => {
+          this.assert(typeof WelcomeModal === 'object', 'WelcomeModal має існувати');
+          this.assert(typeof WelcomeModal.show === 'function', 'WelcomeModal.show має бути функцією');
+          this.log('   👋 Вітальне вікно готове', 'info');
+        }
+      });
+      
+      // Тест 23: Перевірка CategorySettings
+      this.tests.push({
+        name: 'Category Settings',
+        fn: async () => {
+          this.assert(typeof CategorySettings === 'object', 'CategorySettings має існувати');
+          this.assert(typeof CategorySettings.show === 'function', 'CategorySettings.show має бути функцією');
+          this.log('   ⚙️ Налаштування категорій готові', 'info');
+        }
+      });
+      
+      // Тест 24: Перевірка видалення поля
+      this.tests.push({
+        name: 'Видалення поля',
+        fn: async () => {
+          // Створюємо тестове поле
+          State.config.fields.push({
+            id: 'test_delete_field',
+            label: 'Test Delete',
+            type: 'text',
+            category: State.config.categories[0]?.id || 'base',
+            importance: 'low'
+          });
+          
+          const initialCount = State.config.fields.length;
+          
+          // Видаляємо поле
+          State.config.fields = State.config.fields.filter(f => f.id !== 'test_delete_field');
+          
+          this.assert(State.config.fields.length === initialCount - 1, 'Поле має бути видалено');
+          this.log('   🗑️ Поле успішно видалено', 'info');
+        }
+      });
+      
+      // Тест 25: Перевірка фільтрації полів
+      this.tests.push({
+        name: 'Фільтрація полів',
+        fn: async () => {
+          const categoryId = State.config.categories[0]?.id;
+          if (categoryId) {
+            const fields = State.config.fields.filter(f => f.category === categoryId);
+            this.assert(Array.isArray(fields), 'Результат фільтрації має бути масивом');
+            this.log(`   🔎 Знайдено полів: ${fields.length}`, 'info');
+          }
+        }
+      });
+      
+      // Тест 26: Перевірка DefaultConfig
+      this.tests.push({
+        name: 'DefaultConfig структура',
+        fn: async () => {
+          this.assert(typeof DefaultConfig === 'object', 'DefaultConfig має існувати');
+          this.assert(Array.isArray(DefaultConfig.categories), 'DefaultConfig.categories має бути масивом');
+          this.assert(Array.isArray(DefaultConfig.fields), 'DefaultConfig.fields має бути масивом');
+          this.log(`   📦 Дефолтних категорій: ${DefaultConfig.categories.length}`, 'info');
+          this.log(`   📦 Дефолтних полів: ${DefaultConfig.fields.length}`, 'info');
+        }
+      });
+      
+      // Тест 27: Перевірка перекладів для різних мов
+      this.tests.push({
+        name: 'Мультимовність',
+        fn: async () => {
+          const currentLang = i18n.currentLanguage;
+          
+          // Перевіряємо українську
+          i18n.setLanguage('uk');
+          const ukTranslation = i18n.t('ui.save');
+          this.assert(ukTranslation === 'Зберегти', 'Український переклад має працювати');
+          
+          // Перевіряємо англійську
+          i18n.setLanguage('en');
+          const enTranslation = i18n.t('ui.save');
+          this.assert(enTranslation === 'Save', 'Англійський переклад має працювати');
+          
+          // Повертаємо попередню мову
+          i18n.setLanguage(currentLang);
+          
+          this.log('   🌍 Мультимовність працює', 'info');
+        }
+      });
+      
+      // Тест 28: Перевірка валідації полів
+      this.tests.push({
+        name: 'Валідація полів',
+        fn: async () => {
+          const requiredField = State.config.fields.find(f => f.required);
+          if (requiredField) {
+            this.assert(requiredField.required === true, 'Обов\'язкове поле має мати required: true');
+            this.log('   ✓ Знайдено обов\'язкове поле', 'info');
+          }
+        }
+      });
+      
+      // Тест 29: Перевірка типів полів
+      this.tests.push({
+        name: 'Типи полів',
+        fn: async () => {
+          const fieldTypes = ['text', 'textarea', 'date', 'tags', 'nested'];
+          const foundTypes = new Set(State.config.fields.map(f => f.type));
+          
+          this.assert(foundTypes.size > 0, 'Має бути хоча б один тип поля');
+          this.log(`   📝 Знайдено типів полів: ${foundTypes.size}`, 'info');
+          
+          foundTypes.forEach(type => {
+            this.assert(fieldTypes.includes(type), `Тип "${type}" має бути валідним`);
+          });
+        }
+      });
+      
+      // Тест 30: Перевірка важливості полів
+      this.tests.push({
+        name: 'Важливість полів',
+        fn: async () => {
+          const importanceLevels = ['high', 'medium', 'low'];
+          const fields = State.config.fields;
+          
+          fields.forEach(field => {
+            this.assert(importanceLevels.includes(field.importance), 
+              `Важливість поля "${field.label}" має бути валідною`);
+          });
+          
+          const highFields = fields.filter(f => f.importance === 'high').length;
+          this.log(`   ⭐ Полів з високою важливістю: ${highFields}`, 'info');
+        }
+      });
+      
+      // Тест 31: Перевірка Progress.isFieldFilled
+      this.tests.push({
+        name: 'Progress перевірка заповнення',
+        fn: async () => {
+          this.assert(typeof Progress.isFieldFilled === 'function', 'Progress.isFieldFilled має бути функцією');
+          
+          // Створюємо тестове поле та значення
+          const testFieldId = 'test_progress_field';
+          State.config.fields.push({
+            id: testFieldId,
+            label: 'Test Progress',
+            type: 'text',
+            category: State.config.categories[0]?.id || 'base',
+            importance: 'low'
+          });
+          
+          State.values[testFieldId] = 'Test Value';
+          const isFilled = Progress.isFieldFilled(testFieldId);
+          this.assert(isFilled === true, 'Заповнене поле має повертати true');
+          
+          // Очищаємо
+          delete State.values[testFieldId];
+          State.config.fields = State.config.fields.filter(f => f.id !== testFieldId);
+          
+          this.log('   ✓ Перевірка заповнення працює', 'info');
+        }
+      });
+      
+      // Тест 32: Перевірка Storage.clear
+      this.tests.push({
+        name: 'Storage очищення',
+        fn: async () => {
+          this.assert(typeof Storage.clear === 'function', 'Storage.clear має бути функцією');
+          this.log('   🗑️ Функція очищення доступна', 'info');
+        }
+      });
+      
+      // Тест 33: Перевірка Modal.stack (вкладені модалки)
+      this.tests.push({
+        name: 'Modal stack',
+        fn: async () => {
+          this.assert(Array.isArray(Modal.modalStack), 'Modal.modalStack має бути масивом');
+          this.log(`   📚 Стек модалок: ${Modal.modalStack.length}`, 'info');
+        }
+      });
+      
+      // Тест 34: Перевірка Renderer.renderField
+      this.tests.push({
+        name: 'Renderer поля',
+        fn: async () => {
+          this.assert(typeof Renderer.renderField === 'function', 'Renderer.renderField має бути функцією');
+          this.log('   🎨 Рендеринг полів доступний', 'info');
+        }
+      });
+      
+      // Тест 35: Перевірка унікальності ID категорій
+      this.tests.push({
+        name: 'Унікальність ID категорій',
+        fn: async () => {
+          const categoryIds = State.config.categories.map(c => c.id);
+          const uniqueIds = new Set(categoryIds);
+          
+          this.assert(categoryIds.length === uniqueIds.size, 'ID категорій мають бути унікальними');
+          this.log('   ✓ Всі ID категорій унікальні', 'info');
+        }
+      });
+      
+      // Тест 36: Перевірка унікальності ID полів
+      this.tests.push({
+        name: 'Унікальність ID полів',
+        fn: async () => {
+          const fieldIds = State.config.fields.map(f => f.id);
+          const uniqueIds = new Set(fieldIds);
+          
+          this.assert(fieldIds.length === uniqueIds.size, 'ID полів мають бути унікальними');
+          this.log('   ✓ Всі ID полів унікальні', 'info');
+        }
+      });
+      
+      // Тест 37: Перевірка наявності іконок у категорій
+      this.tests.push({
+        name: 'Іконки категорій',
+        fn: async () => {
+          State.config.categories.forEach(cat => {
+            this.assert(cat.icon && cat.icon.startsWith('fa-'), 
+              `Категорія "${cat.label}" має мати валідну іконку`);
+          });
+          this.log('   🎨 Всі категорії мають іконки', 'info');
+        }
+      });
+      
+      // Тест 38: Перевірка SyncManager.hasUnsyncedChanges
+      this.tests.push({
+        name: 'SyncManager незбережені зміни',
+        fn: async () => {
+          this.assert(typeof SyncManager.hasUnsyncedChanges === 'boolean', 
+            'SyncManager.hasUnsyncedChanges має бути boolean');
+          this.log(`   💾 Незбережені зміни: ${SyncManager.hasUnsyncedChanges}`, 'info');
+        }
+      });
+      
+      // Тест 39: Перевірка App.init
+      this.tests.push({
+        name: 'App ініціалізація',
+        fn: async () => {
+          this.assert(typeof App === 'object', 'App має існувати');
+          this.assert(typeof App.init === 'function', 'App.init має бути функцією');
+          this.assert(typeof App.bindEvents === 'function', 'App.bindEvents має бути функцією');
+          this.log('   🚀 App модуль готовий', 'info');
+        }
+      });
+      
+      // Тест 40: Перевірка TestDrive (мета-тест!)
+      this.tests.push({
+        name: 'TestDrive система',
+        fn: async () => {
+          this.assert(typeof TestDrive === 'object', 'TestDrive має існувати');
+          this.assert(typeof TestDrive.run === 'function', 'TestDrive.run має бути функцією');
+          this.assert(typeof TestDrive.copyLogsToClipboard === 'function', 'TestDrive.copyLogsToClipboard має бути функцією');
+          this.log('   🧪 TestDrive працює рекурсивно!', 'info');
         }
       });
     },
