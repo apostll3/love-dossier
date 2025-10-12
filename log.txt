@@ -1,4 +1,0 @@
-const dangerous = '<script>alert("xss")</script>'; // Використовуються ASCII лапки '
-const safe = Sanitizer.sanitize(dangerous);
-this.assert(!safe.includes('<script>'), 'Небезпечний код має бути видалено');
-this.log('   🛡️ XSS захист працює', 'info');
