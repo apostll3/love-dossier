@@ -3739,7 +3739,7 @@ textarea,
           <a href="https://t.me/apostll3" target="_blank" rel="noopener noreferrer" class="footer-social-link" title="Telegram">
             <i class="fab fa-telegram"></i>
           </a>
-          <a href="https://t.me/lovedossier" target="_blank" rel="noopener noreferrer" class="footer-social-link" title="Telegram Group">
+          <a href="https://t.me/apostlenote" target="_blank" rel="noopener noreferrer" class="footer-social-link" title="Telegram Group">
             <i class="fas fa-users"></i>
           </a>
           <a href="https://instagram.com/apostll3" target="_blank" rel="noopener noreferrer" class="footer-social-link" title="Instagram">
@@ -4159,7 +4159,16 @@ textarea,
         errorNotAuthorizedGoogle: 'Не авторизовано в Google',
         errorGoogleApiNotLoaded: 'Google API не завантажено',
         errorGoogleIdentityNotLoaded: 'Google Identity Services не завантажено',
-        errorTokenClientNotInitialized: 'Token client не ініціалізовано'
+        errorTokenClientNotInitialized: 'Token client не ініціалізовано',
+        storageQuotaExceeded: 'Сховище переповнене! Видаліть старі дані або експортуйте в Google Sheets',
+        syncRateLimit: 'Зачекайте {seconds} сек перед наступною синхронізацією',
+        reorderFieldsModeOn: 'Режим зміни порядку полів активовано',
+        reorderFieldsModeOnMobile: 'Режим зміни порядку активовано. Утримуйте поле для переміщення',
+        reorderFieldsModeOnDesktop: 'Режим зміни порядку полів активовано. Перетягуйте поля',
+        reorderFieldsModeOff: 'Режим зміни порядку полів вимкнено',
+        reorderCategoriesModeOnMobile: 'Режим зміни порядку активовано. Утримуйте категорію для переміщення',
+        reorderCategoriesModeOnDesktop: 'Режим зміни порядку активовано. Перетягуйте категорії',
+        reorderCategoriesModeOff: 'Режим зміни порядку вимкнено'
       },
       modal: {
         confirmAction: 'Підтвердження',
@@ -4552,7 +4561,16 @@ textarea,
         errorNotAuthorizedGoogle: 'Not authorized with Google',
         errorGoogleApiNotLoaded: 'Google API not loaded',
         errorGoogleIdentityNotLoaded: 'Google Identity Services not loaded',
-        errorTokenClientNotInitialized: 'Token client not initialized'
+        errorTokenClientNotInitialized: 'Token client not initialized',
+        storageQuotaExceeded: 'Storage quota exceeded! Delete old data or export to Google Sheets',
+        syncRateLimit: 'Wait {seconds} sec before next sync',
+        reorderFieldsModeOn: 'Field reorder mode activated',
+        reorderFieldsModeOnMobile: 'Reorder mode activated. Hold field to move',
+        reorderFieldsModeOnDesktop: 'Field reorder mode activated. Drag fields',
+        reorderFieldsModeOff: 'Field reorder mode disabled',
+        reorderCategoriesModeOnMobile: 'Reorder mode activated. Hold category to move',
+        reorderCategoriesModeOnDesktop: 'Reorder mode activated. Drag categories',
+        reorderCategoriesModeOff: 'Reorder mode disabled'
       },
       modal: {
         confirmAction: 'Confirmation',
@@ -4945,7 +4963,16 @@ textarea,
         errorNotAuthorizedGoogle: 'Не авторизовано в Google',
         errorGoogleApiNotLoaded: 'Google API не загружен',
         errorGoogleIdentityNotLoaded: 'Google Identity Services не загружен',
-        errorTokenClientNotInitialized: 'Token client не инициализирован'
+        errorTokenClientNotInitialized: 'Token client не инициализирован',
+        storageQuotaExceeded: 'Хранилище переполнено! Удалите старые данные или экспортируйте в Google Sheets',
+        syncRateLimit: 'Подождите {seconds} сек перед следующей синхронизацией',
+        reorderFieldsModeOn: 'Режим изменения порядка полей активирован',
+        reorderFieldsModeOnMobile: 'Режим изменения порядка активирован. Удерживайте поле для перемещения',
+        reorderFieldsModeOnDesktop: 'Режим изменения порядка полей активирован. Перетаскивайте поля',
+        reorderFieldsModeOff: 'Режим изменения порядка полей отключен',
+        reorderCategoriesModeOnMobile: 'Режим изменения порядка активирован. Удерживайте категорию для перемещения',
+        reorderCategoriesModeOnDesktop: 'Режим изменения порядка активирован. Перетаскивайте категории',
+        reorderCategoriesModeOff: 'Режим изменения порядка отключен'
       },
       modal: {
         confirmAction: 'Подтверждение',
@@ -5338,7 +5365,16 @@ textarea,
         errorNotAuthorizedGoogle: 'Nie autoryzowano w Google',
         errorGoogleApiNotLoaded: 'Google API nie załadowano',
         errorGoogleIdentityNotLoaded: 'Google Identity Services nie załadowano',
-        errorTokenClientNotInitialized: 'Token client nie zainicjalizowano'
+        errorTokenClientNotInitialized: 'Token client nie zainicjalizowano',
+        storageQuotaExceeded: 'Pamięć przepełniona! Usuń stare dane lub wyeksportuj do Google Sheets',
+        syncRateLimit: 'Poczekaj {seconds} sek przed następną synchronizacją',
+        reorderFieldsModeOn: 'Tryb zmiany kolejności pól aktywowany',
+        reorderFieldsModeOnMobile: 'Tryb zmiany kolejności aktywowany. Przytrzymaj pole, aby przenieść',
+        reorderFieldsModeOnDesktop: 'Tryb zmiany kolejności pól aktywowany. Przeciągnij pola',
+        reorderFieldsModeOff: 'Tryb zmiany kolejności pól wyłączony',
+        reorderCategoriesModeOnMobile: 'Tryb zmiany kolejności aktywowany. Przytrzymaj kategorię, aby przenieść',
+        reorderCategoriesModeOnDesktop: 'Tryb zmiany kolejności aktywowany. Przeciągnij kategorie',
+        reorderCategoriesModeOff: 'Tryb zmiany kolejności wyłączony'
       },
       modal: {
         confirmAction: 'Potwierdzenie',
@@ -5607,6 +5643,7 @@ textarea,
         Renderer.renderCategories();
         Renderer.renderContent();
         Progress.update(); // Оновлюємо прогрес бар з новою мовою
+        SyncManager.refreshStatus(); // Оновлюємо статус синхронізації з новою мовою
       }
     },
     
@@ -6263,7 +6300,7 @@ textarea,
         }));
       } catch (e) {
         if (e.name === 'QuotaExceededError') {
-          Toast.show('❌ Сховище переповнене! Видаліть старі дані або експортуйте в Google Sheets', 'error');
+          Toast.show('❌ ' + i18n.t('messages.storageQuotaExceeded'), 'error');
           throw new Error('Storage quota exceeded');
         }
         Debug.error('localStorage save error:', e);
@@ -6452,6 +6489,30 @@ textarea,
       `;
     },
     
+    // Оновити статус з урахуванням поточного стану (для зміни мови)
+    refreshStatus() {
+      const status = State.sync.status;
+      
+      if (status === 'local') {
+        this.updateStatus('local', i18n.t('ui.localMode'));
+      } else if (status === 'syncing') {
+        this.updateStatus('syncing', i18n.t('messages.syncing'));
+      } else if (status === 'error') {
+        this.updateStatus('error', i18n.t('messages.syncInitError'));
+      } else if (status === 'offline') {
+        this.updateStatus('offline', i18n.t('messages.offlineMode'));
+      } else if (status === 'synced') {
+        // Для synced зберігаємо час, якщо він є
+        const lastSync = State.sync.googleSheets.lastSync;
+        if (lastSync) {
+          const date = new Date(lastSync);
+          this.updateStatus('synced', `${i18n.t('messages.syncComplete')} ${Storage.formatTime(date)}`);
+        } else {
+          this.updateStatus('synced', 'Google Sheets');
+        }
+      }
+    },
+    
     // Запуск автосинхронізації (ОПТИМІЗОВАНО - синхронізує тільки якщо є зміни!)
     startAutoSync(intervalMinutes) {
       this.stopAutoSync();
@@ -6505,7 +6566,7 @@ textarea,
       
       if (timeSinceLastSync < this.syncCooldown) {
         const remainingTime = Math.ceil((this.syncCooldown - timeSinceLastSync) / 1000);
-        Toast.show(`⏳ Зачекайте ${remainingTime} сек перед наступною синхронізацією`, 'warning');
+        Toast.show(`⏳ ` + i18n.t('messages.syncRateLimit').replace('{seconds}', remainingTime), 'warning');
         Debug.log(`Rate limit: ${remainingTime}s remaining`);
         return;
       }
@@ -8187,13 +8248,13 @@ const TelegramWebApp = {
             // Різні повідомлення для мобільних та десктопу
             const isMobile = window.innerWidth <= 768;
             const message = isMobile 
-              ? 'Режим зміни порядку активовано. Утримуйте поле для переміщення.'
-              : 'Режим зміни порядку полів активовано. Перетягуйте поля.';
+              ? i18n.t('messages.reorderFieldsModeOnMobile')
+              : i18n.t('messages.reorderFieldsModeOnDesktop');
             Toast.show(message, 'info');
           } else {
             btnReorderFields.classList.remove('active');
             btnReorderFields.title = 'Змінити порядок полів';
-            Toast.show('Режим зміни порядку полів вимкнено', 'info');
+            Toast.show(i18n.t('messages.reorderFieldsModeOff'), 'info');
           }
           
           this.renderContent();
@@ -8870,9 +8931,11 @@ const TelegramWebApp = {
           
           <div class="modal-footer">
             <button class="btn btn-secondary" onclick="CategorySettings.close()">
+              <i class="fas fa-times"></i>
               ${i18n.t('ui.cancel')}
             </button>
             <button class="btn btn-primary" onclick="CategorySettings.save()">
+              <i class="fas fa-save"></i>
               ${i18n.t('settings.saveChanges')}
             </button>
           </div>
@@ -9928,13 +9991,13 @@ const TelegramWebApp = {
           // Різні повідомлення для мобільних та десктопу
           const isMobile = window.innerWidth <= 768;
           const message = isMobile 
-            ? 'Режим зміни порядку активовано. Утримуйте категорію для переміщення.'
-            : 'Режим зміни порядку активовано. Перетягуйте категорії.';
+            ? i18n.t('messages.reorderCategoriesModeOnMobile')
+            : i18n.t('messages.reorderCategoriesModeOnDesktop');
           Toast.show(message, 'info');
         } else {
           btn.classList.remove('active');
           btn.title = 'Змінити порядок категорій';
-          Toast.show('Режим зміни порядку вимкнено', 'info');
+          Toast.show(i18n.t('messages.reorderCategoriesModeOff'), 'info');
         }
         
         Renderer.renderCategories();
