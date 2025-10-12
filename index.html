@@ -3648,7 +3648,8 @@ textarea,
         tagsPlaceholder: 'тег1, тег2, тег3',
         valuesPlaceholder: 'Значення через кому',
         iconPlaceholder: 'fa-folder',
-        clientIdPlaceholder: '1234567890-abc123...'
+        clientIdPlaceholder: '1234567890-abc123...',
+        autoIdGeneration: 'ID буде згенеровано автоматично'
       },
       emptyStates: {
         noFieldsInCategory: 'Немає полів у цій категорії',
@@ -4017,7 +4018,8 @@ textarea,
         valuesPlaceholder: 'Values separated by comma',
         iconPlaceholder: 'fa-folder',
         clientIdPlaceholder: '1234567890-abc123...',
-        nestedCategories: 'Create categories and subcategories for structured data storage'
+        nestedCategories: 'Create categories and subcategories for structured data storage',
+        autoIdGeneration: 'ID will be generated automatically'
       },
       emptyStates: {
         noFieldsInCategory: 'No fields in this category',
@@ -4386,7 +4388,8 @@ textarea,
         tagsPlaceholder: 'тег1, тег2, тег3',
         valuesPlaceholder: 'значение1, значение2',
         iconPlaceholder: 'fa-folder',
-        clientIdPlaceholder: '1234567890-abc123...'
+        clientIdPlaceholder: '1234567890-abc123...',
+        autoIdGeneration: 'ID будет сгенерирован автоматически'
       },
       emptyStates: {
         noFieldsInCategory: 'Нет полей в этой категории',
@@ -4755,7 +4758,8 @@ textarea,
         tagsPlaceholder: 'tag1, tag2, tag3',
         valuesPlaceholder: 'wartość1, wartość2',
         iconPlaceholder: 'fa-folder',
-        clientIdPlaceholder: '1234567890-abc123...'
+        clientIdPlaceholder: '1234567890-abc123...',
+        autoIdGeneration: 'ID zostanie wygenerowane automatycznie'
       },
       emptyStates: {
         noFieldsInCategory: 'Brak pól w tej kategorii',
@@ -6131,6 +6135,58 @@ const TelegramWebApp = {
     if (!id) return false;
     const regex = /^[a-z0-9_-]+$/i;
     return regex.test(id);
+  };
+  
+  // Автогенерація унікального ID на основі назви
+  window.generateId = function(label, existingIds = [], prefix = '') {
+    if (!label) return null;
+    
+    // Транслітерація (українська, російська, польська → латиниця)
+    const translitMap = {
+      'а': 'a', 'б': 'b', 'в': 'v', 'г': 'h', 'ґ': 'g', 'д': 'd', 'е': 'e', 'є': 'ye', 'ж': 'zh', 'з': 'z',
+      'и': 'y', 'і': 'i', 'ї': 'yi', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o', 'п': 'p',
+      'р': 'r', 'с': 's', 'т': 't', 'у': 'u', 'ф': 'f', 'х': 'kh', 'ц': 'ts', 'ч': 'ch', 'ш': 'sh', 'щ': 'shch',
+      'ь': '', 'ю': 'yu', 'я': 'ya',
+      'ы': 'y', 'э': 'e', 'ё': 'yo', 'ъ': '',
+      'ą': 'a', 'ć': 'c', 'ę': 'e', 'ł': 'l', 'ń': 'n', 'ó': 'o', 'ś': 's', 'ź': 'z', 'ż': 'z'
+    };
+    
+    // Конвертуємо в lower case і транслітеруємо
+    let id = label.toLowerCase().split('').map(char => {
+      return translitMap[char] || char;
+    }).join('');
+    
+    // Замінюємо пробіли та спецсимволи на підкреслення
+    id = id.replace(/[\s\/\\]+/g, '_');
+    
+    // Видаляємо всі символи крім букв, цифр, підкреслення та дефісу
+    id = id.replace(/[^a-z0-9_-]/g, '');
+    
+    // Видаляємо множинні підкреслення
+    id = id.replace(/_+/g, '_');
+    
+    // Видаляємо підкреслення на початку та в кінці
+    id = id.replace(/^_+|_+$/g, '');
+    
+    // Додаємо префікс якщо є
+    if (prefix) {
+      id = prefix + '_' + id;
+    }
+    
+    // Якщо ID порожній після обробки - генеруємо випадковий
+    if (!id) {
+      id = 'item_' + Date.now();
+    }
+    
+    // Перевіряємо унікальність і додаємо номер якщо потрібно
+    let uniqueId = id;
+    let counter = 1;
+    while (existingIds.includes(uniqueId)) {
+      uniqueId = `${id}_${counter}`;
+      counter++;
+    }
+    
+    return uniqueId;
   };
   
   // ============= DEBUG =============
@@ -8557,13 +8613,11 @@ const TelegramWebApp = {
       Modal.open(
         i18n.t(isEdit ? 'modal.editField' : 'modal.newField'),
         `
-          <div class="form-group">
-            <label class="form-label">${i18n.t('modal.fieldId')}</label>
-            <input type="text" class="form-input" id="fieldId" value="${field ? field.id : ''}" ${isEdit ? 'readonly' : ''} required>
-          </div>
+          ${isEdit ? `<input type="hidden" id="fieldId" value="${field.id}">` : ''}
           <div class="form-group">
             <label class="form-label">${i18n.t('modal.fieldName')}</label>
             <input type="text" class="form-input" id="fieldLabel" value="${field ? field.label : ''}" required>
+            ${!isEdit ? `<small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">${i18n.t('hints.autoIdGeneration') || 'ID буде згенеровано автоматично'}</small>` : ''}
           </div>
           <div class="form-row">
             <div class="form-group">
@@ -8609,21 +8663,25 @@ const TelegramWebApp = {
         {
           icon: 'fa-plus-circle',
           onSave: async () => {
-            const id = document.getElementById('fieldId').value.trim();
             const label = document.getElementById('fieldLabel').value.trim();
             const type = document.getElementById('fieldType').value;
             const importance = document.getElementById('fieldImportance').value;
             const category = document.getElementById('fieldCategory').value;
             const required = document.getElementById('fieldRequired').checked;
             
-            if (!id || !label) {
+            if (!label) {
               Toast.t('messages.fillAllFields', 'error');
               return false;
             }
             
-            if (!isEdit && State.config.fields.find(f => f.id === id)) {
-              Toast.t('messages.fieldExists', 'error');
-              return false;
+            // Генеруємо або отримуємо ID
+            let id;
+            if (isEdit) {
+              id = document.getElementById('fieldId').value.trim();
+            } else {
+              // Автогенерація ID для нового поля
+              const existingIds = State.config.fields.map(f => f.id);
+              id = generateId(label, existingIds, 'field');
             }
             
             const fieldData = {id, label, type, importance, category, required};
@@ -8775,21 +8833,12 @@ const TelegramWebApp = {
               
               // Add nested category button
               document.getElementById('btnAddNestedCategory').addEventListener('click', async () => {
-                const catId = await Modal.prompt('Введіть ID категорії', 'тільки латиниця, цифри, _, -');
-                if (!catId) return;
-                
-                if (!validateId(catId)) {
-                  await Modal.confirm('Некоректний ID! Використовуйте тільки латинські букви, цифри, підкреслення та дефіс.', 'Помилка');
-                  return;
-                }
-                
                 const catLabel = await Modal.prompt('Введіть назву категорії');
                 if (!catLabel) return;
                 
-                if (tempNestedCategories.find(c => c.id === catId)) {
-                  await Modal.confirm('Категорія з таким ID вже існує!', 'Помилка');
-                  return;
-                }
+                // Автогенерація ID для nested категорії
+                const existingIds = tempNestedCategories.map(c => c.id);
+                const catId = generateId(catLabel, existingIds);
                 
                 tempNestedCategories.push({id: catId, label: catLabel, subcategories: []});
                 
@@ -8842,23 +8891,14 @@ const TelegramWebApp = {
                   const catIndex = parseInt(e.target.closest('.nested-subcat-add-btn').dataset.catIndex);
                   const cat = tempNestedCategories[catIndex];
                   
-                  const subId = await Modal.prompt('Введіть ID підкатегорії', 'тільки латиниця, цифри, _, -');
-                  if (!subId) return;
-                  
-                  if (!validateId(subId)) {
-                    await Modal.confirm('Некоректний ID! Використовуйте тільки латинські букви, цифри, підкреслення та дефіс.', 'Помилка');
-                    return;
-                  }
-                  
                   const subLabel = await Modal.prompt('Введіть назву підкатегорії');
                   if (!subLabel) return;
                   
                   if (!cat.subcategories) cat.subcategories = [];
                   
-                  if (cat.subcategories.find(s => s.id === subId)) {
-                    await Modal.confirm('Підкатегорія з таким ID вже існує!', 'Помилка');
-                    return;
-                  }
+                  // Автогенерація ID для підкатегорії
+                  const existingIds = cat.subcategories.map(s => s.id);
+                  const subId = generateId(subLabel, existingIds);
                   
                   cat.subcategories.push({id: subId, label: subLabel});
                   renderNestedCategories();
@@ -8908,14 +8948,12 @@ const TelegramWebApp = {
       Modal.open(
         i18n.t(isEdit ? 'modal.editCategory' : 'modal.newCategory'),
         `
-          <div class="form-group">
-            <label class="form-label">${i18n.t('modal.categoryId')}</label>
-            <input type="text" class="form-input" id="catId" value="${category ? category.id : ''}" ${isEdit ? 'readonly' : ''} required>
-          </div>
+          ${isEdit ? `<input type="hidden" id="catId" value="${category.id}">` : ''}
           <div class="form-group">
             <label class="form-label">${i18n.t('modal.categoryName')}</label>
             <input type="text" class="form-input" id="catLabel" value="${category ? (category.originalLabel || category.label) : ''}" required>
-            ${category ? `<small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">💡 ${i18n.t('modal.customCategoryNote')}</small>` : ''}
+            ${category ? `<small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">${i18n.t('modal.customCategoryNote')}</small>` : ''}
+            ${!isEdit ? `<small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">${i18n.t('hints.autoIdGeneration') || 'ID буде згенеровано автоматично'}</small>` : ''}
           </div>
           <div class="form-group">
             <label class="form-label">${i18n.t('modal.icon')}</label>
@@ -8925,18 +8963,22 @@ const TelegramWebApp = {
         {
           icon: 'fa-folder',
           onSave: async () => {
-            const id = document.getElementById('catId').value.trim();
             const label = document.getElementById('catLabel').value.trim();
             const icon = document.getElementById('catIcon').value.trim() || 'fa-folder';
             
-            if (!id || !label) {
+            if (!label) {
               Toast.t('messages.fillAllFields', 'error');
               return false;
             }
             
-            if (!isEdit && State.config.categories.find(c => c.id === id)) {
-              Toast.t('messages.categoryExists', 'error');
-              return false;
+            // Генеруємо або отримуємо ID
+            let id;
+            if (isEdit) {
+              id = document.getElementById('catId').value.trim();
+            } else {
+              // Автогенерація ID для нової категорії
+              const existingIds = State.config.categories.map(c => c.id);
+              id = generateId(label, existingIds, 'cat');
             }
             
             if (isEdit) {
@@ -9060,21 +9102,12 @@ const TelegramWebApp = {
               renderNestedCategories();
               
               document.getElementById('btnAddNestedCategory').addEventListener('click', async () => {
-                const catId = await Modal.prompt('Введіть ID категорії', 'тільки латиниця, цифри, _, -');
-                if (!catId) return;
-                
-                if (!validateId(catId)) {
-                  await Modal.confirm('Некоректний ID! Використовуйте тільки латинські букви, цифри, підкреслення та дефіс.', 'Помилка');
-                  return;
-                }
-                
                 const catLabel = await Modal.prompt('Введіть назву категорії');
                 if (!catLabel) return;
                 
-                if (tempNestedCategories.find(c => c.id === catId)) {
-                  await Modal.confirm('Категорія з таким ID вже існує!', 'Помилка');
-                  return;
-                }
+                // Автогенерація ID для nested категорії
+                const existingIds = tempNestedCategories.map(c => c.id);
+                const catId = generateId(catLabel, existingIds);
                 
                 tempNestedCategories.push({id: catId, label: catLabel, subcategories: []});
                 renderNestedCategories();
@@ -9118,23 +9151,14 @@ const TelegramWebApp = {
                   const catIndex = parseInt(e.target.closest('.nested-subcat-add-btn').dataset.catIndex);
                   const cat = tempNestedCategories[catIndex];
                   
-                  const subId = await Modal.prompt('Введіть ID підкатегорії', 'тільки латиниця, цифри, _, -');
-                  if (!subId) return;
-                  
-                  if (!validateId(subId)) {
-                    await Modal.confirm('Некоректний ID! Використовуйте тільки латинські букви, цифри, підкреслення та дефіс.', 'Помилка');
-                    return;
-                  }
-                  
                   const subLabel = await Modal.prompt('Введіть назву підкатегорії');
                   if (!subLabel) return;
                   
                   if (!cat.subcategories) cat.subcategories = [];
                   
-                  if (cat.subcategories.find(s => s.id === subId)) {
-                    await Modal.confirm('Підкатегорія з таким ID вже існує!', 'Помилка');
-                    return;
-                  }
+                  // Автогенерація ID для підкатегорії
+                  const existingIds = cat.subcategories.map(s => s.id);
+                  const subId = generateId(subLabel, existingIds);
                   
                   cat.subcategories.push({id: subId, label: subLabel});
                   renderNestedCategories();
