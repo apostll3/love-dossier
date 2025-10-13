@@ -8944,26 +8944,23 @@ i[class*="fa-"] svg {
         
         // Обробник кліку (тільки якщо НЕ в режимі редагування)
         if (!reorderMode) {
-          const clickableElements = item.querySelectorAll('.category-icon, .category-label, .category-count');
-          clickableElements.forEach(el => {
-            el.onclick = () => {
-              // Очищуємо пошук при виборі категорії
-              const searchInput = document.getElementById('searchInput');
-              const searchClearBtn = document.getElementById('searchClearBtn');
-              if (searchInput && searchInput.value) {
-                searchInput.value = '';
-                if (searchClearBtn) searchClearBtn.classList.remove('visible');
-                Search.query = '';
-              }
-              
-              State.ui.searchActive = false;
-              State.ui.activeCategory = cat.id;
-              State.ui.lastActiveCategory = cat.id;
-              this.renderCategories();
-              this.renderContent();
-              Progress.update(); // Оновлюємо прогрес при зміні категорії
-            };
-          });
+          item.onclick = () => {
+            // Очищуємо пошук при виборі категорії
+            const searchInput = document.getElementById('searchInput');
+            const searchClearBtn = document.getElementById('searchClearBtn');
+            if (searchInput && searchInput.value) {
+              searchInput.value = '';
+              if (searchClearBtn) searchClearBtn.classList.remove('visible');
+              Search.query = '';
+            }
+            
+            State.ui.searchActive = false;
+            State.ui.activeCategory = cat.id;
+            State.ui.lastActiveCategory = cat.id;
+            this.renderCategories();
+            this.renderContent();
+            Progress.update(); // Оновлюємо прогрес при зміні категорії
+          };
         }
         
         // Drag and Drop обробники (тільки в режимі редагування)
