@@ -6794,11 +6794,11 @@ i[class*="fa-"] svg {
     // 3. При зміні мови applyTranslations() оновлює всі label
     // 4. Це дозволяє легко розрізняти дефолтні та кастомні поля
     fields: [
-      {id: 'fullName', label: 'ПІБ', type: 'text', category: 'base', importance: 'high', required: true},
-      {id: 'dob', label: 'Дата народження', type: 'date', category: 'base', importance: 'high'},
-      {id: 'character', label: 'Особливості характеру', type: 'textarea', category: 'character', importance: 'high'},
-      {id: 'dreams', label: 'Мрії та бажання', type: 'textarea', category: 'character', importance: 'medium'},
-      {id: 'likes', label: 'Що любить', type: 'nested', category: 'preferences', importance: 'high',
+      {id: 'fullName', label: 'ПІБ', type: 'text', category: 'base', importance: 'high', required: true, icon: 'user-circle'},
+      {id: 'dob', label: 'Дата народження', type: 'date', category: 'base', importance: 'high', icon: 'calendar'},
+      {id: 'character', label: 'Особливості характеру', type: 'textarea', category: 'character', importance: 'high', icon: 'brain'},
+      {id: 'dreams', label: 'Мрії та бажання', type: 'textarea', category: 'character', importance: 'medium', icon: 'star'},
+      {id: 'likes', label: 'Що любить', type: 'nested', category: 'preferences', importance: 'high', icon: 'heart',
         nestedCategories: [
           {id: 'food', label: 'Їжа', subcategories: [
             {id: 'sweet', label: 'Солодке'},
@@ -6810,8 +6810,8 @@ i[class*="fa-"] svg {
           ]}
         ]
       },
-      {id: 'memories', label: 'Пам\'ять і спогади', type: 'textarea', category: 'character', importance: 'high'},
-      {id: 'dislikes', label: 'Що не любить', type: 'nested', category: 'antipreferences', importance: 'high',
+      {id: 'memories', label: 'Пам\'ять і спогади', type: 'textarea', category: 'character', importance: 'high', icon: 'star'},
+      {id: 'dislikes', label: 'Що не любить', type: 'nested', category: 'antipreferences', importance: 'high', icon: 'heart-broken',
         nestedCategories: [
           {id: 'food', label: 'Їжа', subcategories: [
             {id: 'tastes', label: 'Смаки'},
@@ -6827,109 +6827,109 @@ i[class*="fa-"] svg {
           ]}
         ]
       },
-      {id: 'anti_triggers', label: 'Тригери та роздратування', type: 'tags', category: 'antipreferences', importance: 'high'},
-      {id: 'anti_topics', label: 'Неприємні теми для розмов', type: 'tags', category: 'antipreferences', importance: 'medium'},
-      {id: 'anti_places', label: 'Місця, які не подобаються', type: 'tags', category: 'antipreferences', importance: 'medium'},
-      {id: 'anti_sounds', label: 'Неприємні звуки/запахи', type: 'tags', category: 'antipreferences', importance: 'low'},
-      {id: 'anti_situations', label: 'Некомфортні ситуації', type: 'textarea', category: 'antipreferences', importance: 'medium'},
-      {id: 'gift_wishlist', label: 'Список бажань', type: 'tags', category: 'gifts', importance: 'high'},
-      {id: 'gift_sizes', label: 'Розміри', type: 'text', category: 'gifts', importance: 'medium'},
-      {id: 'gift_brands', label: 'Улюблені бренди', type: 'tags', category: 'gifts', importance: 'medium'},
-      {id: 'gift_anti', label: 'Антиподарунки', type: 'tags', category: 'gifts', importance: 'medium'},
-      {id: 'gift_history', label: 'Історія подарунків', type: 'textarea', category: 'gifts', importance: 'low'},
-      {id: 'love_language', label: 'Мова кохання', type: 'text', category: 'psychology', importance: 'high'},
-      {id: 'values', label: 'Основні цінності', type: 'tags', category: 'psychology', importance: 'high'},
-      {id: 'psy_conflict_style', label: 'Стиль поведінки в конфліктах', type: 'textarea', category: 'psych', importance: 'high'},
-      {id: 'psy_compliments', label: 'Як любить отримувати компліменти', type: 'textarea', category: 'psych', importance: 'medium'},
-      {id: 'psy_stress_relief', label: 'Способи зняття стресу', type: 'tags', category: 'psych', importance: 'high'},
-      {id: 'log_places', label: 'Улюблені місця', type: 'tags', category: 'logistics', importance: 'medium'},
-      {id: 'log_social_circle', label: 'Соціальне коло', type: 'textarea', category: 'logistics', importance: 'medium'},
-      {id: 'log_schedule_peak', label: 'Пікові години активності', type: 'text', category: 'logistics', importance: 'low'},
-      {id: 'log_media', label: 'Медіа вподобання', type: 'tags', category: 'logistics', importance: 'low'},
-      {id: 'short_goals', label: 'Короткострокові цілі', type: 'tags', category: 'goals', importance: 'high'},
-      {id: 'goal_travel', label: 'Мрії про подорожі', type: 'tags', category: 'goals', importance: 'medium'},
-      {id: 'goal_traditions', label: 'Традиції, які хоче створити', type: 'textarea', category: 'goals', importance: 'medium'},
-      {id: 'goal_cozy_ideal', label: 'Ідеальний затишний вечір', type: 'textarea', category: 'goals', importance: 'low'},
+      {id: 'anti_triggers', label: 'Тригери та роздратування', type: 'tags', category: 'antipreferences', importance: 'high', icon: 'exclamation-triangle'},
+      {id: 'anti_topics', label: 'Неприємні теми для розмов', type: 'tags', category: 'antipreferences', importance: 'medium', icon: 'comments'},
+      {id: 'anti_places', label: 'Місця, які не подобаються', type: 'tags', category: 'antipreferences', importance: 'medium', icon: 'map-marked-alt'},
+      {id: 'anti_sounds', label: 'Неприємні звуки/запахи', type: 'tags', category: 'antipreferences', importance: 'low', icon: 'exclamation-circle'},
+      {id: 'anti_situations', label: 'Некомфортні ситуації', type: 'textarea', category: 'antipreferences', importance: 'medium', icon: 'exclamation-triangle'},
+      {id: 'gift_wishlist', label: 'Список бажань', type: 'tags', category: 'gifts', importance: 'high', icon: 'gift'},
+      {id: 'gift_sizes', label: 'Розміри', type: 'text', category: 'gifts', importance: 'medium', icon: 'tag'},
+      {id: 'gift_brands', label: 'Улюблені бренди', type: 'tags', category: 'gifts', importance: 'medium', icon: 'tags'},
+      {id: 'gift_anti', label: 'Антиподарунки', type: 'tags', category: 'gifts', importance: 'medium', icon: 'times'},
+      {id: 'gift_history', label: 'Історія подарунків', type: 'textarea', category: 'gifts', importance: 'low', icon: 'calendar'},
+      {id: 'love_language', label: 'Мова кохання', type: 'text', category: 'psychology', importance: 'high', icon: 'heart'},
+      {id: 'values', label: 'Основні цінності', type: 'tags', category: 'psychology', importance: 'high', icon: 'star'},
+      {id: 'psy_conflict_style', label: 'Стиль поведінки в конфліктах', type: 'textarea', category: 'psych', importance: 'high', icon: 'exclamation-triangle'},
+      {id: 'psy_compliments', label: 'Як любить отримувати компліменти', type: 'textarea', category: 'psych', importance: 'medium', icon: 'heart'},
+      {id: 'psy_stress_relief', label: 'Способи зняття стресу', type: 'tags', category: 'psych', importance: 'high', icon: 'brain'},
+      {id: 'log_places', label: 'Улюблені місця', type: 'tags', category: 'logistics', importance: 'medium', icon: 'map-marked-alt'},
+      {id: 'log_social_circle', label: 'Соціальне коло', type: 'textarea', category: 'logistics', importance: 'medium', icon: 'users'},
+      {id: 'log_schedule_peak', label: 'Пікові години активності', type: 'text', category: 'logistics', importance: 'low', icon: 'calendar'},
+      {id: 'log_media', label: 'Медіа вподобання', type: 'tags', category: 'logistics', importance: 'low', icon: 'laptop'},
+      {id: 'short_goals', label: 'Короткострокові цілі', type: 'tags', category: 'goals', importance: 'high', icon: 'check-circle'},
+      {id: 'goal_travel', label: 'Мрії про подорожі', type: 'tags', category: 'goals', importance: 'medium', icon: 'globe'},
+      {id: 'goal_traditions', label: 'Традиції, які хоче створити', type: 'textarea', category: 'goals', importance: 'medium', icon: 'heart'},
+      {id: 'goal_cozy_ideal', label: 'Ідеальний затишний вечір', type: 'textarea', category: 'goals', importance: 'low', icon: 'star'},
 
       // ===== Base: контакти та базові деталі =====
-      {id: 'contact_phone', label: 'Телефон', type: 'text', category: 'base', importance: 'high'},
-      {id: 'contact_email', label: 'Email', type: 'text', category: 'base', importance: 'medium'},
-      {id: 'city', label: 'Місто / Локація', type: 'text', category: 'base', importance: 'medium'},
-      {id: 'anniversary', label: 'Річниця / Важлива дата', type: 'date', category: 'base', importance: 'medium'},
+      {id: 'contact_phone', label: 'Телефон', type: 'text', category: 'base', importance: 'high', icon: 'hand-pointer'},
+      {id: 'contact_email', label: 'Email', type: 'text', category: 'base', importance: 'medium', icon: 'inbox'},
+      {id: 'city', label: 'Місто / Локація', type: 'text', category: 'base', importance: 'medium', icon: 'map-marked-alt'},
+      {id: 'anniversary', label: 'Річниця / Важлива дата', type: 'date', category: 'base', importance: 'medium', icon: 'calendar'},
 
       // ===== Character: глибші риси =====
-      {id: 'attachment_style', label: 'Стиль прихильності', type: 'text', category: 'character', importance: 'medium'},
-      {id: 'humor_style', label: 'Почуття гумору', type: 'tags', category: 'character', importance: 'low'},
-      {id: 'personal_boundaries', label: 'Особисті кордони', type: 'textarea', category: 'character', importance: 'high'},
+      {id: 'attachment_style', label: 'Стиль прихильності', type: 'text', category: 'character', importance: 'medium', icon: 'heart'},
+      {id: 'humor_style', label: 'Почуття гумору', type: 'tags', category: 'character', importance: 'low', icon: 'star'},
+      {id: 'personal_boundaries', label: 'Особисті кордони', type: 'textarea', category: 'character', importance: 'high', icon: 'exclamation-circle'},
 
       // ===== Preferences: розширені =====
-      {id: 'cuisines_fav', label: 'Улюблені кухні', type: 'tags', category: 'preferences', importance: 'medium'},
-      {id: 'allergies', label: 'Алергії / Чутливості', type: 'tags', category: 'preferences', importance: 'high'},
-      {id: 'aesthetics', label: 'Естетики / Стилі', type: 'tags', category: 'preferences', importance: 'medium'},
-      {id: 'fav_colors', label: 'Улюблені кольори', type: 'tags', category: 'preferences', importance: 'low'},
+      {id: 'cuisines_fav', label: 'Улюблені кухні', type: 'tags', category: 'preferences', importance: 'medium', icon: 'heart'},
+      {id: 'allergies', label: 'Алергії / Чутливості', type: 'tags', category: 'preferences', importance: 'high', icon: 'exclamation-triangle'},
+      {id: 'aesthetics', label: 'Естетики / Стилі', type: 'tags', category: 'preferences', importance: 'medium', icon: 'star'},
+      {id: 'fav_colors', label: 'Улюблені кольори', type: 'tags', category: 'preferences', importance: 'low', icon: 'tag'},
 
       // ===== Anti-preferences: розширені =====
-      {id: 'anti_allergies', label: 'Заборонені через алергії', type: 'tags', category: 'antipreferences', importance: 'high'},
-      {id: 'anti_people_types', label: 'Типи людей, з якими важко', type: 'tags', category: 'antipreferences', importance: 'medium'},
+      {id: 'anti_allergies', label: 'Заборонені через алергії', type: 'tags', category: 'antipreferences', importance: 'high', icon: 'exclamation-triangle'},
+      {id: 'anti_people_types', label: 'Типи людей, з якими важко', type: 'tags', category: 'antipreferences', importance: 'medium', icon: 'users'},
 
       // ===== Gifts: додаткові ідеї =====
-      {id: 'gift_price_range', label: 'Комфортний бюджет подарунків', type: 'text', category: 'gifts', importance: 'low'},
-      {id: 'gift_stores', label: 'Улюблені магазини / платформи', type: 'tags', category: 'gifts', importance: 'low'},
+      {id: 'gift_price_range', label: 'Комфортний бюджет подарунків', type: 'text', category: 'gifts', importance: 'low', icon: 'wallet'},
+      {id: 'gift_stores', label: 'Улюблені магазини / платформи', type: 'tags', category: 'gifts', importance: 'low', icon: 'gift'},
 
       // ===== Psych: деталізація підтримки =====
-      {id: 'psy_anxiety_triggers', label: 'Тригери тривоги', type: 'tags', category: 'psych', importance: 'high'},
-      {id: 'psy_motivators', label: 'Що мотивує', type: 'tags', category: 'psych', importance: 'medium'},
-      {id: 'psy_calming_words', label: 'Слова/фрази підтримки', type: 'tags', category: 'psych', importance: 'medium'},
+      {id: 'psy_anxiety_triggers', label: 'Тригери тривоги', type: 'tags', category: 'psych', importance: 'high', icon: 'exclamation-triangle'},
+      {id: 'psy_motivators', label: 'Що мотивує', type: 'tags', category: 'psych', importance: 'medium', icon: 'star'},
+      {id: 'psy_calming_words', label: 'Слова/фрази підтримки', type: 'tags', category: 'psych', importance: 'medium', icon: 'heart'},
 
       // ===== Logistics: рутини та організація =====
-      {id: 'log_transport', label: 'Звичний транспорт', type: 'tags', category: 'logistics', importance: 'low'},
-      {id: 'log_work_hours', label: 'Години роботи/навчання', type: 'text', category: 'logistics', importance: 'medium'},
-      {id: 'log_routines', label: 'Щоденні рутини', type: 'textarea', category: 'logistics', importance: 'medium'},
-      {id: 'log_food_schedule', label: 'Харчовий режим', type: 'text', category: 'logistics', importance: 'low'},
+      {id: 'log_transport', label: 'Звичний транспорт', type: 'tags', category: 'logistics', importance: 'low', icon: 'map-marked-alt'},
+      {id: 'log_work_hours', label: 'Години роботи/навчання', type: 'text', category: 'logistics', importance: 'medium', icon: 'calendar'},
+      {id: 'log_routines', label: 'Щоденні рутини', type: 'textarea', category: 'logistics', importance: 'medium', icon: 'list'},
+      {id: 'log_food_schedule', label: 'Харчовий режим', type: 'text', category: 'logistics', importance: 'low', icon: 'calendar'},
 
       // ===== Goals: довгострокові та цікаві напрямки =====
-      {id: 'long_goals', label: 'Довгострокові цілі', type: 'tags', category: 'goals', importance: 'high'},
-      {id: 'learning_topics', label: 'Що хоче вивчити', type: 'tags', category: 'goals', importance: 'medium'},
-      {id: 'bucket_list', label: 'Bucket list', type: 'tags', category: 'goals', importance: 'medium'},
+      {id: 'long_goals', label: 'Довгострокові цілі', type: 'tags', category: 'goals', importance: 'high', icon: 'star'},
+      {id: 'learning_topics', label: 'Що хоче вивчити', type: 'tags', category: 'goals', importance: 'medium', icon: 'brain'},
+      {id: 'bucket_list', label: 'Bucket list', type: 'tags', category: 'goals', importance: 'medium', icon: 'check-circle'},
 
       // ===== Custom: вільні нотатки =====
-      {id: 'notes_private', label: 'Особисті нотатки', type: 'textarea', category: 'custom', importance: 'low'},
+      {id: 'notes_private', label: 'Особисті нотатки', type: 'textarea', category: 'custom', importance: 'low', icon: 'edit'},
 
       // ===== Communication: стиль спілкування =====
-      {id: 'comm_style', label: 'Стиль спілкування', type: 'tags', category: 'communication', importance: 'high'},
-      {id: 'comm_frequency', label: 'Частота бажаного контакту', type: 'text', category: 'communication', importance: 'medium'},
-      {id: 'comm_topics_good', label: 'Комфортні теми', type: 'tags', category: 'communication', importance: 'medium'},
-      {id: 'comm_topics_bad', label: 'Складні теми', type: 'tags', category: 'communication', importance: 'high'},
-      {id: 'comm_love_language', label: 'Мова любові в комунікації', type: 'text', category: 'communication', importance: 'high'},
+      {id: 'comm_style', label: 'Стиль спілкування', type: 'tags', category: 'communication', importance: 'high', icon: 'comments'},
+      {id: 'comm_frequency', label: 'Частота бажаного контакту', type: 'text', category: 'communication', importance: 'medium', icon: 'calendar'},
+      {id: 'comm_topics_good', label: 'Комфортні теми', type: 'tags', category: 'communication', importance: 'medium', icon: 'check-circle'},
+      {id: 'comm_topics_bad', label: 'Складні теми', type: 'tags', category: 'communication', importance: 'high', icon: 'exclamation-triangle'},
+      {id: 'comm_love_language', label: 'Мова любові в комунікації', type: 'text', category: 'communication', importance: 'high', icon: 'heart'},
 
       // ===== Finance: фінансові звички =====
-      {id: 'finance_habits', label: 'Фінансові звички', type: 'textarea', category: 'finance', importance: 'medium'},
-      {id: 'finance_attitude', label: 'Ставлення до грошей', type: 'textarea', category: 'finance', importance: 'medium'},
-      {id: 'finance_goals', label: 'Спільні фінансові цілі', type: 'tags', category: 'finance', importance: 'high'},
-      {id: 'finance_split', label: 'Розподіл витрат', type: 'text', category: 'finance', importance: 'medium'},
+      {id: 'finance_habits', label: 'Фінансові звички', type: 'textarea', category: 'finance', importance: 'medium', icon: 'wallet'},
+      {id: 'finance_attitude', label: 'Ставлення до грошей', type: 'textarea', category: 'finance', importance: 'medium', icon: 'wallet'},
+      {id: 'finance_goals', label: 'Спільні фінансові цілі', type: 'tags', category: 'finance', importance: 'high', icon: 'star'},
+      {id: 'finance_split', label: 'Розподіл витрат', type: 'text', category: 'finance', importance: 'medium', icon: 'wallet'},
 
       // ===== Intimacy: інтимність (ПРИВАТНА) =====
-      {id: 'intimacy_language', label: 'Мова інтимності', type: 'textarea', category: 'intimacy', importance: 'high'},
-      {id: 'intimacy_boundaries', label: 'Boundaries та комфорт', type: 'textarea', category: 'intimacy', importance: 'high'},
-      {id: 'intimacy_gestures', label: 'Романтичні жести', type: 'tags', category: 'intimacy', importance: 'medium'},
+      {id: 'intimacy_language', label: 'Мова інтимності', type: 'textarea', category: 'intimacy', importance: 'high', icon: 'heart'},
+      {id: 'intimacy_boundaries', label: 'Boundaries та комфорт', type: 'textarea', category: 'intimacy', importance: 'high', icon: 'exclamation-circle'},
+      {id: 'intimacy_gestures', label: 'Романтичні жести', type: 'tags', category: 'intimacy', importance: 'medium', icon: 'heart'},
 
       // ===== Family: сім'я та родинні зв'язки =====
-      {id: 'family_info', label: 'Інформація про родину', type: 'textarea', category: 'family', importance: 'medium'},
-      {id: 'family_important', label: 'Важливі люди', type: 'tags', category: 'family', importance: 'high'},
-      {id: 'family_traditions', label: 'Сімейні традиції', type: 'tags', category: 'family', importance: 'medium'},
-      {id: 'family_attitude', label: 'Ставлення до родини', type: 'textarea', category: 'family', importance: 'medium'},
+      {id: 'family_info', label: 'Інформація про родину', type: 'textarea', category: 'family', importance: 'medium', icon: 'users'},
+      {id: 'family_important', label: 'Важливі люди', type: 'tags', category: 'family', importance: 'high', icon: 'user-circle'},
+      {id: 'family_traditions', label: 'Сімейні традиції', type: 'tags', category: 'family', importance: 'medium', icon: 'star'},
+      {id: 'family_attitude', label: 'Ставлення до родини', type: 'textarea', category: 'family', importance: 'medium', icon: 'heart'},
 
       // ===== Career: кар'єра та професійні цілі =====
-      {id: 'career_goals', label: 'Професійні цілі', type: 'tags', category: 'career', importance: 'medium'},
-      {id: 'career_schedule', label: 'Робочий графік', type: 'text', category: 'career', importance: 'low'},
-      {id: 'career_dreams', label: 'Кар\'єрні мрії', type: 'textarea', category: 'career', importance: 'medium'},
-      {id: 'career_balance', label: 'Work-life balance', type: 'textarea', category: 'career', importance: 'medium'},
+      {id: 'career_goals', label: 'Професійні цілі', type: 'tags', category: 'career', importance: 'medium', icon: 'briefcase'},
+      {id: 'career_schedule', label: 'Робочий графік', type: 'text', category: 'career', importance: 'low', icon: 'calendar'},
+      {id: 'career_dreams', label: 'Кар\'єрні мрії', type: 'textarea', category: 'career', importance: 'medium', icon: 'star'},
+      {id: 'career_balance', label: 'Work-life balance', type: 'textarea', category: 'career', importance: 'medium', icon: 'briefcase'},
 
       // ===== Culture: культура та принципи =====
-      {id: 'culture_religion', label: 'Релігійні погляди', type: 'text', category: 'culture', importance: 'medium'},
-      {id: 'culture_politics', label: 'Політичні переконання', type: 'text', category: 'culture', importance: 'low'},
-      {id: 'culture_traditions', label: 'Культурні традиції', type: 'tags', category: 'culture', importance: 'medium'},
-      {id: 'culture_principles', label: 'Життєві принципи', type: 'textarea', category: 'culture', importance: 'high'}
+      {id: 'culture_religion', label: 'Релігійні погляди', type: 'text', category: 'culture', importance: 'medium', icon: 'globe'},
+      {id: 'culture_politics', label: 'Політичні переконання', type: 'text', category: 'culture', importance: 'low', icon: 'globe'},
+      {id: 'culture_traditions', label: 'Культурні традиції', type: 'tags', category: 'culture', importance: 'medium', icon: 'star'},
+      {id: 'culture_principles', label: 'Життєві принципи', type: 'textarea', category: 'culture', importance: 'high', icon: 'heart'}
     ],
     values: {
       fullName: 'Іванна Петренко',
@@ -9448,11 +9448,6 @@ i[class*="fa-"] svg {
           <i class="fa-grip-vertical">${getIcon('grip-vertical')}</i>
         </div>
       ` : '';
-      
-      // Debug: перевіримо чи є іконка
-      if (field.icon) {
-        console.log('Field has icon:', field.label, field.icon);
-      }
       
       card.innerHTML = `
         <div class="field-header">
