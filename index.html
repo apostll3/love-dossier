@@ -220,7 +220,7 @@ i[class*="fa-"] svg {
   gap: 1rem;
   flex-wrap: wrap;
   position: relative;
-  z-index: 1;
+  z-index: 6;
 }
 
 .header-title {
@@ -1064,12 +1064,32 @@ i[class*="fa-"] svg {
 
 /* Content area */
 .content {
-  background: var(--card);
+  background: linear-gradient(135deg, var(--card) 0%, var(--bg) 100%);
   border-radius: var(--radius);
   padding: 1.5rem;
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 20px 40px rgba(99, 102, 241, 0.12);
   min-height: 400px;
   position: relative;
+  border: 2px solid rgba(99, 102, 241, 0.08);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.content::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.02) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.content:hover {
+  box-shadow: 0 24px 48px rgba(99, 102, 241, 0.15);
+  border-color: rgba(99, 102, 241, 0.12);
 }
 
 .content-header {
@@ -1078,9 +1098,11 @@ i[class*="fa-"] svg {
   align-items: center;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 2px solid var(--border);
+  border-bottom: 2px solid rgba(99, 102, 241, 0.1);
   gap: 1rem;
   flex-wrap: wrap;
+  position: relative;
+  z-index: 5;
 }
 
 .content-title {
@@ -1089,10 +1111,17 @@ i[class*="fa-"] svg {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  background: linear-gradient(135deg, var(--primary) 0%, #7c3aed 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .content-title i {
-  color: var(--primary);
+  background: linear-gradient(135deg, var(--primary), #7c3aed);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .content-title span {
@@ -1279,19 +1308,99 @@ i[class*="fa-"] svg {
 .fields-grid {
   display: grid;
   gap: 1rem;
+  position: relative;
+  z-index: 1;
 }
 
+/* Grid View (Default) */
+.fields-grid {
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+/* List View */
+.fields-grid.view-list {
+  grid-template-columns: 1fr;
+}
+
+/* Compact View */
+.fields-grid.view-compact {
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 0.75rem;
+}
+
+.fields-grid.view-compact .field-card {
+  padding: 0.75rem;
+}
+
+.fields-grid.view-compact .field-label {
+  font-size: 0.9rem;
+}
+
+.fields-grid.view-compact .field-value {
+  padding: 0.5rem;
+  min-height: 2rem;
+  font-size: 0.875rem;
+}
+
+/* Анімація появи карточок */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.field-card.fade-in {
+  animation: fadeInUp 0.4s ease-out backwards;
+}
+
+/* Затримки для послідовної появи */
+.field-card.fade-in:nth-child(1) { animation-delay: 0.05s; }
+.field-card.fade-in:nth-child(2) { animation-delay: 0.1s; }
+.field-card.fade-in:nth-child(3) { animation-delay: 0.15s; }
+.field-card.fade-in:nth-child(4) { animation-delay: 0.2s; }
+.field-card.fade-in:nth-child(5) { animation-delay: 0.25s; }
+.field-card.fade-in:nth-child(6) { animation-delay: 0.3s; }
+.field-card.fade-in:nth-child(7) { animation-delay: 0.35s; }
+.field-card.fade-in:nth-child(8) { animation-delay: 0.4s; }
+.field-card.fade-in:nth-child(9) { animation-delay: 0.45s; }
+.field-card.fade-in:nth-child(n+10) { animation-delay: 0.5s; }
+
 .field-card {
-  background: var(--bg);
-  border: 2px solid var(--border);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.95));
+  border: 2px solid rgba(99, 102, 241, 0.1);
   border-radius: var(--radius-sm);
   padding: 1rem;
-  transition: all 0.2s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.08);
+  backdrop-filter: blur(10px);
+}
+
+.field-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.05), transparent);
+  transition: left 0.5s ease;
+}
+
+.field-card:hover::before {
+  left: 100%;
 }
 
 .field-card:hover {
-  border-color: var(--primary);
-  box-shadow: var(--shadow);
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.15);
+  transform: translateY(-2px);
 }
 
 .field-card.dragging {
@@ -1384,12 +1493,19 @@ i[class*="fa-"] svg {
 }
 
 .field-label {
-  font-weight: 600;
+  font-weight: 700;
   font-size: 1rem;
   margin-bottom: 0.25rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  color: var(--text);
+  position: relative;
+}
+
+.field-label i {
+  color: var(--primary);
+  font-size: 0.875rem;
 }
 
 .field-meta {
@@ -1398,6 +1514,12 @@ i[class*="fa-"] svg {
   gap: 0.5rem;
   font-size: 0.75rem;
   color: var(--text-muted);
+  flex-wrap: wrap;
+}
+
+.field-meta .badge {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
 }
 
 .field-controls {
@@ -1446,15 +1568,23 @@ i[class*="fa-"] svg {
 
 .field-value {
   padding: 0.75rem;
-  background: white;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(248, 250, 252, 0.8));
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
+  border: 1px solid rgba(99, 102, 241, 0.08);
   min-height: 3rem;
   display: flex;
   align-items: center;
   white-space: pre-wrap;
   word-wrap: break-word;
   flex-wrap: wrap;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.field-value:hover {
+  border-color: rgba(99, 102, 241, 0.15);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 1), rgba(248, 250, 252, 1));
 }
 
 .field-value.empty {
@@ -3888,6 +4018,64 @@ i[class*="fa-"] svg {
   .content-actions > .btn,
   .filters-toggle-btn {
     flex: 1;
+  }
+  
+  /* Адаптивна сітка для карточок на планшетах */
+  .fields-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 0.875rem;
+  }
+  
+  .fields-grid.view-compact {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 0.625rem;
+  }
+  
+  .content {
+    padding: 1rem;
+  }
+  
+  .content-title {
+    font-size: 1.25rem;
+  }
+}
+
+/* Мобільні пристрої */
+@media (max-width: 500px) {
+  /* На мобільних завжди одна колонка */
+  .fields-grid,
+  .fields-grid.view-list,
+  .fields-grid.view-compact {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .field-card {
+    padding: 0.875rem;
+  }
+  
+  .field-label {
+    font-size: 0.95rem;
+  }
+  
+  .field-value {
+    padding: 0.625rem;
+    min-height: 2.5rem;
+    font-size: 0.9rem;
+  }
+  
+  .content {
+    padding: 0.875rem;
+    min-height: 300px;
+  }
+  
+  .content-header {
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+  }
+  
+  .content-title {
+    font-size: 1.125rem;
   }
 }
 
