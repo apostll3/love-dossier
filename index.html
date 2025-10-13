@@ -3986,11 +3986,6 @@ i[class*="fa-"] svg {
           <span data-i18n="ui.save">Зберегти</span>
         </button>
         
-        <button class="btn btn-primary btn-sm" id="btnAddField">
-          <i class="fa-plus"></i>
-          <span data-i18n="ui.addField">Додати поле</span>
-        </button>
-        
         <button class="header-menu-btn" data-action="App.toggleHeaderMenu" id="headerMenuBtn">
           <i class="fa-ellipsis-h"></i>
           <span data-i18n="ui.more">Більше</span>
@@ -8854,6 +8849,11 @@ i[class*="fa-"] svg {
         : '';
       
       contentActions.innerHTML = `
+        <button class="btn btn-primary btn-sm" id="btnAddField" title="${i18n.t('ui.addField')}">
+          <i class="fa-plus">${getIcon('plus')}</i>
+          <span>${i18n.t('ui.addField')}</span>
+        </button>
+        
         <button class="filters-toggle-btn" id="btnReorderFields" title="Змінити порядок полів">
           <i class="fa-arrows-alt-v">${getIcon('arrows-alt-v')}</i>
           <span>Порядок</span>
@@ -8961,6 +8961,14 @@ i[class*="fa-"] svg {
         const card = this.renderField(field, false, index);
         grid.appendChild(card);
       });
+      
+      // Додаємо обробник для кнопки додавання поля після рендерингу
+      const btnAddField = document.getElementById('btnAddField');
+      if (btnAddField) {
+        btnAddField.onclick = () => {
+          App.showFieldModal();
+        };
+      }
       
       // Додаємо обробник для кнопки зміни порядку після рендерингу
       const btnReorderFields = document.getElementById('btnReorderFields');
@@ -10721,10 +10729,6 @@ i[class*="fa-"] svg {
           // Перезавантажуємо сторінку, щоб показати onboarding
           location.reload();
         }
-      };
-      
-      document.getElementById('btnAddField').onclick = () => {
-        this.showFieldModal();
       };
       
       document.getElementById('btnAddCategory').onclick = () => {
