@@ -1006,13 +1006,13 @@ i[class*="fa-"] svg {
   transition: opacity 0.2s, transform 0.2s;
 }
 
-.category-item.drag-over {
+.category-item.drag-over:not(.active) {
   border-top: 3px solid var(--primary);
   background: rgba(99, 102, 241, 0.05);
   transition: all 0.15s ease;
 }
 
-.category-item.drag-over-bottom {
+.category-item.drag-over-bottom:not(.active) {
   border-bottom: 3px solid var(--primary);
   background: rgba(99, 102, 241, 0.05);
   transition: all 0.15s ease;
@@ -1083,12 +1083,12 @@ i[class*="fa-"] svg {
   }
   
   /* Більш помітні індикатори на мобільних */
-  .category-item.drag-over {
+  .category-item.drag-over:not(.active) {
     border-top: 4px solid var(--primary) !important;
     background: rgba(99, 102, 241, 0.08) !important;
   }
   
-  .category-item.drag-over-bottom {
+  .category-item.drag-over-bottom:not(.active) {
     border-bottom: 4px solid var(--primary) !important;
     background: rgba(99, 102, 241, 0.08) !important;
   }
