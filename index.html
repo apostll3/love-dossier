@@ -1000,36 +1000,22 @@ i[class*="fa-"] svg {
 
 /* Drag and Drop стилі для категорій */
 .category-item.dragging {
-  opacity: 0.3;
+  opacity: 0.5;
   cursor: grabbing;
   transform: scale(0.98);
   transition: opacity 0.2s, transform 0.2s;
 }
 
-.category-item.drag-over::before {
-  content: '';
-  position: absolute;
-  top: -0.375rem;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: var(--primary);
-  border-radius: 2px;
-  box-shadow: 0 0 8px rgba(var(--primary-rgb), 0.5);
-  z-index: 10;
+.category-item.drag-over {
+  border-top: 3px solid var(--primary);
+  background: rgba(99, 102, 241, 0.05);
+  transition: all 0.15s ease;
 }
 
-.category-item.drag-over-bottom::after {
-  content: '';
-  position: absolute;
-  bottom: -0.375rem;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: var(--primary);
-  border-radius: 2px;
-  box-shadow: 0 0 8px rgba(var(--primary-rgb), 0.5);
-  z-index: 10;
+.category-item.drag-over-bottom {
+  border-bottom: 3px solid var(--primary);
+  background: rgba(99, 102, 241, 0.05);
+  transition: all 0.15s ease;
 }
 
 .category-drag-handle {
@@ -1097,14 +1083,14 @@ i[class*="fa-"] svg {
   }
   
   /* Більш помітні індикатори на мобільних */
-  .category-item.drag-over::before {
-    height: 4px;
-    box-shadow: 0 0 12px rgba(var(--primary-rgb), 0.6);
+  .category-item.drag-over {
+    border-top: 4px solid var(--primary) !important;
+    background: rgba(99, 102, 241, 0.08) !important;
   }
   
-  .category-item.drag-over-bottom::after {
-    height: 4px;
-    box-shadow: 0 0 12px rgba(var(--primary-rgb), 0.6);
+  .category-item.drag-over-bottom {
+    border-bottom: 4px solid var(--primary) !important;
+    background: rgba(99, 102, 241, 0.08) !important;
   }
 }
 
@@ -1454,30 +1440,16 @@ i[class*="fa-"] svg {
   cursor: grabbing;
 }
 
-.field-card.drag-over::before {
-  content: '';
-  position: absolute;
-  top: -0.5rem;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: var(--primary);
-  border-radius: 2px;
-  box-shadow: 0 0 8px rgba(var(--primary-rgb), 0.5);
-  z-index: 10;
+.field-card.drag-over {
+  border-top: 3px solid var(--primary);
+  background: rgba(99, 102, 241, 0.05);
+  transition: all 0.15s ease;
 }
 
-.field-card.drag-over-bottom::after {
-  content: '';
-  position: absolute;
-  bottom: -0.5rem;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: var(--primary);
-  border-radius: 2px;
-  box-shadow: 0 0 8px rgba(var(--primary-rgb), 0.5);
-  z-index: 10;
+.field-card.drag-over-bottom {
+  border-bottom: 3px solid var(--primary);
+  background: rgba(99, 102, 241, 0.05);
+  transition: all 0.15s ease;
 }
 
 .field-drag-handle {
@@ -9050,42 +9022,60 @@ i[class*="fa-"] svg {
             const currentY = e.clientY;
             const allItems = Array.from(document.querySelectorAll('.category-item')).filter(el => el !== draggingItem);
             
-            // Знаходимо найближчу картку до курсора
-            let closestItem = null;
-            let closestDistance = Infinity;
-            let insertAfter = false;
-            
-            allItems.forEach(el => {
-              const rect = el.getBoundingClientRect();
-              const middle = rect.top + rect.height / 2;
-              const distance = Math.abs(middle - currentY);
-              
-              if (distance < closestDistance) {
-                closestDistance = distance;
-                closestItem = el;
-                // Визначаємо чи курсор вище чи нижче середини
-                insertAfter = currentY > middle;
-              }
-            });
-            
             // Очищуємо всі індикатори
             document.querySelectorAll('.category-item').forEach(el => {
               el.classList.remove('drag-over', 'drag-over-bottom');
             });
             
-            // Показуємо лінію на найближчій картці
-            if (closestItem) {
-              if (insertAfter) {
-                closestItem.classList.add('drag-over-bottom');
-              } else {
-                closestItem.classList.add('drag-over');
+            // Знаходимо найближчу gap зону
+            let bestMatch = null;
+            let bestDistance = Infinity;
+            
+            for (let i = 0; i < allItems.length; i++) {
+              const currentRect = allItems[i].getBoundingClientRect();
+              const nextItem = allItems[i + 1];
+              
+              // Перевіряємо gap між поточною і наступною карткою
+              if (nextItem) {
+                const nextRect = nextItem.getBoundingClientRect();
+                const gapMiddle = (currentRect.bottom + nextRect.top) / 2;
+                const distance = Math.abs(currentY - gapMiddle);
+                
+                if (distance < bestDistance) {
+                  bestDistance = distance;
+                  bestMatch = { type: 'between', current: allItems[i], next: nextItem };
+                }
+              }
+              
+              // Перевіряємо зону перед першим елементом
+              if (i === 0) {
+                const topDistance = Math.abs(currentY - currentRect.top);
+                if (topDistance < bestDistance) {
+                  bestDistance = topDistance;
+                  bestMatch = { type: 'before', target: allItems[i] };
+                }
+              }
+              
+              // Перевіряємо зону після останнього елемента
+              if (i === allItems.length - 1) {
+                const bottomDistance = Math.abs(currentY - currentRect.bottom);
+                if (bottomDistance < bestDistance) {
+                  bestDistance = bottomDistance;
+                  bestMatch = { type: 'after', target: allItems[i] };
+                }
               }
             }
-          });
-          
-          item.addEventListener('dragleave', (e) => {
-            if (!item.contains(e.relatedTarget)) {
-              item.classList.remove('drag-over', 'drag-over-bottom');
+            
+            // Показуємо індикатор на найближчому місці
+            if (bestMatch) {
+              if (bestMatch.type === 'between') {
+                bestMatch.current.classList.add('drag-over-bottom');
+                bestMatch.next.classList.add('drag-over');
+              } else if (bestMatch.type === 'before') {
+                bestMatch.target.classList.add('drag-over');
+              } else if (bestMatch.type === 'after') {
+                bestMatch.target.classList.add('drag-over-bottom');
+              }
             }
           });
           
@@ -9099,13 +9089,16 @@ i[class*="fa-"] svg {
             const fromIndex = parseInt(draggingItem.dataset.categoryIndex);
             const toIndex = parseInt(item.dataset.categoryIndex);
             
-            const rect = item.getBoundingClientRect();
-            const threshold = rect.top + rect.height * 0.4;
-            const insertBefore = e.clientY < threshold;
+            // Визначаємо insertBefore по класу drag-over
+            // drag-over означає вставити ПЕРЕД цією карткою
+            // drag-over-bottom означає вставити ПІСЛЯ цієї картки
+            const insertBefore = item.classList.contains('drag-over');
             
             this.reorderCategories(fromIndex, toIndex, insertBefore);
             
-            item.classList.remove('drag-over', 'drag-over-bottom');
+            document.querySelectorAll('.category-item').forEach(el => {
+              el.classList.remove('drag-over', 'drag-over-bottom');
+            });
           });
           
           // Touch events для мобільних - покращена версія
@@ -9190,37 +9183,62 @@ i[class*="fa-"] svg {
               dragGhost.style.top = ghostTop + 'px';
             }
             
-            // Знаходимо найближчу картку до пальця
+            // Знаходимо всі елементи окрім того що перетягується
             const allItems = Array.from(document.querySelectorAll('.category-item')).filter(el => el !== item && !el.classList.contains('drag-ghost'));
-            
-            let closestItem = null;
-            let closestDistance = Infinity;
-            let insertAfter = false;
-            
-            allItems.forEach(el => {
-              const rect = el.getBoundingClientRect();
-              const middle = rect.top + rect.height / 2;
-              const distance = Math.abs(middle - currentY);
-              
-              if (distance < closestDistance) {
-                closestDistance = distance;
-                closestItem = el;
-                // Визначаємо чи палець вище чи нижче середини
-                insertAfter = currentY > middle;
-              }
-            });
             
             // Очищуємо всі індикатори
             document.querySelectorAll('.category-item').forEach(el => {
               el.classList.remove('drag-over', 'drag-over-bottom');
             });
             
-            // Показуємо лінію на найближчій картці
-            if (closestItem) {
-              if (insertAfter) {
-                closestItem.classList.add('drag-over-bottom');
-              } else {
-                closestItem.classList.add('drag-over');
+            // Знаходимо найближчу gap зону
+            let bestMatch = null;
+            let bestDistance = Infinity;
+            
+            for (let i = 0; i < allItems.length; i++) {
+              const currentRect = allItems[i].getBoundingClientRect();
+              const nextItem = allItems[i + 1];
+              
+              // Перевіряємо gap між поточною і наступною карткою
+              if (nextItem) {
+                const nextRect = nextItem.getBoundingClientRect();
+                const gapMiddle = (currentRect.bottom + nextRect.top) / 2;
+                const distance = Math.abs(currentY - gapMiddle);
+                
+                if (distance < bestDistance) {
+                  bestDistance = distance;
+                  bestMatch = { type: 'between', current: allItems[i], next: nextItem };
+                }
+              }
+              
+              // Перевіряємо зону перед першим елементом
+              if (i === 0) {
+                const topDistance = Math.abs(currentY - currentRect.top);
+                if (topDistance < bestDistance) {
+                  bestDistance = topDistance;
+                  bestMatch = { type: 'before', target: allItems[i] };
+                }
+              }
+              
+              // Перевіряємо зону після останнього елемента
+              if (i === allItems.length - 1) {
+                const bottomDistance = Math.abs(currentY - currentRect.bottom);
+                if (bottomDistance < bestDistance) {
+                  bestDistance = bottomDistance;
+                  bestMatch = { type: 'after', target: allItems[i] };
+                }
+              }
+            }
+            
+            // Показуємо індикатор на найближчому місці
+            if (bestMatch) {
+              if (bestMatch.type === 'between') {
+                bestMatch.current.classList.add('drag-over-bottom');
+                bestMatch.next.classList.add('drag-over');
+              } else if (bestMatch.type === 'before') {
+                bestMatch.target.classList.add('drag-over');
+              } else if (bestMatch.type === 'after') {
+                bestMatch.target.classList.add('drag-over-bottom');
               }
             }
           });
@@ -9251,9 +9269,9 @@ i[class*="fa-"] svg {
           
           if (targetItem && targetItem !== item && !targetItem.classList.contains('drag-ghost')) {
             const toIndex = parseInt(targetItem.dataset.categoryIndex);
-            const rect = targetItem.getBoundingClientRect();
-            const threshold = rect.top + rect.height * 0.4;
-            const insertBefore = touch.clientY < threshold;
+            
+            // Визначаємо insertBefore по класу drag-over
+            const insertBefore = targetItem.classList.contains('drag-over');
             
             // Вібрація при успішному перетягуванні
             if (navigator.vibrate) {
@@ -9298,17 +9316,15 @@ i[class*="fa-"] svg {
       const categories = [...State.config.categories];
       const [movedCategory] = categories.splice(fromIndex, 1);
       
-      // Коригуємо індекс вставки
-      let insertIndex = toIndex;
-      if (fromIndex < toIndex && !insertBefore) {
-        insertIndex = toIndex;
-      } else if (fromIndex < toIndex && insertBefore) {
-        insertIndex = toIndex;
-      } else if (fromIndex > toIndex && insertBefore) {
-        insertIndex = toIndex;
-      } else if (fromIndex > toIndex && !insertBefore) {
-        insertIndex = toIndex + 1;
+      // Якщо видалили елемент перед toIndex, toIndex зменшується на 1
+      let adjustedToIndex = toIndex;
+      if (fromIndex < toIndex) {
+        adjustedToIndex = toIndex - 1;
       }
+      
+      // Вставляємо: якщо insertBefore, вставляємо на позицію toIndex,
+      // якщо ні - вставляємо після (toIndex + 1)
+      const insertIndex = insertBefore ? adjustedToIndex : adjustedToIndex + 1;
       
       categories.splice(insertIndex, 0, movedCategory);
       State.config.categories = categories;
@@ -9701,35 +9717,59 @@ i[class*="fa-"] svg {
           const currentY = e.clientY;
           const allCards = Array.from(document.querySelectorAll('.field-card')).filter(el => el !== draggingCard);
           
-          // Знаходимо найближчу картку до курсора
-          let closestCard = null;
-          let closestDistance = Infinity;
-          let insertAfter = false;
-          
-          allCards.forEach(el => {
-            const rect = el.getBoundingClientRect();
-            const middle = rect.top + rect.height / 2;
-            const distance = Math.abs(middle - currentY);
-            
-            if (distance < closestDistance) {
-              closestDistance = distance;
-              closestCard = el;
-              // Визначаємо чи курсор вище чи нижче середини
-              insertAfter = currentY > middle;
-            }
-          });
-          
           // Очищуємо всі індикатори
           document.querySelectorAll('.field-card').forEach(el => {
             el.classList.remove('drag-over', 'drag-over-bottom');
           });
           
-          // Показуємо лінію на найближчій картці
-          if (closestCard) {
-            if (insertAfter) {
-              closestCard.classList.add('drag-over-bottom');
-            } else {
-              closestCard.classList.add('drag-over');
+          // Знаходимо найближчу gap зону
+          let bestMatch = null;
+          let bestDistance = Infinity;
+          
+          for (let i = 0; i < allCards.length; i++) {
+            const currentRect = allCards[i].getBoundingClientRect();
+            const nextCard = allCards[i + 1];
+            
+            // Перевіряємо gap між поточною і наступною карткою
+            if (nextCard) {
+              const nextRect = nextCard.getBoundingClientRect();
+              const gapMiddle = (currentRect.bottom + nextRect.top) / 2;
+              const distance = Math.abs(currentY - gapMiddle);
+              
+              if (distance < bestDistance) {
+                bestDistance = distance;
+                bestMatch = { type: 'between', current: allCards[i], next: nextCard };
+              }
+            }
+            
+            // Перевіряємо зону перед першою карткою
+            if (i === 0) {
+              const topDistance = Math.abs(currentY - currentRect.top);
+              if (topDistance < bestDistance) {
+                bestDistance = topDistance;
+                bestMatch = { type: 'before', target: allCards[i] };
+              }
+            }
+            
+            // Перевіряємо зону після останньої картки
+            if (i === allCards.length - 1) {
+              const bottomDistance = Math.abs(currentY - currentRect.bottom);
+              if (bottomDistance < bestDistance) {
+                bestDistance = bottomDistance;
+                bestMatch = { type: 'after', target: allCards[i] };
+              }
+            }
+          }
+          
+          // Показуємо індикатор на найближчому місці
+          if (bestMatch) {
+            if (bestMatch.type === 'between') {
+              bestMatch.current.classList.add('drag-over-bottom');
+              bestMatch.next.classList.add('drag-over');
+            } else if (bestMatch.type === 'before') {
+              bestMatch.target.classList.add('drag-over');
+            } else if (bestMatch.type === 'after') {
+              bestMatch.target.classList.add('drag-over-bottom');
             }
           }
         });
@@ -9750,13 +9790,16 @@ i[class*="fa-"] svg {
           const fromIndex = parseInt(draggingCard.dataset.fieldIndex);
           const toIndex = parseInt(card.dataset.fieldIndex);
           
-          const rect = card.getBoundingClientRect();
-          const threshold = rect.top + rect.height * 0.4;
-          const insertBefore = e.clientY < threshold;
+          // Визначаємо insertBefore по класу drag-over
+          // drag-over означає вставити ПЕРЕД цією карткою
+          // drag-over-bottom означає вставити ПІСЛЯ цієї картки
+          const insertBefore = card.classList.contains('drag-over');
           
           this.reorderFields(fromIndex, toIndex, insertBefore);
           
-          card.classList.remove('drag-over', 'drag-over-bottom');
+          document.querySelectorAll('.field-card').forEach(el => {
+            el.classList.remove('drag-over', 'drag-over-bottom');
+          });
         });
         
         // Touch events для мобільних - покращена версія з ghost
@@ -9841,37 +9884,62 @@ i[class*="fa-"] svg {
             dragGhost.style.top = ghostTop + 'px';
           }
           
-          // Знаходимо найближчу картку до пальця
+          // Знаходимо всі елементи окрім того що перетягується
           const allCards = Array.from(document.querySelectorAll('.field-card')).filter(el => el !== card && !el.classList.contains('drag-ghost'));
-          
-          let closestCard = null;
-          let closestDistance = Infinity;
-          let insertAfter = false;
-          
-          allCards.forEach(el => {
-            const rect = el.getBoundingClientRect();
-            const middle = rect.top + rect.height / 2;
-            const distance = Math.abs(middle - currentY);
-            
-            if (distance < closestDistance) {
-              closestDistance = distance;
-              closestCard = el;
-              // Визначаємо чи палець вище чи нижче середини
-              insertAfter = currentY > middle;
-            }
-          });
           
           // Очищуємо всі індикатори
           document.querySelectorAll('.field-card').forEach(el => {
             el.classList.remove('drag-over', 'drag-over-bottom');
           });
           
-          // Показуємо лінію на найближчій картці
-          if (closestCard) {
-            if (insertAfter) {
-              closestCard.classList.add('drag-over-bottom');
-            } else {
-              closestCard.classList.add('drag-over');
+          // Знаходимо найближчу gap зону
+          let bestMatch = null;
+          let bestDistance = Infinity;
+          
+          for (let i = 0; i < allCards.length; i++) {
+            const currentRect = allCards[i].getBoundingClientRect();
+            const nextCard = allCards[i + 1];
+            
+            // Перевіряємо gap між поточною і наступною карткою
+            if (nextCard) {
+              const nextRect = nextCard.getBoundingClientRect();
+              const gapMiddle = (currentRect.bottom + nextRect.top) / 2;
+              const distance = Math.abs(currentY - gapMiddle);
+              
+              if (distance < bestDistance) {
+                bestDistance = distance;
+                bestMatch = { type: 'between', current: allCards[i], next: nextCard };
+              }
+            }
+            
+            // Перевіряємо зону перед першою карткою
+            if (i === 0) {
+              const topDistance = Math.abs(currentY - currentRect.top);
+              if (topDistance < bestDistance) {
+                bestDistance = topDistance;
+                bestMatch = { type: 'before', target: allCards[i] };
+              }
+            }
+            
+            // Перевіряємо зону після останньої картки
+            if (i === allCards.length - 1) {
+              const bottomDistance = Math.abs(currentY - currentRect.bottom);
+              if (bottomDistance < bestDistance) {
+                bestDistance = bottomDistance;
+                bestMatch = { type: 'after', target: allCards[i] };
+              }
+            }
+          }
+          
+          // Показуємо індикатор на найближчому місці
+          if (bestMatch) {
+            if (bestMatch.type === 'between') {
+              bestMatch.current.classList.add('drag-over-bottom');
+              bestMatch.next.classList.add('drag-over');
+            } else if (bestMatch.type === 'before') {
+              bestMatch.target.classList.add('drag-over');
+            } else if (bestMatch.type === 'after') {
+              bestMatch.target.classList.add('drag-over-bottom');
             }
           }
         });
@@ -9902,9 +9970,9 @@ i[class*="fa-"] svg {
           
           if (targetCard && targetCard !== card && !targetCard.classList.contains('drag-ghost')) {
             const toIndex = parseInt(targetCard.dataset.fieldIndex);
-            const rect = targetCard.getBoundingClientRect();
-            const threshold = rect.top + rect.height * 0.4;
-            const insertBefore = touch.clientY < threshold;
+            
+            // Визначаємо insertBefore по класу drag-over
+            const insertBefore = targetCard.classList.contains('drag-over');
             
             // Вібрація при успішному перетягуванні
             if (navigator.vibrate) {
@@ -9952,17 +10020,15 @@ i[class*="fa-"] svg {
       // Переміщуємо поле в масиві
       const [movedField] = categoryFields.splice(fromIndex, 1);
       
-      // Коригуємо індекс вставки
-      let insertIndex = toIndex;
-      if (fromIndex < toIndex && !insertBefore) {
-        insertIndex = toIndex;
-      } else if (fromIndex < toIndex && insertBefore) {
-        insertIndex = toIndex;
-      } else if (fromIndex > toIndex && insertBefore) {
-        insertIndex = toIndex;
-      } else if (fromIndex > toIndex && !insertBefore) {
-        insertIndex = toIndex + 1;
+      // Якщо видалили елемент перед toIndex, toIndex зменшується на 1
+      let adjustedToIndex = toIndex;
+      if (fromIndex < toIndex) {
+        adjustedToIndex = toIndex - 1;
       }
+      
+      // Вставляємо: якщо insertBefore, вставляємо на позицію toIndex,
+      // якщо ні - вставляємо після (toIndex + 1)
+      const insertIndex = insertBefore ? adjustedToIndex : adjustedToIndex + 1;
       
       categoryFields.splice(insertIndex, 0, movedField);
       
