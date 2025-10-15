@@ -9088,10 +9088,22 @@ i[class*="fa-"] svg {
               dragGhost.style.height = item.offsetHeight + 'px';
               document.body.appendChild(dragGhost);
               
-              // Позиціонуємо ghost під пальцем
+              // Позиціонуємо ghost під пальцем з обмеженням по viewport
               const touch = e.touches[0];
-              dragGhost.style.left = (touch.clientX - item.offsetWidth / 2) + 'px';
-              dragGhost.style.top = (touch.clientY - item.offsetHeight / 2) + 'px';
+              const ghostWidth = item.offsetWidth;
+              const ghostHeight = item.offsetHeight;
+              const viewportWidth = window.innerWidth;
+              const viewportHeight = window.innerHeight;
+              
+              let ghostLeft = touch.clientX - ghostWidth / 2;
+              let ghostTop = touch.clientY - ghostHeight / 2;
+              
+              // Обмежуємо щоб не виходив за межі екрану
+              ghostLeft = Math.max(0, Math.min(ghostLeft, viewportWidth - ghostWidth));
+              ghostTop = Math.max(0, Math.min(ghostTop, viewportHeight - ghostHeight));
+              
+              dragGhost.style.left = ghostLeft + 'px';
+              dragGhost.style.top = ghostTop + 'px';
             }
           }, 300); // Збільшено до 300ms для більш очевидного long press
         });
@@ -9107,10 +9119,23 @@ i[class*="fa-"] svg {
           const touch = e.touches[0];
           const currentY = touch.clientY;
           
-          // Оновлюємо позицію ghost
+          // Оновлюємо позицію ghost з обмеженням по viewport
           if (dragGhost) {
-            dragGhost.style.left = (touch.clientX - item.offsetWidth / 2) + 'px';
-            dragGhost.style.top = (touch.clientY - item.offsetHeight / 2) + 'px';
+            const ghostWidth = item.offsetWidth;
+            const ghostHeight = item.offsetHeight;
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            
+            // Розраховуємо позицію з центруванням під пальцем
+            let ghostLeft = touch.clientX - ghostWidth / 2;
+            let ghostTop = touch.clientY - ghostHeight / 2;
+            
+            // Обмежуємо щоб не виходив за межі екрану
+            ghostLeft = Math.max(0, Math.min(ghostLeft, viewportWidth - ghostWidth));
+            ghostTop = Math.max(0, Math.min(ghostTop, viewportHeight - ghostHeight));
+            
+            dragGhost.style.left = ghostLeft + 'px';
+            dragGhost.style.top = ghostTop + 'px';
           }
           
           // Знаходимо елемент під пальцем (ігноруючи ghost)
@@ -9165,6 +9190,7 @@ i[class*="fa-"] svg {
             const insertBefore = touch.clientY < midpoint;
             
             // Вібрація при успішному перетягуванні
+            if (navigator.vibrate) {
               navigator.vibrate(30);
             }
             
@@ -9645,31 +9671,90 @@ i[class*="fa-"] svg {
           card.classList.remove('drag-over', 'drag-over-bottom');
         });
         
-        // Touch events для мобільних
+        // Touch events для мобільних - покращена версія з ghost
+        let dragGhost = null;
+        let longPressTimer = null;
+        
         card.addEventListener('touchstart', (e) => {
           touchStartY = e.touches[0].clientY;
           touchStartIndex = fieldIndex;
           isDragging = false;
           
-          setTimeout(() => {
+          // Встановлюємо таймер для long press
+          longPressTimer = setTimeout(() => {
             if (!isDragging) {
-              card.classList.add('dragging');
               isDragging = true;
+              card.classList.add('dragging');
+              
+              // Вібрація для підтвердження початку drag
+              if (navigator.vibrate) {
+                navigator.vibrate(50);
+              }
+              
+              // Створюємо візуальний клон (ghost)
+              dragGhost = card.cloneNode(true);
+              dragGhost.classList.add('drag-ghost');
+              dragGhost.classList.remove('dragging');
+              dragGhost.style.width = card.offsetWidth + 'px';
+              dragGhost.style.height = card.offsetHeight + 'px';
+              document.body.appendChild(dragGhost);
+              
+              // Позиціонуємо ghost під пальцем з обмеженням по viewport
+              const touch = e.touches[0];
+              const ghostWidth = card.offsetWidth;
+              const ghostHeight = card.offsetHeight;
+              const viewportWidth = window.innerWidth;
+              const viewportHeight = window.innerHeight;
+              
+              let ghostLeft = touch.clientX - ghostWidth / 2;
+              let ghostTop = touch.clientY - ghostHeight / 2;
+              
+              // Обмежуємо щоб не виходив за межі екрану
+              ghostLeft = Math.max(0, Math.min(ghostLeft, viewportWidth - ghostWidth));
+              ghostTop = Math.max(0, Math.min(ghostTop, viewportHeight - ghostHeight));
+              
+              dragGhost.style.left = ghostLeft + 'px';
+              dragGhost.style.top = ghostTop + 'px';
             }
-          }, 200);
+          }, 300); // Long press 300ms
         });
         
         card.addEventListener('touchmove', (e) => {
-          if (!isDragging) return;
+          if (!isDragging) {
+            // Якщо палець рухається до початку drag, скасовуємо long press
+            clearTimeout(longPressTimer);
+            return;
+          }
           
           e.preventDefault();
           const touch = e.touches[0];
           const currentY = touch.clientY;
           
+          // Оновлюємо позицію ghost з обмеженням по viewport
+          if (dragGhost) {
+            const ghostWidth = card.offsetWidth;
+            const ghostHeight = card.offsetHeight;
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            
+            // Розраховуємо позицію з центруванням під пальцем
+            let ghostLeft = touch.clientX - ghostWidth / 2;
+            let ghostTop = touch.clientY - ghostHeight / 2;
+            
+            // Обмежуємо щоб не виходив за межі екрану
+            ghostLeft = Math.max(0, Math.min(ghostLeft, viewportWidth - ghostWidth));
+            ghostTop = Math.max(0, Math.min(ghostTop, viewportHeight - ghostHeight));
+            
+            dragGhost.style.left = ghostLeft + 'px';
+            dragGhost.style.top = ghostTop + 'px';
+          }
+          
+          // Знаходимо елемент під пальцем (ігноруючи ghost)
+          if (dragGhost) dragGhost.style.pointerEvents = 'none';
           const elementBelow = document.elementFromPoint(touch.clientX, currentY);
           const targetCard = elementBelow?.closest('.field-card');
           
-          if (targetCard && targetCard !== card) {
+          if (targetCard && targetCard !== card && !targetCard.classList.contains('drag-ghost')) {
             const rect = targetCard.getBoundingClientRect();
             const midpoint = rect.top + rect.height / 2;
             
@@ -9686,7 +9771,22 @@ i[class*="fa-"] svg {
         });
         
         card.addEventListener('touchend', (e) => {
+          clearTimeout(longPressTimer);
+          
           if (!isDragging) return;
+          
+          // Прибираємо ghost з анімацією
+          if (dragGhost) {
+            dragGhost.style.transition = 'all 0.2s ease';
+            dragGhost.style.opacity = '0';
+            dragGhost.style.transform = 'scale(0.8)';
+            setTimeout(() => {
+              if (dragGhost && dragGhost.parentNode) {
+                dragGhost.parentNode.removeChild(dragGhost);
+              }
+              dragGhost = null;
+            }, 200);
+          }
           
           card.classList.remove('dragging');
           
@@ -9694,11 +9794,16 @@ i[class*="fa-"] svg {
           const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
           const targetCard = elementBelow?.closest('.field-card');
           
-          if (targetCard && targetCard !== card) {
+          if (targetCard && targetCard !== card && !targetCard.classList.contains('drag-ghost')) {
             const toIndex = parseInt(targetCard.dataset.fieldIndex);
             const rect = targetCard.getBoundingClientRect();
             const midpoint = rect.top + rect.height / 2;
             const insertBefore = touch.clientY < midpoint;
+            
+            // Вібрація при успішному перетягуванні
+            if (navigator.vibrate) {
+              navigator.vibrate(30);
+            }
             
             this.reorderFields(touchStartIndex, toIndex, insertBefore);
           }
@@ -9711,6 +9816,13 @@ i[class*="fa-"] svg {
         });
         
         card.addEventListener('touchcancel', () => {
+          clearTimeout(longPressTimer);
+          
+          if (dragGhost && dragGhost.parentNode) {
+            dragGhost.parentNode.removeChild(dragGhost);
+            dragGhost = null;
+          }
+          
           card.classList.remove('dragging');
           document.querySelectorAll('.field-card').forEach(el => {
             el.classList.remove('drag-over', 'drag-over-bottom');
