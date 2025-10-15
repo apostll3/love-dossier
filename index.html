@@ -656,7 +656,6 @@ i[class*="fa-"] svg {
   align-items: start;
 }
 
-
 /* Sidebar */
 .sidebar {
   background: var(--card);
@@ -664,10 +663,23 @@ i[class*="fa-"] svg {
   padding: 1.5rem;
   box-shadow: var(--shadow-lg);
   position: sticky;
-  top: 0rem;
-  max-height: calc(100vh - 3rem);
-  overflow-y: auto;
+  top: 0;
+  /* max-height: calc(100vh - 2rem); */
+  max-height: calc(550px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
   transition: all 0.3s ease;
+}
+
+/* Приховуємо scrollbar тільки для sidebar */
+.sidebar::-webkit-scrollbar {
+  display: none;
+}
+
+.sidebar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* Кнопка toggle (тільки на мобільних) */
@@ -744,6 +756,7 @@ i[class*="fa-"] svg {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 1rem;
+  flex-shrink: 0;
 }
 
 .sidebar-title {
@@ -758,13 +771,48 @@ i[class*="fa-"] svg {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  margin-bottom: 1rem;
+  /* margin-bottom: 1rem; */
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  padding-right: 0.5rem;
+}
+
+/* Стилізація scrollbar для category-nav */
+.category-nav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.category-nav::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+
+.category-nav::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.2);
+  border-radius: 10px;
+  transition: background 0.2s ease;
+}
+
+.category-nav::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.4);
+}
+
+.category-nav::-webkit-scrollbar-thumb:active {
+  background: rgba(99, 102, 241, 0.6);
+}
+
+/* Для Firefox */
+.category-nav {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(99, 102, 241, 0.2) transparent;
 }
 
 /* Sidebar actions container */
 .sidebar-actions {
   display: flex;
   gap: 0.5rem;
+  flex-shrink: 0;
 }
 
 /* Кнопка налаштувань категорій */
@@ -941,6 +989,7 @@ i[class*="fa-"] svg {
   background: var(--bg);
   position: relative;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 /* Коли елемент в режимі редагування, показуємо візуальний індикатор */
