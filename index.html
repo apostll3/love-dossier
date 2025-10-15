@@ -9013,13 +9013,13 @@ i[class*="fa-"] svg {
             if (!draggingItem || draggingItem === item) return;
             
             const rect = item.getBoundingClientRect();
-            const midpoint = rect.top + rect.height / 2;
+            const threshold = rect.top + rect.height * 0.4;
             
             document.querySelectorAll('.category-item').forEach(el => {
               el.classList.remove('drag-over', 'drag-over-bottom');
             });
             
-            if (e.clientY < midpoint) {
+            if (e.clientY < threshold) {
               item.classList.add('drag-over');
             } else {
               item.classList.add('drag-over-bottom');
@@ -9043,8 +9043,8 @@ i[class*="fa-"] svg {
             const toIndex = parseInt(item.dataset.categoryIndex);
             
             const rect = item.getBoundingClientRect();
-            const midpoint = rect.top + rect.height / 2;
-            const insertBefore = e.clientY < midpoint;
+            const threshold = rect.top + rect.height * 0.4;
+            const insertBefore = e.clientY < threshold;
             
             this.reorderCategories(fromIndex, toIndex, insertBefore);
             
@@ -9136,13 +9136,13 @@ i[class*="fa-"] svg {
           
           if (targetItem && targetItem !== item && !targetItem.classList.contains('drag-ghost')) {
             const rect = targetItem.getBoundingClientRect();
-            const midpoint = rect.top + rect.height / 2;
+            const threshold = rect.top + rect.height * 0.4;
             
             document.querySelectorAll('.category-item').forEach(el => {
               el.classList.remove('drag-over', 'drag-over-bottom');
             });
             
-            if (currentY < midpoint) {
+            if (currentY < threshold) {
               targetItem.classList.add('drag-over');
             } else {
               targetItem.classList.add('drag-over-bottom');
@@ -9177,8 +9177,8 @@ i[class*="fa-"] svg {
           if (targetItem && targetItem !== item && !targetItem.classList.contains('drag-ghost')) {
             const toIndex = parseInt(targetItem.dataset.categoryIndex);
             const rect = targetItem.getBoundingClientRect();
-            const midpoint = rect.top + rect.height / 2;
-            const insertBefore = touch.clientY < midpoint;
+            const threshold = rect.top + rect.height * 0.4;
+            const insertBefore = touch.clientY < threshold;
             
             // Вібрація при успішному перетягуванні
             if (navigator.vibrate) {
@@ -9624,13 +9624,13 @@ i[class*="fa-"] svg {
           if (!draggingCard || draggingCard === card) return;
           
           const rect = card.getBoundingClientRect();
-          const midpoint = rect.top + rect.height / 2;
+          const threshold = rect.top + rect.height * 0.4;
           
           document.querySelectorAll('.field-card').forEach(el => {
             el.classList.remove('drag-over', 'drag-over-bottom');
           });
           
-          if (e.clientY < midpoint) {
+          if (e.clientY < threshold) {
             card.classList.add('drag-over');
           } else {
             card.classList.add('drag-over-bottom');
@@ -9654,8 +9654,8 @@ i[class*="fa-"] svg {
           const toIndex = parseInt(card.dataset.fieldIndex);
           
           const rect = card.getBoundingClientRect();
-          const midpoint = rect.top + rect.height / 2;
-          const insertBefore = e.clientY < midpoint;
+          const threshold = rect.top + rect.height * 0.4;
+          const insertBefore = e.clientY < threshold;
           
           this.reorderFields(fromIndex, toIndex, insertBefore);
           
@@ -9747,13 +9747,13 @@ i[class*="fa-"] svg {
           
           if (targetCard && targetCard !== card && !targetCard.classList.contains('drag-ghost')) {
             const rect = targetCard.getBoundingClientRect();
-            const midpoint = rect.top + rect.height / 2;
+            const threshold = rect.top + rect.height * 0.4;
             
             document.querySelectorAll('.field-card').forEach(el => {
               el.classList.remove('drag-over', 'drag-over-bottom');
             });
             
-            if (currentY < midpoint) {
+            if (currentY < threshold) {
               targetCard.classList.add('drag-over');
             } else {
               targetCard.classList.add('drag-over-bottom');
@@ -9788,8 +9788,8 @@ i[class*="fa-"] svg {
           if (targetCard && targetCard !== card && !targetCard.classList.contains('drag-ghost')) {
             const toIndex = parseInt(targetCard.dataset.fieldIndex);
             const rect = targetCard.getBoundingClientRect();
-            const midpoint = rect.top + rect.height / 2;
-            const insertBefore = touch.clientY < midpoint;
+            const threshold = rect.top + rect.height * 0.4;
+            const insertBefore = touch.clientY < threshold;
             
             // Вібрація при успішному перетягуванні
             if (navigator.vibrate) {
