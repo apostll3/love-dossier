@@ -997,18 +997,22 @@ i[class*="fa-"] svg {
 
 /* Drag and Drop стилі для категорій */
 .category-item.dragging {
-  opacity: 0.5;
+  opacity: 0.3;
   cursor: grabbing;
+  transform: scale(0.98);
+  transition: opacity 0.2s, transform 0.2s;
 }
 
 .category-item.drag-over {
   border-top: 3px solid var(--primary);
   margin-top: 0.5rem;
+  box-shadow: 0 -2px 8px rgba(var(--primary-rgb), 0.3);
 }
 
 .category-item.drag-over-bottom {
   border-bottom: 3px solid var(--primary);
   margin-bottom: 0.5rem;
+  box-shadow: 0 2px 8px rgba(var(--primary-rgb), 0.3);
 }
 
 .category-drag-handle {
@@ -1020,29 +1024,59 @@ i[class*="fa-"] svg {
   color: var(--text-muted);
   cursor: grab;
   opacity: 1;
-  transition: opacity 0.2s;
+  transition: opacity 0.2s, transform 0.2s;
   flex-shrink: 0;
 }
 
 .category-drag-handle:active {
   cursor: grabbing;
+  transform: scale(1.1);
 }
 
 .category-item.active .category-drag-handle {
   color: rgba(255, 255, 255, 0.7);
 }
 
-/* На мобільних приховуємо handle для категорій */
+/* Drag ghost - клон елемента при перетягуванні */
+.drag-ghost {
+  position: fixed;
+  pointer-events: none;
+  z-index: 10000;
+  opacity: 0.9;
+  transform: rotate(2deg) scale(1.05);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  transition: transform 0.05s ease-out;
+}
+
+/* На мобільних ПОКАЗУЄМО handle але більшого розміру */
 @media (max-width: 768px) {
   .category-drag-handle {
-    display: none;
+    width: 2.5rem;
+    height: 100%;
+    margin-right: 0.5rem;
+    background: rgba(var(--primary-rgb), 0.1);
+    border-radius: 0.5rem;
+    touch-action: none;
   }
   
-  /* Замість цього додаємо візуальний індикатор */
   .category-item[draggable="true"] {
-    border-style: dashed;
-    padding-left: 2.5rem;
-    position: relative;
+    touch-action: none;
+    user-select: none;
+  }
+  
+  .category-item.dragging {
+    opacity: 0.5;
+  }
+  
+  /* Більш помітні індикатори на мобільних */
+  .category-item.drag-over {
+    border-top: 4px solid var(--primary);
+    margin-top: 0.75rem;
+  }
+  
+  .category-item.drag-over-bottom {
+    border-bottom: 4px solid var(--primary);
+    margin-bottom: 0.75rem;
   }
   
   .category-item[draggable="true"]::before {
@@ -9026,87 +9060,146 @@ i[class*="fa-"] svg {
             item.classList.remove('drag-over', 'drag-over-bottom');
           });
           
-          // Touch events для мобільних
+          // Touch events для мобільних - покращена версія
+          let dragGhost = null;
+          let longPressTimer = null;
+          
           item.addEventListener('touchstart', (e) => {
-            touchStartY = e.touches[0].clientY;
-            touchStartIndex = index;
-            isDragging = false;
-            
-            setTimeout(() => {
-              if (!isDragging) {
-                item.classList.add('dragging');
-                isDragging = true;
+          touchStartY = e.touches[0].clientY;
+          touchStartIndex = index;
+          isDragging = false;
+          
+          // Встановлюємо таймер для long press
+          longPressTimer = setTimeout(() => {
+            if (!isDragging) {
+              isDragging = true;
+              item.classList.add('dragging');
+              
+              // Вібрація для підтвердження початку drag
+              if (navigator.vibrate) {
+                navigator.vibrate(50);
               }
-            }, 200); // Long press для початку drag
-          });
-          
-          item.addEventListener('touchmove', (e) => {
-            if (!isDragging) return;
-            
-            e.preventDefault();
-            const touch = e.touches[0];
-            const currentY = touch.clientY;
-            
-            // Знаходимо елемент під пальцем
-            const elementBelow = document.elementFromPoint(touch.clientX, currentY);
-            const targetItem = elementBelow?.closest('.category-item');
-            
-            if (targetItem && targetItem !== item) {
-              const rect = targetItem.getBoundingClientRect();
-              const midpoint = rect.top + rect.height / 2;
               
-              document.querySelectorAll('.category-item').forEach(el => {
-                el.classList.remove('drag-over', 'drag-over-bottom');
-              });
+              // Створюємо візуальний клон (ghost)
+              dragGhost = item.cloneNode(true);
+              dragGhost.classList.add('drag-ghost');
+              dragGhost.classList.remove('dragging');
+              dragGhost.style.width = item.offsetWidth + 'px';
+              dragGhost.style.height = item.offsetHeight + 'px';
+              document.body.appendChild(dragGhost);
               
-              if (currentY < midpoint) {
-                targetItem.classList.add('drag-over');
-              } else {
-                targetItem.classList.add('drag-over-bottom');
-              }
+              // Позиціонуємо ghost під пальцем
+              const touch = e.touches[0];
+              dragGhost.style.left = (touch.clientX - item.offsetWidth / 2) + 'px';
+              dragGhost.style.top = (touch.clientY - item.offsetHeight / 2) + 'px';
             }
-          });
-          
-          item.addEventListener('touchend', (e) => {
-            if (!isDragging) return;
-            
-            item.classList.remove('dragging');
-            
-            const touch = e.changedTouches[0];
-            const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
-            const targetItem = elementBelow?.closest('.category-item');
-            
-            if (targetItem && targetItem !== item) {
-              const toIndex = parseInt(targetItem.dataset.categoryIndex);
-              const rect = targetItem.getBoundingClientRect();
-              const midpoint = rect.top + rect.height / 2;
-              const insertBefore = touch.clientY < midpoint;
-              
-              this.reorderCategories(touchStartIndex, toIndex, insertBefore);
-            }
-            
-            document.querySelectorAll('.category-item').forEach(el => {
-              el.classList.remove('drag-over', 'drag-over-bottom');
-            });
-            
-            isDragging = false;
-          });
-          
-          item.addEventListener('touchcancel', () => {
-            item.classList.remove('dragging');
-            document.querySelectorAll('.category-item').forEach(el => {
-              el.classList.remove('drag-over', 'drag-over-bottom');
-            });
-            isDragging = false;
-          });
-        }
+          }, 300); // Збільшено до 300ms для більш очевидного long press
+        });
         
-        nav.appendChild(item);
-      });
+        item.addEventListener('touchmove', (e) => {
+          if (!isDragging) {
+            // Якщо палець рухається до початку drag, скасовуємо long press
+            clearTimeout(longPressTimer);
+            return;
+          }
+          
+          e.preventDefault();
+          const touch = e.touches[0];
+          const currentY = touch.clientY;
+          
+          // Оновлюємо позицію ghost
+          if (dragGhost) {
+            dragGhost.style.left = (touch.clientX - item.offsetWidth / 2) + 'px';
+            dragGhost.style.top = (touch.clientY - item.offsetHeight / 2) + 'px';
+          }
+          
+          // Знаходимо елемент під пальцем (ігноруючи ghost)
+          dragGhost.style.pointerEvents = 'none';
+          const elementBelow = document.elementFromPoint(touch.clientX, currentY);
+          const targetItem = elementBelow?.closest('.category-item');
+          
+          if (targetItem && targetItem !== item && !targetItem.classList.contains('drag-ghost')) {
+            const rect = targetItem.getBoundingClientRect();
+            const midpoint = rect.top + rect.height / 2;
+            
+            document.querySelectorAll('.category-item').forEach(el => {
+              el.classList.remove('drag-over', 'drag-over-bottom');
+            });
+            
+            if (currentY < midpoint) {
+              targetItem.classList.add('drag-over');
+            } else {
+              targetItem.classList.add('drag-over-bottom');
+            }
+          }
+        });
+        
+        item.addEventListener('touchend', (e) => {
+          clearTimeout(longPressTimer);
+          
+          if (!isDragging) return;
+          
+          // Прибираємо ghost з анімацією
+          if (dragGhost) {
+            dragGhost.style.transition = 'all 0.2s ease';
+            dragGhost.style.opacity = '0';
+            dragGhost.style.transform = 'scale(0.8)';
+            setTimeout(() => {
+              if (dragGhost && dragGhost.parentNode) {
+                dragGhost.parentNode.removeChild(dragGhost);
+              }
+              dragGhost = null;
+            }, 200);
+          }
+          
+          item.classList.remove('dragging');
+          
+          const touch = e.changedTouches[0];
+          const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+          const targetItem = elementBelow?.closest('.category-item');
+          
+          if (targetItem && targetItem !== item && !targetItem.classList.contains('drag-ghost')) {
+            const toIndex = parseInt(targetItem.dataset.categoryIndex);
+            const rect = targetItem.getBoundingClientRect();
+            const midpoint = rect.top + rect.height / 2;
+            const insertBefore = touch.clientY < midpoint;
+            
+            // Вібрація при успішному перетягуванні
+              navigator.vibrate(30);
+            }
+            
+            this.reorderCategories(touchStartIndex, toIndex, insertBefore);
+          }
+          
+          document.querySelectorAll('.category-item').forEach(el => {
+            el.classList.remove('drag-over', 'drag-over-bottom');
+          });
+          
+          isDragging = false;
+        });
+        
+        item.addEventListener('touchcancel', () => {
+          clearTimeout(longPressTimer);
+          
+          if (dragGhost && dragGhost.parentNode) {
+            dragGhost.parentNode.removeChild(dragGhost);
+            dragGhost = null;
+          }
+          
+          item.classList.remove('dragging');
+          document.querySelectorAll('.category-item').forEach(el => {
+            el.classList.remove('drag-over', 'drag-over-bottom');
+          });
+          isDragging = false;
+        });
+      }
       
-      // Оновлюємо іконки після рендерингу
-      refreshIcons();
-    },
+      nav.appendChild(item);
+    });
+    
+    // Оновлюємо іконки після рендерингу
+    refreshIcons();
+  },
     
     // Функція для зміни порядку категорій
     reorderCategories(fromIndex, toIndex, insertBefore) {
