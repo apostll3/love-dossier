@@ -1025,10 +1025,43 @@ i[class*="fa-"] svg {
   bottom: 0;
   width: 0.25rem;
   background: var(--primary);
-  opacity: 0.3;
+  opacity: 0.5;
   cursor: grab;
   transition: opacity 0.2s, width 0.2s;
   border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+}
+
+/* Анімація успішного переміщення категорії */
+.category-item.move-success {
+  position: relative;
+  overflow: hidden;
+}
+
+.category-item.move-success::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #10b981, #059669);
+  animation: progressBarSlide 0.5s ease-out forwards;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+}
+
+@keyframes progressBarSlide {
+  0% {
+    width: 0;
+    opacity: 1;
+  }
+  70% {
+    width: 100%;
+    opacity: 1;
+  }
+  100% {
+    width: 100%;
+    opacity: 0;
+  }
 }
 
 .category-drag-handle:hover {
@@ -1042,7 +1075,7 @@ i[class*="fa-"] svg {
 }
 
 .category-item.active .category-drag-handle {
-  background: rgba(255, 255, 255, 0.5);
+  background: var(--primary);
   opacity: 0.5;
 }
 
@@ -1549,6 +1582,11 @@ i[class*="fa-"] svg {
   background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), transparent);
   opacity: 0;
   transition: opacity 0.3s ease;
+}
+
+.field-icon svg {
+  height: 66%;
+  width: auto;
 }
 
 .field-card:hover .field-icon {
@@ -9329,9 +9367,25 @@ i[class*="fa-"] svg {
       categories.splice(insertIndex, 0, movedCategory);
       State.config.categories = categories;
       
+      // Зберігаємо ID переміщеної категорії для анімації
+      const movedCategoryId = movedCategory.id;
+      
       // Зберігаємо та оновлюємо UI
       Storage.save();
       this.renderCategories();
+      
+      // Додаємо анімацію успішного переміщення
+      setTimeout(() => {
+        const movedElement = document.querySelector(`.category-item[data-category-id="${movedCategoryId}"]`);
+        if (movedElement) {
+          movedElement.classList.add('move-success');
+          // Видаляємо клас після завершення анімації
+          setTimeout(() => {
+            movedElement.classList.remove('move-success');
+          }, 600);
+        }
+      }, 50);
+      
       Toast.t('messages.saved', 'success');
     },
     
