@@ -5355,7 +5355,11 @@ i[class*="fa-"] svg {
         forest: 'Ліс',
         custom: 'Власна',
         applyTheme: 'Застосувати тему',
-        preview: 'Попередній перегляд'
+        preview: 'Попередній перегляд',
+        import: 'Імпортувати тему',
+        export: 'Експортувати поточну',
+        imported: 'Тему імпортовано',
+        exported: 'Тему експортовано'
       },
       categories: {
         base: 'Базова інформація',
@@ -5542,7 +5546,7 @@ i[class*="fa-"] svg {
         showFilled: 'Показано: заповнені поля',
         showEmpty: 'Показано: порожні поля',
         showAll: 'Показано: всі поля',
-        allImportance: 'Показано поля всіх рівнів важливості',
+        allImportance: 'Показані поля всіх рівнів важливості',
         syncing: 'Синхронізація...',
         noFieldsWithFilters: 'Немає полів за обраними фільтрами',
         noFilledFields: 'Немає заповнених полів за обраними фільтрами',
@@ -5828,7 +5832,11 @@ i[class*="fa-"] svg {
         forest: 'Forest',
         custom: 'Custom',
         applyTheme: 'Apply theme',
-        preview: 'Preview'
+        preview: 'Preview',
+        import: 'Import theme',
+        export: 'Export current',
+        imported: 'Theme imported',
+        exported: 'Theme exported'
       },
       categories: {
         base: 'Basic Information',
@@ -6245,7 +6253,11 @@ i[class*="fa-"] svg {
         forest: 'Лес',
         custom: 'Собственная',
         applyTheme: 'Применить тему',
-        preview: 'Предпросмотр'
+        preview: 'Предпросмотр',
+        import: 'Импортировать тему',
+        export: 'Экспортировать текущую',
+        imported: 'Тема импортирована',
+        exported: 'Тема экспортирована'
       },
       categories: {
         base: 'Базовая информация',
@@ -6274,10 +6286,10 @@ i[class*="fa-"] svg {
         memories: 'Память и воспоминания',
         dislikes: 'Что не любит',
         anti_triggers: 'Триггеры и раздражители',
-        anti_topics: 'Неудобные темы',
+        anti_topics: 'Неприятные темы',
         anti_places: 'Нелюбимые места',
         anti_sounds: 'Неприятные звуки/запахи',
-        anti_situations: 'Неудобные ситуации',
+        anti_situations: 'Некомфортные ситуации',
         gift_wishlist: 'Список желаний',
         gift_sizes: 'Размеры',
         gift_brands: 'Любимые бренды',
@@ -6385,7 +6397,7 @@ i[class*="fa-"] svg {
         features: 'Возможности',
         feature1: '16 категорий информации',
         feature2: 'Markdown форматирование',
-        feature3: 'Синхронизация с Google Sheets',
+        feature3: 'Google Sheets синхронизация',
         feature4: 'AES-256 шифрование',
         stats: 'Статистика',
         totalFields: 'Всего полей',
@@ -6662,7 +6674,11 @@ i[class*="fa-"] svg {
         forest: 'Las',
         custom: 'Własny',
         applyTheme: 'Zastosuj motyw',
-        preview: 'Podgląd'
+        preview: 'Podgląd',
+        import: 'Importuj motyw',
+        export: 'Eksportuj bieżący',
+        imported: 'Motyw zaimportowano',
+        exported: 'Motyw wyeksportowano'
       },
       categories: {
         base: 'Informacje podstawowe',
@@ -12070,13 +12086,13 @@ i[class*="fa-"] svg {
           ${themesHtml}
         </div>
         <div class="theme-modal-actions">
-          <button class="btn btn-secondary" id="btnCustomTheme" style="display: none;">
-            <i class="fa-edit">${getIcon('edit')}</i>
-            <span data-i18n="themes.createCustom">Створити кастомну</span>
-          </button>
-          <button class="btn btn-secondary" id="btnImportTheme" style="display: none;">
+          <button class="btn btn-secondary" id="btnImportTheme">
             <i class="fa-upload">${getIcon('upload')}</i>
-            <span data-i18n="themes.import">Імпортувати</span>
+            <span data-i18n="themes.import">Імпортувати тему</span>
+          </button>
+          <button class="btn btn-secondary" id="btnExportCurrentTheme">
+            <i class="fa-download">${getIcon('download')}</i>
+            <span data-i18n="themes.export">Експортувати поточну</span>
           </button>
         </div>
       `;
@@ -12101,11 +12117,111 @@ i[class*="fa-"] svg {
               }, 500);
             });
           });
+          
+          // Обробник кнопки імпорту
+          const btnImport = document.getElementById('btnImportTheme');
+          if (btnImport) {
+            btnImport.addEventListener('click', () => {
+              this.importTheme();
+            });
+          }
+          
+          // Обробник кнопки експорту поточної теми
+          const btnExport = document.getElementById('btnExportCurrentTheme');
+          if (btnExport) {
+            btnExport.addEventListener('click', () => {
+              this.exportTheme(this.currentThemeName);
+            });
+          }
         }
       });
       
       // Ховаємо кнопку Save в Modal (вона не потрібна)
       Modal.saveBtn.style.display = 'none';
+    },
+    
+    exportTheme(themeName) {
+      const theme = this.getTheme(themeName);
+      if (!theme) {
+        Toast.show('Тему не знайдено', 'error');
+        return;
+      }
+      
+      const exportData = {
+        name: theme.name,
+        icon: theme.icon,
+        colors: theme.colors,
+        version: '1.0',
+        createdAt: new Date().toISOString()
+      };
+      
+      const json = JSON.stringify(exportData, null, 2);
+      const blob = new Blob([json], {type: 'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `love-dossier-theme-${themeName}-${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      Toast.show(`Тему "${theme.name}" експортовано`, 'success');
+      Debug.log(`ThemeManager: Тему "${themeName}" експортовано`);
+    },
+    
+    importTheme() {
+      // Створюємо input для вибору файлу
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.json';
+      
+      input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          try {
+            const importedTheme = JSON.parse(event.target.result);
+            
+            // Валідація структури
+            if (!importedTheme.name || !importedTheme.colors) {
+              Toast.show('Невірний формат файлу теми', 'error');
+              return;
+            }
+            
+            // Перевіряємо наявність всіх необхідних кольорів
+            const requiredColors = ['primary', 'primaryDark', 'bgGradientStart', 'bgGradientEnd', 
+                                   'bg', 'card', 'text', 'textMuted', 'border'];
+            const missingColors = requiredColors.filter(c => !importedTheme.colors[c]);
+            
+            if (missingColors.length > 0) {
+              Toast.show(`Відсутні кольори: ${missingColors.join(', ')}`, 'error');
+              return;
+            }
+            
+            // Зберігаємо як кастомну тему
+            this.themes.custom = {
+              name: importedTheme.name,
+              icon: importedTheme.icon || 'fa-palette',
+              colors: importedTheme.colors
+            };
+            
+            // Застосовуємо імпортовану тему
+            this.applyTheme('custom', true);
+            
+            Toast.show(`Тему "${importedTheme.name}" імпортовано та застосовано`, 'success');
+            Debug.log('ThemeManager: Тему імпортовано', importedTheme);
+            
+          } catch (error) {
+            Debug.error('ThemeManager: Помилка імпорту теми', error);
+            Toast.show('Помилка читання файлу теми', 'error');
+          }
+        };
+        
+        reader.readAsText(file);
+      };
+      
+      input.click();
     }
   };
   
