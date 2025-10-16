@@ -4815,8 +4815,8 @@ i[class*="fa-"] svg {
 /* Анімація появи контенту */
 .container {
   opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
+  transform: translateY(10px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
 .container.fade-in {
@@ -4827,22 +4827,26 @@ i[class*="fa-"] svg {
 /* Анімація появи окремих елементів */
 .animate-item {
   opacity: 0;
-  transform: translateY(20px);
-  animation: fadeInUp 0.6s ease forwards;
+  transform: translateY(10px);
+  animation: fadeInUp 0.4s ease forwards;
 }
 
 @keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-.animate-item:nth-child(1) { animation-delay: 0.1s; }
-.animate-item:nth-child(2) { animation-delay: 0.2s; }
-.animate-item:nth-child(3) { animation-delay: 0.3s; }
-.animate-item:nth-child(4) { animation-delay: 0.4s; }
-.animate-item:nth-child(5) { animation-delay: 0.5s; }
+.animate-item:nth-child(1) { animation-delay: 0.05s; }
+.animate-item:nth-child(2) { animation-delay: 0.1s; }
+.animate-item:nth-child(3) { animation-delay: 0.15s; }
+.animate-item:nth-child(4) { animation-delay: 0.2s; }
+.animate-item:nth-child(5) { animation-delay: 0.25s; }
 </style>
 </head>
 <body>
@@ -10796,12 +10800,26 @@ i[class*="fa-"] svg {
             const header = document.querySelector('.header');
             const sidebar = document.querySelector('.sidebar');
             const content = document.querySelector('.content');
+            const footer = document.querySelector('.app-footer');
             
-            if (header) header.classList.add('animate-item');
-            if (sidebar) sidebar.classList.add('animate-item');
-            if (content) content.classList.add('animate-item');
-          }, 100);
-        }, 300);
+            if (header) {
+              header.classList.add('animate-item');
+              header.style.animationDelay = '0.05s';
+            }
+            if (sidebar) {
+              sidebar.classList.add('animate-item');
+              sidebar.style.animationDelay = '0.1s';
+            }
+            if (content) {
+              content.classList.add('animate-item');
+              content.style.animationDelay = '0.15s';
+            }
+            if (footer) {
+              footer.classList.add('animate-item');
+              footer.style.animationDelay = '0.2s';
+            }
+          }, 50);
+        }, 150);
       }
     }
   };
