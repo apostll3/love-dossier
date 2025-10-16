@@ -4443,23 +4443,211 @@ i[class*="fa-"] svg {
 }
 
 @media (max-width: 500px) {
-
   .content-title {
     font-size: 18px;
   }
-}
-
-@media (max-width: 500px) {
+  
   /* Ховаємо всі кнопки крім меню */
   .field-controls > .btn:not(.field-controls-menu-btn) {
     display: none !important;
+  }
+}
+
+/* ============= THEME MODAL STYLES ============= */
+.theme-modal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1.5rem;
+  padding: 1rem 0;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.theme-card {
+  background: var(--card);
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px var(--primary-20);
+  border-color: var(--primary);
+}
+
+.theme-card.active {
+  border-color: var(--primary);
+  background: var(--primary-5);
+  box-shadow: 0 4px 12px var(--primary-15);
+}
+
+.theme-card.active::before {
+  content: '✓';
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: var(--primary);
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  animation: checkmarkPop 0.3s ease;
+}
+
+@keyframes checkmarkPop {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.theme-preview {
+  width: 100%;
+  height: 80px;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.theme-preview-header {
+  height: 25%;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  padding: 0 8px;
+}
+
+.theme-preview-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.theme-preview-body {
+  height: 75%;
+  display: grid;
+  grid-template-columns: 30% 70%;
+  gap: 4px;
+  padding: 0 8px 8px 8px;
+}
+
+.theme-preview-sidebar {
+  border-radius: 4px;
+  opacity: 0.7;
+}
+
+.theme-preview-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.theme-preview-bar {
+  height: 6px;
+  border-radius: 3px;
+  opacity: 0.6;
+}
+
+.theme-preview-bar:nth-child(2) {
+  width: 60%;
+  opacity: 0.4;
+}
+
+.theme-card-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.theme-card-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+}
+
+.theme-card-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.theme-card-name {
+  font-weight: 600;
+  color: var(--text);
+  font-size: 14px;
+  flex: 1;
+}
+
+.theme-modal-actions {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid var(--border);
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.theme-modal-actions .btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.theme-modal-actions .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--primary-20);
+}
+
+@media (max-width: 768px) {
+  .theme-modal-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1rem;
+  }
+  
+  .theme-preview {
+    height: 60px;
+  }
+  
+  .theme-card {
+    padding: 0.75rem;
+  }
+  
+  .theme-card-name {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .theme-modal-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 </style>
 </head>
 <body>
 <div class="container">
-  <!-- Header -->
   <header class="header">
     <!-- Top Row: Title + Main Actions -->
     <div class="header-top">
@@ -4579,27 +4767,8 @@ i[class*="fa-"] svg {
         </button>
         
         <div class="header-menu-dropdown" id="headerMenuDropdown">
-          <!-- 🎨 ТЕМИ (тестування) -->
-          <div style="padding: 0.5rem 0.875rem; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em;">
-            🎨 Теми (тест)
-          </div>
-          <button class="btn" onclick="ThemeManager.applyTheme('current')">
-            <i class="fa-palette"></i> <span>Поточна</span>
-          </button>
-          <button class="btn" onclick="ThemeManager.applyTheme('light')">
-            <i class="fa-sun"></i> <span>☀️ Світла</span>
-          </button>
-          <button class="btn" onclick="ThemeManager.applyTheme('dark')">
-            <i class="fa-moon"></i> <span>🌙 Темна</span>
-          </button>
-          <button class="btn" onclick="ThemeManager.applyTheme('ocean')">
-            <i class="fa-water"></i> <span>🌊 Океан</span>
-          </button>
-          <button class="btn" onclick="ThemeManager.applyTheme('sunset')">
-            <i class="fa-cloud-sun"></i> <span>🌅 Захід</span>
-          </button>
-          <button class="btn" onclick="ThemeManager.applyTheme('forest')">
-            <i class="fa-tree"></i> <span>🌲 Ліс</span>
+          <button class="btn" id="btnThemes">
+            <i class="fa-palette"></i> <span data-i18n="ui.themes">Теми</span>
           </button>
           
           <div style="height: 1px; background: var(--border); margin: 0.5rem 0;"></div>
@@ -5166,7 +5335,8 @@ i[class*="fa-"] svg {
         manageCategories: 'Керувати категоріями',
         values: 'Значення',
         optional: 'опціонально',
-        addIcon: 'Додати іконку'
+        addIcon: 'Додати іконку',
+        themes: 'Теми'
       },
       format: {
         bold: 'Жирний (Ctrl+B)',
@@ -5174,6 +5344,18 @@ i[class*="fa-"] svg {
         strikethrough: 'Закреслений',
         link: 'Посилання (Ctrl+K)',
         chip: 'Тег'
+      },
+      themes: {
+        modalTitle: 'Оберіть тему оформлення',
+        current: 'Поточна',
+        light: 'Світла',
+        dark: 'Темна',
+        ocean: 'Океан',
+        sunset: 'Захід сонця',
+        forest: 'Ліс',
+        custom: 'Власна',
+        applyTheme: 'Застосувати тему',
+        preview: 'Попередній перегляд'
       },
       categories: {
         base: 'Базова інформація',
@@ -5626,7 +5808,8 @@ i[class*="fa-"] svg {
         manageCategories: 'Manage Categories',
         values: 'Values',
         optional: 'optional',
-        addIcon: 'Add icon'
+        addIcon: 'Add icon',
+        themes: 'Themes'
       },
       format: {
         bold: 'Bold (Ctrl+B)',
@@ -5634,6 +5817,18 @@ i[class*="fa-"] svg {
         strikethrough: 'Strikethrough',
         link: 'Link (Ctrl+K)',
         chip: 'Tag'
+      },
+      themes: {
+        modalTitle: 'Choose a theme',
+        current: 'Current',
+        light: 'Light',
+        dark: 'Dark',
+        ocean: 'Ocean',
+        sunset: 'Sunset',
+        forest: 'Forest',
+        custom: 'Custom',
+        applyTheme: 'Apply theme',
+        preview: 'Preview'
       },
       categories: {
         base: 'Basic Information',
@@ -6030,7 +6225,8 @@ i[class*="fa-"] svg {
         manageCategories: 'Управлять категориями',
         values: 'Значения',
         optional: 'опционально',
-        addIcon: 'Добавить иконку'
+        addIcon: 'Добавить иконку',
+        themes: 'Темы'
       },
       format: {
         bold: 'Жирный (Ctrl+B)',
@@ -6038,6 +6234,18 @@ i[class*="fa-"] svg {
         strikethrough: 'Зачёркнутый',
         link: 'Ссылка (Ctrl+K)',
         chip: 'Тег'
+      },
+      themes: {
+        modalTitle: 'Выберите тему оформления',
+        current: 'Текущая',
+        light: 'Светлая',
+        dark: 'Тёмная',
+        ocean: 'Океан',
+        sunset: 'Закат',
+        forest: 'Лес',
+        custom: 'Собственная',
+        applyTheme: 'Применить тему',
+        preview: 'Предпросмотр'
       },
       categories: {
         base: 'Базовая информация',
@@ -6434,7 +6642,8 @@ i[class*="fa-"] svg {
         manageCategories: 'Zarządzaj kategoriami',
         values: 'Wartości',
         optional: 'opcjonalnie',
-        addIcon: 'Dodaj ikonę'
+        addIcon: 'Dodaj ikonę',
+        themes: 'Motywy'
       },
       format: {
         bold: 'Pogrubienie (Ctrl+B)',
@@ -6442,6 +6651,18 @@ i[class*="fa-"] svg {
         strikethrough: 'Przekreślenie',
         link: 'Link (Ctrl+K)',
         chip: 'Tag'
+      },
+      themes: {
+        modalTitle: 'Wybierz motyw',
+        current: 'Bieżący',
+        light: 'Jasny',
+        dark: 'Ciemny',
+        ocean: 'Ocean',
+        sunset: 'Zachód słońca',
+        forest: 'Las',
+        custom: 'Własny',
+        applyTheme: 'Zastosuj motyw',
+        preview: 'Podgląd'
       },
       categories: {
         base: 'Informacje podstawowe',
@@ -11807,8 +12028,84 @@ i[class*="fa-"] svg {
     },
     
     showThemeModal() {
-      Toast.show('Модальне вікно тем (в розробці)', 'info');
-      // TODO: Реалізувати UI в наступних кроках
+      const currentTheme = this.currentThemeName;
+      
+      // Генеруємо HTML для кожної теми
+      const themesHtml = Object.keys(this.themes)
+        .filter(key => key !== 'custom' && this.themes[key]) // Поки що без custom
+        .map(themeName => {
+          const theme = this.themes[themeName];
+          const isActive = themeName === currentTheme;
+          const colors = theme.colors;
+          
+          return `
+            <div class="theme-card ${isActive ? 'active' : ''}" data-theme="${themeName}">
+              <div class="theme-preview" style="background: linear-gradient(135deg, ${colors.bgGradientStart}, ${colors.bgGradientEnd});">
+                <div class="theme-preview-header" style="background: ${colors.card};">
+                  <div class="theme-preview-dot"></div>
+                  <div class="theme-preview-dot"></div>
+                  <div class="theme-preview-dot"></div>
+                </div>
+                <div class="theme-preview-body">
+                  <div class="theme-preview-sidebar" style="background: ${colors.card};"></div>
+                  <div class="theme-preview-content">
+                    <div class="theme-preview-bar" style="background: ${colors.primary};"></div>
+                    <div class="theme-preview-bar" style="background: ${colors.text};"></div>
+                    <div class="theme-preview-bar" style="background: ${colors.textMuted};"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="theme-card-info">
+                <div class="theme-card-icon">
+                  ${getIcon(theme.icon)}
+                </div>
+                <div class="theme-card-name">${theme.name}</div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      
+      const modalContent = `
+        <div class="theme-modal-grid">
+          ${themesHtml}
+        </div>
+        <div class="theme-modal-actions">
+          <button class="btn btn-secondary" id="btnCustomTheme" style="display: none;">
+            <i class="fa-edit">${getIcon('edit')}</i>
+            <span data-i18n="themes.createCustom">Створити кастомну</span>
+          </button>
+          <button class="btn btn-secondary" id="btnImportTheme" style="display: none;">
+            <i class="fa-upload">${getIcon('upload')}</i>
+            <span data-i18n="themes.import">Імпортувати</span>
+          </button>
+        </div>
+      `;
+      
+      Modal.open(i18n.t('themes.modalTitle'), modalContent, {
+        icon: 'fa-palette',
+        size: 'large',
+        onOpen: () => {
+          // Додаємо обробники кліків на картки тем
+          document.querySelectorAll('.theme-card').forEach(card => {
+            card.addEventListener('click', () => {
+              const themeName = card.dataset.theme;
+              this.applyTheme(themeName, true);
+              
+              // Оновлюємо активну картку
+              document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('active'));
+              card.classList.add('active');
+              
+              // Закриваємо модальне вікно через 500ms
+              setTimeout(() => {
+                Modal.close();
+              }, 500);
+            });
+          });
+        }
+      });
+      
+      // Ховаємо кнопку Save в Modal (вона не потрібна)
+      Modal.saveBtn.style.display = 'none';
     }
   };
   
@@ -11998,6 +12295,11 @@ i[class*="fa-"] svg {
           // Перезавантажуємо сторінку, щоб показати onboarding
           location.reload();
         }
+      };
+      
+      // Кнопка вибору теми
+      document.getElementById('btnThemes').onclick = () => {
+        ThemeManager.showThemeModal();
       };
       
       document.getElementById('btnAddCategory').onclick = () => {
@@ -13997,6 +14299,7 @@ i[class*="fa-"] svg {
   }
 
 })();
+
 </script>
 </body>
 </html>
