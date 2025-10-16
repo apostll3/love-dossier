@@ -62,8 +62,8 @@
   --body-bg: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
   
   /* === СИСТЕМА ТЕМ - Card === */
-  --card-gradient-start: var(--card);
-  --card-gradient-end: var(--bg);
+  --card-gradient-start: #ffffff;
+  --card-gradient-end: #f8fafc;
   --card-bg: linear-gradient(135deg, var(--card-gradient-start) 0%, var(--card-gradient-end) 100%);
   --card-border: var(--primary-10);
   --card-border-hover: var(--primary-12);
@@ -76,8 +76,8 @@
   --header-border-hover: var(--primary-20);
   
   /* === СИСТЕМА ТЕМ - Sidebar === */
-  --sidebar-bg: var(--card);
-  --sidebar-item-bg: var(--bg);
+  --sidebar-bg: #ffffff;
+  --sidebar-item-bg: #f8fafc;
   --sidebar-item-hover-bg: var(--primary-10);
   --sidebar-item-active-bg: var(--primary);
   --sidebar-item-active-text: #ffffff;
@@ -115,8 +115,8 @@
   --primary-40: rgba(99, 102, 241, 0.4);
   
   /* === СИСТЕМА ТЕМ - Input === */
-  --input-bg: var(--card);
-  --input-border: var(--border);
+  --input-bg: #ffffff;
+  --input-border: #e2e8f0;
   --input-border-hover: #cbd5e1;
   --input-shadow-focus: 0 0 0 4px var(--primary-10);
 }
@@ -127,17 +127,6 @@ body {
   padding: 1.5rem;
   color: var(--text);
   line-height: 1.6;
-}
-
-/* === THEME TRANSITION ANIMATION === */
-html.theme-transitioning,
-html.theme-transitioning * {
-  transition: 
-    background 0.3s ease,
-    background-color 0.3s ease,
-    border-color 0.3s ease,
-    color 0.3s ease,
-    box-shadow 0.3s ease !important;
 }
 
 /* 1) Скрыть scrollbar у страницы (html + body) but keep scrolling */
@@ -1798,7 +1787,7 @@ i[class*="fa-"] svg {
 
 .field-value {
   padding: 0.75rem;
-  background: var(--card);
+  background: var(--input-bg);
   border-radius: var(--radius-sm);
   border: 1px solid var(--primary-8);
   min-height: 3rem;
@@ -1814,7 +1803,7 @@ i[class*="fa-"] svg {
 
 .field-value:hover {
   border-color: var(--primary-15);
-  background: var(--card);
+  background: var(--input-bg);
 }
 
 .field-value.empty {
@@ -11533,7 +11522,7 @@ i[class*="fa-"] svg {
           primaryDark: '#2563eb',
           bgGradientStart: '#bfdbfe',
           bgGradientEnd: '#dbeafe',
-          bg: '#ffffff',
+          bg: '#f9fafb',
           card: '#ffffff',
           cardGradientStart: '#ffffff',
           cardGradientEnd: '#f9fafb',
@@ -11556,13 +11545,13 @@ i[class*="fa-"] svg {
           primaryDark: '#6366f1',
           bgGradientStart: '#1e1b4b',
           bgGradientEnd: '#312e81',
-          bg: '#1f2937',
-          card: '#111827',
-          cardGradientStart: '#1f2937',
-          cardGradientEnd: '#111827',
-          text: '#f9fafb',
-          textMuted: '#9ca3af',
-          border: '#374151',
+          bg: '#0f172a',
+          card: '#1e293b',
+          cardGradientStart: '#1e293b',
+          cardGradientEnd: '#0f172a',
+          text: '#f1f5f9',
+          textMuted: '#94a3b8',
+          border: '#334155',
           success: '#34d399',
           warning: '#fbbf24',
           danger: '#f87171',
@@ -11693,78 +11682,88 @@ i[class*="fa-"] svg {
       const root = document.documentElement;
       const colors = theme.colors;
       
-      if (animate) {
-        root.classList.add('theme-transitioning');
-      }
+      // Підготовка всіх змін в об'єкт для batch update
+      const cssVars = {};
       
       // Основні кольори
-      root.style.setProperty('--primary', colors.primary);
-      root.style.setProperty('--primary-dark', colors.primaryDark);
-      root.style.setProperty('--bg', colors.bg);
-      root.style.setProperty('--card', colors.card);
-      root.style.setProperty('--text', colors.text);
-      root.style.setProperty('--text-muted', colors.textMuted);
-      root.style.setProperty('--border', colors.border);
-      root.style.setProperty('--success', colors.success);
-      root.style.setProperty('--warning', colors.warning);
-      root.style.setProperty('--danger', colors.danger);
+      cssVars['--primary'] = colors.primary;
+      cssVars['--primary-dark'] = colors.primaryDark;
+      cssVars['--bg'] = colors.bg;
+      cssVars['--card'] = colors.card;
+      cssVars['--text'] = colors.text;
+      cssVars['--text-muted'] = colors.textMuted;
+      cssVars['--border'] = colors.border;
+      cssVars['--success'] = colors.success;
+      cssVars['--warning'] = colors.warning;
+      cssVars['--danger'] = colors.danger;
       
       // Градієнти
-      root.style.setProperty('--bg-gradient-start', colors.bgGradientStart);
-      root.style.setProperty('--bg-gradient-end', colors.bgGradientEnd);
-      root.style.setProperty('--card-gradient-start', colors.cardGradientStart);
-      root.style.setProperty('--card-gradient-end', colors.cardGradientEnd);
+      cssVars['--bg-gradient-start'] = colors.bgGradientStart;
+      cssVars['--bg-gradient-end'] = colors.bgGradientEnd;
+      cssVars['--card-gradient-start'] = colors.cardGradientStart;
+      cssVars['--card-gradient-end'] = colors.cardGradientEnd;
       
       // Акценти
-      root.style.setProperty('--accent-purple', colors.accentPurple);
-      root.style.setProperty('--accent-pink', colors.accentPink);
+      cssVars['--accent-purple'] = colors.accentPurple;
+      cssVars['--accent-pink'] = colors.accentPink;
       
-      // Оновити похідні змінні
-      this.updateDerivedVariables(colors);
-      
-      this.currentThemeName = themeName;
-      this.saveTheme();
-      
-      if (animate) {
-        setTimeout(() => {
-          root.classList.remove('theme-transitioning');
-        }, 300);
-        Toast.show(`Тему "${theme.name}" застосовано`, 'success');
+      // Похідні змінні (opacity)
+      const primaryRgb = this.hexToRgb(colors.primary);
+      if (primaryRgb) {
+        const {r, g, b} = primaryRgb;
+        cssVars['--primary-5'] = `rgba(${r}, ${g}, ${b}, 0.05)`;
+        cssVars['--primary-8'] = `rgba(${r}, ${g}, ${b}, 0.08)`;
+        cssVars['--primary-10'] = `rgba(${r}, ${g}, ${b}, 0.1)`;
+        cssVars['--primary-12'] = `rgba(${r}, ${g}, ${b}, 0.12)`;
+        cssVars['--primary-15'] = `rgba(${r}, ${g}, ${b}, 0.15)`;
+        cssVars['--primary-20'] = `rgba(${r}, ${g}, ${b}, 0.2)`;
+        cssVars['--primary-25'] = `rgba(${r}, ${g}, ${b}, 0.25)`;
+        cssVars['--primary-30'] = `rgba(${r}, ${g}, ${b}, 0.3)`;
+        cssVars['--primary-35'] = `rgba(${r}, ${g}, ${b}, 0.35)`;
+        cssVars['--primary-40'] = `rgba(${r}, ${g}, ${b}, 0.4)`;
       }
       
-      Debug.log(`ThemeManager: Тему "${themeName}" застосовано успішно`);
+      // Композитні змінні
+      cssVars['--body-bg'] = `linear-gradient(135deg, ${colors.bgGradientStart} 0%, ${colors.bgGradientEnd} 100%)`;
+      cssVars['--card-bg'] = `linear-gradient(135deg, ${colors.cardGradientStart} 0%, ${colors.cardGradientEnd} 100%)`;
+      cssVars['--sidebar-bg'] = colors.card;
+      cssVars['--sidebar-item-bg'] = colors.bg;
+      cssVars['--input-bg'] = colors.card;
+      cssVars['--input-border'] = colors.border;
+      
+      // Застосовуємо всі зміни одночасно через requestAnimationFrame
+      requestAnimationFrame(() => {
+        if (animate) {
+          root.classList.add('theme-transitioning');
+        }
+        
+        // Batch update - всі зміни в одному циклі
+        for (const [property, value] of Object.entries(cssVars)) {
+          root.style.setProperty(property, value);
+        }
+        
+        this.currentThemeName = themeName;
+        this.saveTheme();
+        
+        if (animate) {
+          // Затримка для анімації (300ms = час transition)
+          setTimeout(() => {
+            root.classList.remove('theme-transitioning');
+          }, 300);
+          Toast.show(`Тему "${theme.name}" застосовано`, 'success');
+        }
+        
+        Debug.log(`ThemeManager: Тему "${themeName}" застосовано успішно`);
+      });
     },
     
-    updateDerivedVariables(colors) {
-      const root = document.documentElement;
-      
-      const hexToRgb = (hex) => {
-        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return result ? {
-          r: parseInt(result[1], 16),
-          g: parseInt(result[2], 16),
-          b: parseInt(result[3], 16)
-        } : null;
-      };
-      
-      const primaryRgb = hexToRgb(colors.primary);
-      if (primaryRgb) {
-        const r = primaryRgb.r, g = primaryRgb.g, b = primaryRgb.b;
-        root.style.setProperty('--primary-5', `rgba(${r}, ${g}, ${b}, 0.05)`);
-        root.style.setProperty('--primary-8', `rgba(${r}, ${g}, ${b}, 0.08)`);
-        root.style.setProperty('--primary-10', `rgba(${r}, ${g}, ${b}, 0.1)`);
-        root.style.setProperty('--primary-12', `rgba(${r}, ${g}, ${b}, 0.12)`);
-        root.style.setProperty('--primary-15', `rgba(${r}, ${g}, ${b}, 0.15)`);
-        root.style.setProperty('--primary-20', `rgba(${r}, ${g}, ${b}, 0.2)`);
-        root.style.setProperty('--primary-25', `rgba(${r}, ${g}, ${b}, 0.25)`);
-        root.style.setProperty('--primary-30', `rgba(${r}, ${g}, ${b}, 0.3)`);
-        root.style.setProperty('--primary-35', `rgba(${r}, ${g}, ${b}, 0.35)`);
-        root.style.setProperty('--primary-40', `rgba(${r}, ${g}, ${b}, 0.4)`);
-      }
-      
-      // Складені значення
-      root.style.setProperty('--body-bg', `linear-gradient(135deg, ${colors.bgGradientStart} 0%, ${colors.bgGradientEnd} 100%)`);
-      root.style.setProperty('--card-bg', `linear-gradient(135deg, ${colors.cardGradientStart} 0%, ${colors.cardGradientEnd} 100%)`);
+    hexToRgb(hex) {
+      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+      } : null;
     },
     
     getTheme(themeName) {
