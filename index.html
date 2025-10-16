@@ -4,9 +4,30 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title data-i18n="app.title">Досьє коханої людини</title>
-<meta name="description" content="Love Dossier - приватний веб-застосунок для організації та збереження важливої інформації про вашу кохану людину. Категорії, поля, синхронізація, шифрування. Безкоштовно та приватно.">
-<meta name="keywords" content="love dossier, relationship organizer, personal information manager, gift planner, privacy, encryption, offline app">
+<meta name="description" content="Love Dossier / Досьє коханої людини - Privacy-focused web app for organizing information about your loved one. 16 categories, 64+ fields, sync, encryption. Free & private. | Приватний застосунок для організації інформації. Безкоштовно та приватно.">
+<meta name="keywords" content="love dossier, досьє коханої людини, досье любимого человека, dossier ukochanej osoby, relationship organizer, gift planner, personal diary, privacy app, шифрування, encryption, offline app, PWA">
 <meta name="author" content="apostll3">
+<!-- Open Graph / Social Media -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://apostll3.github.io/love-dossier/">
+<meta property="og:title" content="Love Dossier - Privacy-focused relationship organizer">
+<meta property="og:description" content="Free web app for organizing information about your loved one. 16 categories, 64+ fields, encryption, offline support. Available in 4 languages.">
+<meta property="og:image" content="https://apostll3.github.io/love-dossier/preview.png">
+<meta property="og:locale" content="uk_UA">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:locale:alternate" content="ru_RU">
+<meta property="og:locale:alternate" content="pl_PL">
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Love Dossier - Privacy-focused relationship organizer">
+<meta name="twitter:description" content="Free web app for organizing information about your loved one. 16 categories, 64+ fields, encryption, offline support.">
+<meta name="twitter:image" content="https://apostll3.github.io/love-dossier/preview.png">
+<!-- Multi-language alternate pages -->
+<link rel="alternate" hreflang="uk" href="https://apostll3.github.io/love-dossier/?lang=uk" />
+<link rel="alternate" hreflang="en" href="https://apostll3.github.io/love-dossier/?lang=en" />
+<link rel="alternate" hreflang="ru" href="https://apostll3.github.io/love-dossier/?lang=ru" />
+<link rel="alternate" hreflang="pl" href="https://apostll3.github.io/love-dossier/?lang=pl" />
+<link rel="alternate" hreflang="x-default" href="https://apostll3.github.io/love-dossier/" />
 <!-- Performance optimizations -->
 <link rel="preconnect" href="https://accounts.google.com">
 <link rel="preconnect" href="https://apis.google.com">
@@ -52,8 +73,12 @@
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   "name": "Love Dossier",
-  "alternateName": "Досьє коханої людини",
-  "description": "Privacy-focused web application for organizing personal information about your loved one. Categories, fields, synchronization, encryption. Free and private.",
+  "alternateName": [
+    "Досьє коханої людини",
+    "Досье любимого человека",
+    "Dossier ukochanej osoby"
+  ],
+  "description": "Privacy-focused web application for organizing personal information about your loved one. Categories, fields, synchronization, encryption. Free and private. | Приватний веб-застосунок для організації особистої інформації про вашу кохану людину. | Частное веб-приложение для организации личной информации о любимом человеке.",
   "applicationCategory": "LifestyleApplication",
   "operatingSystem": "Web Browser, iOS, Android, Windows, macOS, Linux",
   "offers": {
@@ -68,20 +93,27 @@
   },
   "softwareVersion": "2.0",
   "inLanguage": ["uk", "en", "ru", "pl"],
-  "keywords": "love dossier, relationship organizer, personal information manager, gift planner, privacy, encryption, offline app, PWA",
+  "keywords": "love dossier, досьє коханої людини, досье любимого человека, dossier ukochanej osoby, relationship organizer, personal information manager, gift planner, privacy app, шифрування, encryption, offline app, PWA, застосунок для пари, приложение для пары",
   "featureList": [
-    "16 customizable categories",
-    "64+ fields for detailed information",
-    "Rich text formatting with Markdown syntax",
-    "Smart search and filters",
-    "Progress tracking",
-    "Google Sheets synchronization",
-    "AES-GCM 256-bit encryption",
-    "PWA installable app",
-    "6 built-in themes",
-    "Offline support",
-    "Multi-language (Ukrainian, English, Russian, Polish)"
-  ]
+    "16 customizable categories / 16 настроюваних категорій / 16 настраиваемых категорий",
+    "64+ fields for detailed information / 64+ поля для детальної інформації",
+    "Rich text formatting with Markdown syntax / Форматування тексту",
+    "Smart search and filters / Розумний пошук та фільтри",
+    "Progress tracking / Відстеження прогресу",
+    "Google Sheets synchronization / Синхронізація з Google Sheets",
+    "AES-GCM 256-bit encryption / AES-GCM 256-біт шифрування",
+    "PWA installable app / PWA застосунок для встановлення",
+    "6 built-in themes / 6 вбудованих тем",
+    "Offline support / Робота офлайн",
+    "Multi-language: Ukrainian, English, Russian, Polish"
+  ],
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "5.0",
+    "ratingCount": "1",
+    "bestRating": "5",
+    "worstRating": "1"
+  }
 }
 </script>
 <style>
