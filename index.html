@@ -5579,7 +5579,7 @@ i[class*="fa-"] svg {
         forest: 'Ліс',
         custom: 'Власна',
         applyTheme: 'Застосувати тему',
-        preview: 'Попередній перегляд',
+        preview: 'Перегляд теми',
         import: 'Імпортувати тему',
         export: 'Експортувати поточну',
         imported: 'Тему імпортовано',
@@ -11173,10 +11173,15 @@ i[class*="fa-"] svg {
     close() {
       const backdrop = document.getElementById('welcomeModalBackdrop');
       if (backdrop) {
-        backdrop.classList.remove('active');
+        // Додаємо closing клас для анімації
         backdrop.classList.add('closing');
+        backdrop.classList.remove('active');
         document.body.classList.remove('modal-open');
-        setTimeout(() => backdrop.remove(), 300);
+        
+        // Видаляємо елемент після завершення анімації (300ms)
+        setTimeout(() => {
+          backdrop.remove();
+        }, 300);
       }
     }
   };
@@ -12400,14 +12405,14 @@ i[class*="fa-"] svg {
       return this.themes[themeName] || null;
     },
     
-    showPreviewPanel() {
+    showPreviewPanel(themeName) {
       // Прибираємо стару панель якщо вона є
       const existingPanel = document.querySelector('.theme-preview-panel');
       if (existingPanel) {
         existingPanel.remove();
       }
       
-      const theme = this.getTheme(this.currentThemeName);
+      const theme = this.getTheme(themeName);
       if (!theme) return;
       
       const panel = document.createElement('div');
@@ -12416,7 +12421,7 @@ i[class*="fa-"] svg {
         <div class="theme-preview-panel-content">
           <div class="theme-preview-panel-title">
             <i class="fa-eye">${getIcon('eye')}</i>
-            <span>Попередній перегляд</span>
+            <span>Перегляд теми</span>
           </div>
           <div class="theme-preview-panel-theme">${theme.name}</div>
         </div>
@@ -12466,8 +12471,8 @@ i[class*="fa-"] svg {
       // Застосовуємо тему без збереження
       this.applyTheme(themeName, true, false);
       
-      // Показуємо floating панель
-      this.showPreviewPanel();
+      // Показуємо floating панель з назвою обраної теми
+      this.showPreviewPanel(themeName);
     },
     
     cancelPreview() {
