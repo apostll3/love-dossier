@@ -4114,13 +4114,111 @@ i[class*="fa-"] svg {
 }
 
 .toast:hover {
-  transform: scale(1.02);
-  box-shadow: var(--shadow-xl);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
 .toast i {
   font-size: 1.25rem;
   flex-shrink: 0;
+}
+
+/* ============= THEME PREVIEW PANEL ============= */
+.theme-preview-panel {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: var(--card);
+  border: 2px solid var(--primary);
+  border-radius: 16px;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  z-index: 10000;
+  animation: slideUpFade 0.3s ease;
+  backdrop-filter: blur(10px);
+  min-width: 320px;
+}
+
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.theme-preview-panel-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.theme-preview-panel-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.theme-preview-panel-theme {
+  font-size: 1rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent-purple) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.theme-preview-panel-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.theme-preview-panel .btn {
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  border-radius: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.theme-preview-panel .btn-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  box-shadow: 0 4px 12px var(--primary-30);
+}
+
+.theme-preview-panel .btn-secondary {
+  background: var(--bg);
+  color: var(--text);
+  border: 2px solid var(--border);
+}
+
+@media (max-width: 768px) {
+  .theme-preview-panel {
+    bottom: 1rem;
+    right: 1rem;
+    left: 1rem;
+    min-width: auto;
+    padding: 1rem;
+  }
+  
+  .theme-preview-panel-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .theme-preview-panel .btn {
+    width: 100%;
+  }
 }
 
 @keyframes slideIn {
@@ -5096,6 +5194,7 @@ i[class*="fa-"] svg {
     // Стрілки та навігація
     'chevron-down': '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>',
     'arrows-alt-v': '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 11 12 6 7 11"></polyline><polyline points="17 13 12 18 7 13"></polyline></svg>',
+    'arrow-left': '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>',
     
     // Файли та папки
     'folder': '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-9l-2-2H5a2 2 0 0 0-2 2z"></path></svg>',
@@ -8583,7 +8682,7 @@ i[class*="fa-"] svg {
     baseZIndex: 1000, // Базовий z-index
     
     open(title, contentHtml, options = {}) {
-      const { onSave, icon = 'fa-edit', size = 'medium', onOpen } = options;
+      const { onSave, icon = 'fa-edit', size = 'medium', onOpen, onClose, onBeforeClose } = options;
       
       // Якщо це перше модальне вікно - використовуємо основний backdrop
       if (this.modalStack.length === 0) {
@@ -8634,7 +8733,9 @@ i[class*="fa-"] svg {
         // Додаємо в стек
         this.modalStack.push({
           backdrop: this.backdrop,
-          isMain: true
+          isMain: true,
+          onClose: onClose,
+          onBeforeClose: onBeforeClose
         });
         
         // Викликаємо onOpen callback для основного модального вікна
@@ -8761,15 +8862,29 @@ i[class*="fa-"] svg {
       }
     },
     
-    close() {
+    async close() {
       if (this.modalStack.length === 0) return;
       
       const topModal = this.modalStack[this.modalStack.length - 1];
       
       if (topModal.isMain) {
+        // Викликаємо onBeforeClose для перевірки чи можна закрити
+        if (topModal.onBeforeClose) {
+          const canClose = await topModal.onBeforeClose();
+          if (canClose === false) {
+            // Забороняємо закриття
+            return;
+          }
+        }
+        
         // Викликаємо onCancel перед закриттям
         if (topModal.onCancel) {
           topModal.onCancel();
+        }
+        
+        // Викликаємо onClose перед закриттям
+        if (topModal.onClose) {
+          topModal.onClose();
         }
         
         // Закриваємо основне модальне вікно
@@ -12032,9 +12147,64 @@ i[class*="fa-"] svg {
       return this.themes[themeName] || null;
     },
     
+    showPreviewPanel() {
+      // Прибираємо стару панель якщо вона є
+      const existingPanel = document.querySelector('.theme-preview-panel');
+      if (existingPanel) {
+        existingPanel.remove();
+      }
+      
+      const theme = this.getTheme(this.currentThemeName);
+      if (!theme) return;
+      
+      const panel = document.createElement('div');
+      panel.className = 'theme-preview-panel';
+      panel.innerHTML = `
+        <div class="theme-preview-panel-content">
+          <div class="theme-preview-panel-title">
+            <i class="fa-eye">${getIcon('eye')}</i>
+            <span>Попередній перегляд</span>
+          </div>
+          <div class="theme-preview-panel-theme">${theme.name}</div>
+        </div>
+        <div class="theme-preview-panel-actions">
+          <button class="btn btn-secondary" id="btnBackToThemes">
+            <i class="fa-arrow-left">${getIcon('arrow-left')}</i>
+            Інша тема
+          </button>
+          <button class="btn btn-primary" id="btnSaveTheme">
+            <i class="fa-check">${getIcon('check')}</i>
+            Застосувати
+          </button>
+        </div>
+      `;
+      
+      document.body.appendChild(panel);
+      
+      // Обробники
+      document.getElementById('btnBackToThemes').onclick = () => {
+        // Ховаємо панель і відкриваємо модалку БЕЗ скасування поточної теми
+        // Залишаємо isPreviewMode = true і previewOriginalTheme збереженим
+        panel.remove();
+        this.showThemeModal();
+      };
+      
+      document.getElementById('btnSaveTheme').onclick = () => {
+        this.savePreview();
+        panel.remove();
+      };
+    },
+    
+    hidePreviewPanel() {
+      const panel = document.querySelector('.theme-preview-panel');
+      if (panel) {
+        panel.remove();
+      }
+    },
+    
     startPreview(themeName) {
+      // Зберігаємо оригінальну тему тільки при першому запуску preview
       if (!this.isPreviewMode) {
-        // Зберігаємо поточну тему перед preview
         this.previewOriginalTheme = this.currentThemeName;
         this.isPreviewMode = true;
         Debug.log(`ThemeManager: Початок preview режиму. Збережено тему "${this.previewOriginalTheme}"`);
@@ -12042,6 +12212,9 @@ i[class*="fa-"] svg {
       
       // Застосовуємо тему без збереження
       this.applyTheme(themeName, true, false);
+      
+      // Показуємо floating панель
+      this.showPreviewPanel();
     },
     
     cancelPreview() {
@@ -12050,6 +12223,7 @@ i[class*="fa-"] svg {
         this.applyTheme(this.previewOriginalTheme, true, false);
         this.previewOriginalTheme = null;
         this.isPreviewMode = false;
+        this.hidePreviewPanel();
       }
     },
     
@@ -12059,16 +12233,15 @@ i[class*="fa-"] svg {
         this.saveTheme();
         this.previewOriginalTheme = null;
         this.isPreviewMode = false;
-        Toast.show(`Тему збережено`, 'success');
+        this.hidePreviewPanel();
+        
+        const theme = this.getTheme(this.currentThemeName);
+        Toast.show(`Тему "${theme.name}" застосовано`, 'success');
       }
     },
     
     showThemeModal() {
       const currentTheme = this.currentThemeName;
-      
-      // Початок preview режиму при відкритті модалки
-      this.previewOriginalTheme = currentTheme;
-      this.isPreviewMode = true;
       
       // Генеруємо HTML для кожної теми
       const themesHtml = Object.keys(this.themes)
@@ -12125,15 +12298,17 @@ i[class*="fa-"] svg {
         icon: 'fa-palette',
         size: 'large',
         onOpen: () => {
-          // Додаємо обробники кліків на картки тем - тепер тільки preview
+          // Додаємо обробники кліків на картки тем
           document.querySelectorAll('.theme-card').forEach(card => {
             card.addEventListener('click', () => {
               const themeName = card.dataset.theme;
               this.startPreview(themeName);
               
-              // Оновлюємо активну картку
-              document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('active'));
-              card.classList.add('active');
+              // Встановлюємо флаг що модалка закривається після вибору теми
+              this.closingAfterThemeSelection = true;
+              
+              // Закриваємо модалку
+              Modal.close();
             });
           });
           
@@ -12154,24 +12329,26 @@ i[class*="fa-"] svg {
           }
         },
         onClose: () => {
-          // При закритті модалки без збереження - повертаємо стару тему
-          this.cancelPreview();
+          // Якщо модалка закривається після вибору теми - не скасовуємо preview
+          if (this.closingAfterThemeSelection) {
+            this.closingAfterThemeSelection = false;
+            return;
+          }
+          
+          // При закритті модалки вручну скасовуємо preview і повертаємо оригінальну тему
+          if (this.isPreviewMode && this.previewOriginalTheme) {
+            Debug.log(`ThemeManager: Модалка закрита вручну. Скасування preview, повернення до "${this.previewOriginalTheme}"`);
+            this.applyTheme(this.previewOriginalTheme, true, false);
+            this.previewOriginalTheme = null;
+            this.isPreviewMode = false;
+            this.hidePreviewPanel();
+          }
         }
       });
       
-      // Змінюємо текст кнопки Save на "Застосувати"
-      Modal.saveBtn.textContent = i18n.t('themes.applyTheme');
-      Modal.saveBtn.style.display = 'inline-flex';
-      
-      // Додаємо обробник для кнопки Застосувати
-      const originalSaveHandler = Modal.saveBtn.onclick;
-      Modal.saveBtn.onclick = () => {
-        this.savePreview();
-        Modal.close();
-      };
-      
-      // Змінюємо текст кнопки Cancel
-      Modal.cancelBtn.textContent = i18n.t('ui.cancel');
+      // Ховаємо кнопки Save/Cancel - вони тепер в floating панелі
+      Modal.saveBtn.style.display = 'none';
+      Modal.cancelBtn.style.display = 'none';
     },
     
     exportTheme(themeName) {
