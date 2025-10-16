@@ -46,6 +46,44 @@
 <!-- Google API для синхронізації -->
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="https://apis.google.com/js/api.js" async defer></script>
+<!-- Structured Data для кращої індексації -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Love Dossier",
+  "alternateName": "Досьє коханої людини",
+  "description": "Privacy-focused web application for organizing personal information about your loved one. Categories, fields, synchronization, encryption. Free and private.",
+  "applicationCategory": "LifestyleApplication",
+  "operatingSystem": "Web Browser, iOS, Android, Windows, macOS, Linux",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "author": {
+    "@type": "Person",
+    "name": "apostll3",
+    "url": "https://github.com/apostll3"
+  },
+  "softwareVersion": "2.0",
+  "inLanguage": ["uk", "en", "ru", "pl"],
+  "keywords": "love dossier, relationship organizer, personal information manager, gift planner, privacy, encryption, offline app, PWA",
+  "featureList": [
+    "16 customizable categories",
+    "64+ fields for detailed information",
+    "Rich text formatting with Markdown syntax",
+    "Smart search and filters",
+    "Progress tracking",
+    "Google Sheets synchronization",
+    "AES-GCM 256-bit encryption",
+    "PWA installable app",
+    "6 built-in themes",
+    "Offline support",
+    "Multi-language (Ukrainian, English, Russian, Polish)"
+  ]
+}
+</script>
 <style>
 *, *::before, *::after {
   box-sizing: border-box;
