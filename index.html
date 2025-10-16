@@ -11743,6 +11743,8 @@ i[class*="fa-"] svg {
   
   const ThemeManager = {
     currentThemeName: 'current',
+    previewOriginalTheme: null, // Зберігаємо оригінальну тему для preview режиму
+    isPreviewMode: false, // Чи активний preview режим
     
     themes: {
       current: {
@@ -11924,7 +11926,7 @@ i[class*="fa-"] svg {
       }
     },
     
-    applyTheme(themeName, animate = true) {
+    applyTheme(themeName, animate = true, saveToStorage = true) {
       const theme = this.getTheme(themeName);
       if (!theme) {
         Debug.error(`ThemeManager: Тема "${themeName}" не знайдена`);
@@ -11997,14 +11999,20 @@ i[class*="fa-"] svg {
         }
         
         this.currentThemeName = themeName;
-        this.saveTheme();
+        if (saveToStorage) {
+          this.saveTheme();
+        }
         
         if (animate) {
           // Затримка для анімації (200ms = час transition)
           setTimeout(() => {
             root.classList.remove('theme-transitioning');
           }, 200);
-          Toast.show(`Тему "${theme.name}" застосовано`, 'success');
+          
+          // Показуємо Toast тільки якщо не preview режим
+          if (saveToStorage) {
+            Toast.show(`Тему "${theme.name}" застосовано`, 'success');
+          }
         }
         
         Debug.log(`ThemeManager: Тему "${themeName}" застосовано успішно`);
@@ -12024,8 +12032,43 @@ i[class*="fa-"] svg {
       return this.themes[themeName] || null;
     },
     
+    startPreview(themeName) {
+      if (!this.isPreviewMode) {
+        // Зберігаємо поточну тему перед preview
+        this.previewOriginalTheme = this.currentThemeName;
+        this.isPreviewMode = true;
+        Debug.log(`ThemeManager: Початок preview режиму. Збережено тему "${this.previewOriginalTheme}"`);
+      }
+      
+      // Застосовуємо тему без збереження
+      this.applyTheme(themeName, true, false);
+    },
+    
+    cancelPreview() {
+      if (this.isPreviewMode && this.previewOriginalTheme) {
+        Debug.log(`ThemeManager: Скасування preview. Повернення до "${this.previewOriginalTheme}"`);
+        this.applyTheme(this.previewOriginalTheme, true, false);
+        this.previewOriginalTheme = null;
+        this.isPreviewMode = false;
+      }
+    },
+    
+    savePreview() {
+      if (this.isPreviewMode) {
+        Debug.log(`ThemeManager: Збереження preview теми "${this.currentThemeName}"`);
+        this.saveTheme();
+        this.previewOriginalTheme = null;
+        this.isPreviewMode = false;
+        Toast.show(`Тему збережено`, 'success');
+      }
+    },
+    
     showThemeModal() {
       const currentTheme = this.currentThemeName;
+      
+      // Початок preview режиму при відкритті модалки
+      this.previewOriginalTheme = currentTheme;
+      this.isPreviewMode = true;
       
       // Генеруємо HTML для кожної теми
       const themesHtml = Object.keys(this.themes)
@@ -12082,20 +12125,15 @@ i[class*="fa-"] svg {
         icon: 'fa-palette',
         size: 'large',
         onOpen: () => {
-          // Додаємо обробники кліків на картки тем
+          // Додаємо обробники кліків на картки тем - тепер тільки preview
           document.querySelectorAll('.theme-card').forEach(card => {
             card.addEventListener('click', () => {
               const themeName = card.dataset.theme;
-              this.applyTheme(themeName, true);
+              this.startPreview(themeName);
               
               // Оновлюємо активну картку
               document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('active'));
               card.classList.add('active');
-              
-              // Закриваємо модальне вікно через 500ms
-              setTimeout(() => {
-                Modal.close();
-              }, 500);
             });
           });
           
@@ -12114,11 +12152,26 @@ i[class*="fa-"] svg {
               this.exportTheme(this.currentThemeName);
             });
           }
+        },
+        onClose: () => {
+          // При закритті модалки без збереження - повертаємо стару тему
+          this.cancelPreview();
         }
       });
       
-      // Ховаємо кнопку Save в Modal (вона не потрібна)
-      Modal.saveBtn.style.display = 'none';
+      // Змінюємо текст кнопки Save на "Застосувати"
+      Modal.saveBtn.textContent = i18n.t('themes.applyTheme');
+      Modal.saveBtn.style.display = 'inline-flex';
+      
+      // Додаємо обробник для кнопки Застосувати
+      const originalSaveHandler = Modal.saveBtn.onclick;
+      Modal.saveBtn.onclick = () => {
+        this.savePreview();
+        Modal.close();
+      };
+      
+      // Змінюємо текст кнопки Cancel
+      Modal.cancelBtn.textContent = i18n.t('ui.cancel');
     },
     
     exportTheme(themeName) {
@@ -12203,6 +12256,17 @@ i[class*="fa-"] svg {
       };
       
       input.click();
+    },
+    
+    // Додатковий метод для швидкого перемикання тем (без модалки)
+    toggleTheme() {
+      const themes = Object.keys(this.themes).filter(k => k !== 'custom' && this.themes[k]);
+      const currentIndex = themes.indexOf(this.currentThemeName);
+      const nextIndex = (currentIndex + 1) % themes.length;
+      const nextTheme = themes[nextIndex];
+      
+      this.applyTheme(nextTheme, true);
+      Debug.log(`ThemeManager: Перемикання на тему "${nextTheme}"`);
     }
   };
   
