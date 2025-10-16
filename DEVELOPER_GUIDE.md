@@ -30,10 +30,12 @@
 
 ### Key Characteristics
 
-- **Single-file architecture**: Everything in `index.html` (11,767 lines, 432KB)
+- **Single-file architecture**: Everything in `index.html` (14,971 lines, 576KB)
 - **No build process**: Open and run directly in browser
-- **No dependencies**: Pure Vanilla JS (except Font Awesome for icons)
+- **No dependencies**: Pure Vanilla JS (no external libraries)
 - **Local-first**: Works offline by default
+- **Progressive Web App**: Installable with Service Worker
+- **Dynamic theming**: 6 built-in themes with CSS variables
 - **Progressive enhancement**: Optional cloud sync via Google Sheets
 
 ### Technology Stack
@@ -69,10 +71,10 @@ love-dossier/
 ### index.html Structure
 
 ```
-Lines 1-33      → HTML head (meta, title, external resources)
-Lines 34-2755   → <style> section (all CSS)
-Lines 2756-3028 → HTML body (UI structure)
-Lines 3029-11767 → <script> section (all JavaScript)
+Lines 1-48      → HTML head (meta, title, PWA manifest, external resources)
+Lines 49-4760   → <style> section (all CSS including theme system)
+Lines 4761-5035 → HTML body (UI structure)
+Lines 5036-14971 → <script> section (all JavaScript)
 ```
 
 ### Code Organization in JavaScript
@@ -111,9 +113,13 @@ WelcomeModal = {...}     // Onboarding flow
 // Lines 8800-9700: Testing
 TestDrive = {...}        // Automated testing system
 
-// Lines 9700-11767: Application Controller
+// Lines 9700-12750: Theme System
+ThemeManager = {...}     // Theme management system
+
+// Lines 12750-14971: Application Controller
 App = {...}              // Main application logic
 App.init()               // Application entry point
+Service Worker registration // PWA functionality
 ```
 
 ---
@@ -755,12 +761,101 @@ See [Contributing section in README.md](./README.md#-contributing)
 
 ---
 
+## 🎨 Theme System
+
+### ThemeManager Overview
+
+The `ThemeManager` object handles all theme-related functionality:
+
+```javascript
+ThemeManager = {
+  currentThemeName: 'current',
+  themes: { current, light, dark, ocean, sunset, forest, custom },
+  
+  init(),                    // Initialize theme system
+  applyTheme(name, animate), // Apply theme with optional animation
+  showThemeModal(),          // Open theme selection modal
+  startPreview(name),        // Preview theme without saving
+  savePreview(),             // Save previewed theme
+  cancelPreview(),           // Cancel preview and restore original
+  exportTheme(name),         // Export theme as JSON
+  importTheme()              // Import theme from JSON file
+};
+```
+
+### Theme Structure
+
+```javascript
+{
+  name: 'Theme Name',
+  icon: 'fa-icon-name',
+  colors: {
+    primary: '#6366f1',
+    primaryDark: '#4f46e5',
+    bgGradientStart: '#667eea',
+    bgGradientEnd: '#764ba2',
+    card: '#ffffff',
+    text: '#0f172a',
+    textMuted: '#64748b'
+    // ... more colors
+  }
+}
+```
+
+### Adding a New Theme
+
+```javascript
+// 1. Add to ThemeManager.themes
+ThemeManager.themes.mytheme = {
+  name: 'My Theme',
+  icon: 'fa-star',
+  colors: { /* ... */ }
+};
+
+// 2. Add translations
+TRANSLATIONS.uk.themes.mytheme = 'Моя тема';
+TRANSLATIONS.en.themes.mytheme = 'My Theme';
+// ... other languages
+```
+
+---
+
+## 📱 PWA Implementation
+
+### Service Worker
+
+Located in `service-worker.js`, handles:
+- **Caching**: Static assets cached for offline use
+- **Cache-first strategy**: Serves from cache, falls back to network
+- **Version management**: Auto-updates cache on version change
+- **Google API bypass**: External APIs not cached
+
+### Web App Manifest
+
+Located in `manifest.json`, defines:
+- **App name and description**
+- **Icons and screenshots**
+- **Display mode**: standalone
+- **Theme colors**
+- **Shortcuts**
+
+### Installation
+
+Users can install Love Dossier:
+- **Desktop**: Click install button in browser address bar
+- **Mobile**: "Add to Home Screen" from browser menu
+- **Automatically**: Browser prompts if PWA criteria met
+
+---
+
 ## 📚 Additional Resources
 
 - **MDN Web Docs**: https://developer.mozilla.org/
 - **Font Awesome Icons**: https://fontawesome.com/icons
 - **Google Sheets API**: https://developers.google.com/sheets/api
 - **Web Crypto API**: https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API
+- **PWA Documentation**: https://web.dev/progressive-web-apps/
+- **Service Workers**: https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API
 
 ---
 

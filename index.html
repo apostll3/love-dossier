@@ -4,9 +4,25 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title data-i18n="app.title">Досьє коханої людини</title>
+<meta name="description" content="Love Dossier - приватний веб-застосунок для організації та збереження важливої інформації про вашу кохану людину. Категорії, поля, синхронізація, шифрування. Безкоштовно та приватно.">
+<meta name="keywords" content="love dossier, relationship organizer, personal information manager, gift planner, privacy, encryption, offline app">
+<meta name="author" content="apostll3">
+<!-- Performance optimizations -->
+<link rel="preconnect" href="https://accounts.google.com">
+<link rel="preconnect" href="https://apis.google.com">
+<link rel="dns-prefetch" href="https://accounts.google.com">
+<link rel="dns-prefetch" href="https://apis.google.com">
 <link rel="icon" type="image/x-icon" href="LoveDossier.ico">
+<!-- PWA Configuration -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#6366f1">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Love Dossier">
+<link rel="apple-touch-icon" href="LoveDossier.ico">
 <!--
-  📝 ІНСТРУКЦІЯ З ФОРМАТУВАННЯ ТЕКСТУ:
+  ІНСТРУКЦІЯ З ФОРМАТУВАННЯ ТЕКСТУ:
   
   При редагуванні полів ви можете використовувати спеціальний синтаксис для форматування:
   
@@ -14923,6 +14939,30 @@ ease;
     document.addEventListener('DOMContentLoaded', () => App.init());
   } else {
     App.init();
+  }
+
+  // Register Service Worker for PWA
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./service-worker.js')
+        .then((registration) => {
+          console.log('[PWA] Service Worker зареєстровано:', registration.scope);
+          
+          // Перевірка оновлень
+          registration.addEventListener('updatefound', () => {
+            const newWorker = registration.installing;
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                console.log('[PWA] Доступне оновлення. Перезавантажте сторінку.');
+                // Можна показати Toast.show('Доступне оновлення застосунку', 'info');
+              }
+            });
+          });
+        })
+        .catch((error) => {
+          console.log('[PWA] Помилка реєстрації Service Worker:', error);
+        });
+    });
   }
 
 })();

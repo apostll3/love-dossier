@@ -10,12 +10,14 @@
 
 ### Quick Facts
 - **Tech Stack**: HTML5 + CSS3 + Vanilla JS (ES6+)
-- **File Size**: 11,767 lines, 432KB
-- **Architecture**: Single-file application (`index.html`)
+- **File Size**: 14,971 lines, 576KB
+- **Architecture**: Single-file application (`index.html`) + PWA files
 - **Storage**: LocalStorage (default), Google Sheets (optional), File export/import
 - **Security**: AES-GCM 256-bit encryption
 - **Languages**: 4 languages supported (Ukrainian, English, Russian, Polish)
-- **Version**: 2.0 BETA
+- **Themes**: 6 built-in themes with import/export support
+- **PWA**: Installable app with Service Worker for offline use
+- **Version**: 2.0
 
 ### Key Features
 1. **16 Categories**: Base, Character, Preferences, Anti-preferences, Gifts, Psychology, Psych, Logistics, Goals, Custom, Communication, Finance, Intimacy, Family, Career, Culture
@@ -33,11 +35,15 @@
 
 ### File Layout
 ```
-Lines 1-33      → HTML head
-Lines 34-2755   → <style> CSS
-Lines 2756-3028 → HTML body
-Lines 3029-11767 → <script> JavaScript
+Lines 1-48      → HTML head (includes PWA manifest, SEO meta tags)
+Lines 49-4760   → <style> CSS (includes theme system styles)
+Lines 4761-5035 → HTML body
+Lines 5036-14971 → <script> JavaScript (includes ThemeManager)
 ```
+
+### Additional Files
+- `manifest.json` — PWA manifest for app installation
+- `service-worker.js` — Service Worker for offline functionality
 
 ### JavaScript Organization
 ```javascript
@@ -62,8 +68,12 @@ Progress, Search, Renderer, CategorySettings, WelcomeModal
 // Testing (8800-9700)
 TestDrive
 
-// App Controller (9700-11767)
+// Theme System (9700-12750)
+ThemeManager
+
+// App Controller (12750-14971)
 App.init()
+Service Worker registration
 ```
 
 ---
@@ -352,6 +362,7 @@ When user requests work:
 - `Renderer` — UI rendering
 - `Modal` — Dialog system
 - `Toast` — Notifications
+- `ThemeManager` — Theme system (6 built-in themes, import/export)
 
 ### Common Patterns
 - Module pattern for components

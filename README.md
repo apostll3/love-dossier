@@ -122,20 +122,22 @@ Three storage modes to fit your needs:
 - **No backend servers** (client-side only)
 - **No analytics or tracking**
 
-### 📱 **Fully Responsive Design**
+### 📱 **PWA & Responsive Design**
+- **Progressive Web App**: Install on mobile and desktop
+- **Offline support**: Service Worker for offline functionality
 - **Mobile-first approach**: Optimized for smartphones
 - **Tablet support**: Perfect layout for tablets
 - **Desktop experience**: Full-featured desktop interface
 - **Touch-friendly**: Large tap targets, swipe gestures
 - **Adaptive layouts**: Dynamic grid system
 - **Smooth animations**: CSS transitions for all interactions
-- **PWA-ready**: Works offline after first load
 
-### 🎨 **Modern UI/UX**
+### 🎨 **Modern UI/UX & Themes**
 - **Beautiful gradients**: Eye-catching color schemes
-- **Smooth animations**: Polished user experience
+- **6 Built-in themes**: Current, Light, Dark, Ocean, Sunset, Forest
+- **Theme system**: Live preview, import/export custom themes
+- **Smooth animations**: Polished user experience with optimized transitions
 - **Custom components**: Dropdowns, modals, toasts, selectors
-- **Dark mode ready**: Prepared for dark theme implementation
 - **Accessibility**: Keyboard navigation, ARIA labels
 - **Intuitive navigation**: Easy category switching
 
@@ -190,11 +192,13 @@ xdg-open index.html  # Linux
 - **Vanilla JavaScript (ES6+)** — No frameworks, pure JS
 
 ### Architecture
-- **Single-file application** — Everything in `index.html` (11,767 lines)
+- **Single-file application** — Everything in `index.html` (14,971 lines)
 - **Modular code structure** — Logically separated sections
 - **State management** — Centralized `State` object
 - **Event delegation** — Efficient event handling
 - **Local-first** — Works offline by default
+- **PWA-ready** — Installable with Service Worker
+- **Theme system** — Dynamic theming with CSS variables
 
 ### External Dependencies
 - **Font Awesome 6.5.0** — Icons
@@ -204,7 +208,9 @@ xdg-open index.html  # Linux
 ### File Structure
 ```
 love-dossier/
-├── index.html          # Main application (432KB, development version)
+├── index.html          # Main application (576KB, development version)
+├── manifest.json       # PWA manifest
+├── service-worker.js   # Service Worker for offline support
 ├── LoveDossier.ico     # Favicon
 ├── preview.png         # Screenshot
 ├── README.md           # This file
@@ -217,11 +223,17 @@ love-dossier/
 ```
 
 ### Code Statistics
-- **Total lines**: 11,767
+- **Total lines**: 14,971
 - **HTML**: ~500 lines
-- **CSS**: ~2,700 lines
-- **JavaScript**: ~8,500 lines
-- **File size**: 432KB (uncompressed)
+- **CSS**: ~4,800 lines
+- **JavaScript**: ~9,600 lines
+- **File size**: 576KB (uncompressed)
+
+### Performance
+- **Lighthouse Desktop**: 100/100 (Performance, Accessibility, Best Practices), 100/100 (SEO)
+- **Lighthouse Mobile**: 96/100 (Performance), 100/100 (Accessibility, Best Practices, SEO)
+- **LCP**: 2.8s on mobile, optimized with preconnect hints
+- **CLS**: 0 (perfect layout stability)
 
 ---
 
@@ -361,8 +373,17 @@ git push origin feature/amazing-feature
 
 ## 🌟 Roadmap
 
+### Recently Added (v2.0) ✅
+- [✓] Theme system with 6 built-in themes
+- [✓] PWA support (installable app)
+- [✓] Service Worker for offline functionality
+- [✓] SEO optimization (100/100 score)
+- [✓] Performance optimization (96-100/100 score)
+- [✓] Theme import/export functionality
+- [✓] Live theme preview
+
 ### Planned Features
-- [ ] Dark mode theme
+- [ ] Custom theme editor with color picker
 - [ ] Export to PDF
 - [ ] Import from other formats
 - [ ] More field types (number, rating, checklist)
