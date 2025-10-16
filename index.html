@@ -295,6 +295,7 @@ i[class*="fa-"] svg {
   /* overflow: hidden; */
   border: 2px solid var(--card-border);
   transition: all 0.3s ease;
+  z-index:5;
 }
 
 
@@ -312,7 +313,7 @@ i[class*="fa-"] svg {
   gap: 1rem;
   flex-wrap: wrap;
   position: relative;
-  z-index: 6;
+  z-index: 10; /* Збільшений z-index для коректної роботи вкладених елементів */
 }
 
 .header-title {
@@ -334,7 +335,7 @@ i[class*="fa-"] svg {
   align-items: center;
   flex-wrap: wrap;
   position: relative;
-  z-index: 1;
+  z-index: 100; /* Високий z-index для коректної роботи dropdown */
 }
 
 /* Header Save Button */
@@ -439,7 +440,7 @@ i[class*="fa-"] svg {
   border-radius: var(--radius);
   box-shadow: var(--shadow-lg);
   padding: 0.5rem;
-  z-index: 1000;
+  z-index: 9999; /* Максимальний z-index для відображення над усіма елементами */
   min-width: 200px;
 }
 
@@ -4723,9 +4724,147 @@ i[class*="fa-"] svg {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* ============================================================================
+   APP LOADER - Система завантаження додатку з анімаціями
+   ============================================================================ */
+
+#appLoader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--body-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+#appLoader.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loader-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+.loader-logo {
+  width: 80px;
+  height: 80px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.loader-logo svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 20px var(--primary-40));
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+.loader-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid var(--primary-20);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loader-text {
+  font-size: 1.1rem;
+  color: var(--card);
+  font-weight: 500;
+  text-align: center;
+  animation: fadeInOut 2s ease-in-out infinite;
+}
+
+@keyframes fadeInOut {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Анімація появи контенту */
+.container {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.container.fade-in {
+  opacity: 1;
+  transform: none; /* Видаляємо transform після анімації, щоб не блокувати z-index дочірніх елементів */
+}
+
+/* Анімація появи окремих елементів */
+.animate-item {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-item:nth-child(1) { animation-delay: 0.1s; }
+.animate-item:nth-child(2) { animation-delay: 0.2s; }
+.animate-item:nth-child(3) { animation-delay: 0.3s; }
+.animate-item:nth-child(4) { animation-delay: 0.4s; }
+.animate-item:nth-child(5) { animation-delay: 0.5s; }
 </style>
 </head>
 <body>
+<!-- App Loader -->
+<div id="appLoader">
+  <div class="loader-content">
+    <div class="loader-logo">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 513 449">
+        <defs>
+          <linearGradient id="loaderGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#6366f1" />
+            <stop offset="100%" stop-color="#8b5cf6" />
+          </linearGradient>
+        </defs>
+        <path fill="url(#loaderGradient)" d="m256 75.9l-15-20.8c-25-34.6-65.1-55.1-107.9-55.1-73.5 0-133.1 59.6-133.1 133.1v2.6c0 23.6 6.2 48 16.6 72.3h106c3.2 0 6.1-1.9 7.4-4.9l31.8-76.3c3.7-8.8 12.3-14.6 21.8-14.8 9.5-0.2 18.3 5.4 22.2 14.1l51.3 113.9 41.4-82.8c4.1-8.1 12.4-13.3 21.5-13.3 9.1 0 17.4 5.1 21.5 13.3l23.2 46.3c1.4 2.7 4.1 4.4 7.2 4.4h123.6c10.5-24.3 16.6-48.7 16.6-72.3v-2.6c-0.1-73.4-59.7-133-133.2-133-42.7 0-82.9 20.5-107.9 55.1l-15 20.7zm213.6 180.1h-97.8c-21.2 0-40.6-12-50.1-31l-1.7-3.4-42.5 85.1c-4.1 8.3-12.7 13.5-22 13.3-9.3-0.2-17.6-5.7-21.4-14.1l-49.3-109.5-10.5 25.2c-8.7 20.9-29.1 34.5-51.7 34.5h-80.2c47.2 73.8 123 141.7 170.4 177.9 12.4 9.4 27.6 14.1 43.1 14.1 15.5 0 30.8-4.6 43.1-14.1 47.6-36.3 123.4-104.2 170.6-178z" />
+      </svg>
+    </div>
+    <div class="loader-spinner"></div>
+    <div class="loader-text" id="loaderText">Завантаження...</div>
+  </div>
+</div>
+
 <div class="container">
   <header class="header">
     <!-- Top Row: Title + Main Actions -->
@@ -4951,6 +5090,179 @@ i[class*="fa-"] svg {
       </div>
     </main>
   </div>
+
+  <footer class="app-footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <div class="footer-logo">
+          <i class="fa-heart"></i>
+          <span>Love Dossier</span>
+        </div>
+        <p class="footer-tagline" data-i18n="footer.tagline">Зберігай найважливіше про найдорожчу людину</p>
+        <div class="footer-version">
+          <i class="fa-code-branch"></i>
+          <span>v2.0.0</span>
+        </div>
+      </div>
+      
+      <div class="footer-section">
+        <h4 class="footer-title" data-i18n="footer.features">Можливості</h4>
+        <ul class="footer-links">
+          <li><i class="fa-check"></i> <span data-i18n="footer.feature1">16 категорій інформації</span></li>
+          <li><i class="fa-check"></i> <span data-i18n="footer.feature2">Markdown форматування</span></li>
+          <li><i class="fa-check"></i> <span data-i18n="footer.feature3">Google Sheets синхронізація</span></li>
+          <li><i class="fa-check"></i> <span data-i18n="footer.feature4">AES-256 шифрування</span></li>
+        </ul>
+      </div>
+      
+      <div class="footer-section">
+        <h4 class="footer-title" data-i18n="footer.stats">Статистика</h4>
+        <div class="footer-stats">
+          <div class="footer-stat">
+            <div class="footer-stat-icon">
+              <i class="fa-list"></i>
+            </div>
+            <div class="footer-stat-content">
+              <div class="footer-stat-value" id="footerTotalFields">0</div>
+              <div class="footer-stat-label" data-i18n="footer.totalFields">Всього полів</div>
+            </div>
+          </div>
+          <div class="footer-stat">
+            <div class="footer-stat-icon">
+              <i class="fa-check-circle"></i>
+            </div>
+            <div class="footer-stat-content">
+              <div class="footer-stat-value" id="footerFilledFields">0</div>
+              <div class="footer-stat-label" data-i18n="footer.filledFields">Заповнено</div>
+            </div>
+          </div>
+          <div class="footer-stat">
+            <div class="footer-stat-icon">
+              <i class="fa-chart-line"></i>
+            </div>
+            <div class="footer-stat-content">
+              <div class="footer-stat-value" id="footerProgress">0%</div>
+              <div class="footer-stat-label" data-i18n="footer.progress">Прогрес</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer-section">
+        <h4 class="footer-title" data-i18n="footer.author">Автор</h4>
+        <div class="footer-author">
+          <div class="footer-author-info">
+            <div class="footer-author-name">@apostll3</div>
+            <p class="footer-author-desc" data-i18n="footer.authorDesc">Створено з любов'ю для тих, хто цінує деталі</p>
+          </div>
+          <div class="footer-social">
+            <a href="https://t.me/apostll3" target="_blank" rel="noopener noreferrer" class="footer-social-link" title="Telegram">
+              <i class="fa-telegram"></i>
+            </a>
+            <a href="https://t.me/apostlenote" target="_blank" rel="noopener noreferrer" class="footer-social-link" title="Telegram Group">
+              <i class="fa-users"></i>
+            </a>
+            <a href="https://instagram.com/apostll3" target="_blank" rel="noopener noreferrer" class="footer-social-link" title="Instagram">
+              <i class="fa-instagram"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <div class="footer-bottom-content">
+        <p class="footer-copyright">
+          <i class="fa-code"></i>
+          <span data-i18n="footer.madeWith">Зроблено з</span>
+          <i class="fa-heart" style="color: var(--danger);"></i>
+          <span data-i18n="footer.forLove">для кохання</span>
+        </p>
+        <div class="footer-language-selector" id="footerLanguageSelector">
+          <div class="footer-language-trigger" id="footerLanguageTrigger" data-i18n-title="tooltips.changeLanguage">
+            <span class="language-flag" id="footerCurrentLanguage">
+              <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+                <rect width="800" height="600" fill="#0057B7" rx="50"/>
+                <rect y="300" width="800" height="300" fill="#FFD700"/>
+              </svg>
+            </span>
+          </div>
+          <div class="footer-language-dropdown" id="footerLanguageDropdown">
+            <div class="language-option" data-lang="uk">
+              <span class="language-flag">
+                <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="800" height="600" fill="#0057B7" rx="50"/>
+                  <rect y="300" width="800" height="300" fill="#FFD700"/>
+                </svg>
+              </span>
+              <span class="language-name">Українська</span>
+              <i class="fa-check language-check" style="visibility: visible;"></i>
+            </div>
+            <div class="language-option" data-lang="en">
+              <span class="language-flag">
+                <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="800" height="600" fill="#f0f0f0" rx="50"/>
+                  <g fill="#B22234">
+                    <rect width="800" height="46.15"/>
+                    <rect y="92.31" width="800" height="46.15"/>
+                    <rect y="184.62" width="800" height="46.15"/>
+                    <rect y="276.92" width="800" height="46.15"/>
+                    <rect y="369.23" width="800" height="46.15"/>
+                    <rect y="461.54" width="800" height="46.15"/>
+                    <rect y="553.85" width="800" height="46.15"/>
+                  </g>
+                  <rect width="342.86" height="323.08" fill="#3C3B6E"/>
+                  <g fill="#fff">
+                    <circle cx="57.14" cy="40" r="15"/>
+                    <circle cx="128.57" cy="40" r="15"/>
+                    <circle cx="200" cy="40" r="15"/>
+                    <circle cx="271.43" cy="40" r="15"/>
+                    <circle cx="92.86" cy="100" r="15"/>
+                    <circle cx="164.29" cy="100" r="15"/>
+                    <circle cx="235.71" cy="100" r="15"/>
+                    <circle cx="57.14" cy="160" r="15"/>
+                    <circle cx="128.57" cy="160" r="15"/>
+                    <circle cx="200" cy="160" r="15"/>
+                    <circle cx="271.43" cy="160" r="15"/>
+                    <circle cx="92.86" cy="220" r="15"/>
+                    <circle cx="164.29" cy="220" r="15"/>
+                    <circle cx="235.71" cy="220" r="15"/>
+                    <circle cx="57.14" cy="280" r="15"/>
+                    <circle cx="128.57" cy="280" r="15"/>
+                    <circle cx="200" cy="280" r="15"/>
+                    <circle cx="271.43" cy="280" r="15"/>
+                  </g>
+                </svg>
+              </span>
+              <span class="language-name">English</span>
+              <i class="fa-check language-check"></i>
+            </div>
+            <div class="language-option" data-lang="ru">
+              <span class="language-flag">
+                <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="800" height="600" fill="white" rx="50"/>
+                  <rect y="200" width="800" height="200" fill="#0039A6"/>
+                  <rect y="400" width="800" height="200" fill="#D52B1E"/>
+                </svg>
+              </span>
+              <span class="language-name">Русский</span>
+              <i class="fa-check language-check"></i>
+            </div>
+            <div class="language-option" data-lang="pl">
+              <span class="language-flag">
+                <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="800" height="600" fill="white" rx="50"/>
+                  <rect y="300" width="800" height="300" fill="#DC143C"/>
+                </svg>
+              </span>
+              <span class="language-name">Polski</span>
+              <i class="fa-check language-check"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
 </div>
 
 <!-- Modal -->
@@ -5002,179 +5314,6 @@ i[class*="fa-"] svg {
     <i class="fa-tag"></i>
   </button>
 </div>
-
-<footer class="app-footer">
-  <div class="footer-content">
-    <div class="footer-section">
-      <div class="footer-logo">
-        <i class="fa-heart"></i>
-        <span>Love Dossier</span>
-      </div>
-      <p class="footer-tagline" data-i18n="footer.tagline">Зберігай найважливіше про найдорожчу людину</p>
-      <div class="footer-version">
-        <i class="fa-code-branch"></i>
-        <span>v2.0.0</span>
-      </div>
-    </div>
-    
-    <div class="footer-section">
-      <h4 class="footer-title" data-i18n="footer.features">Можливості</h4>
-      <ul class="footer-links">
-        <li><i class="fa-check"></i> <span data-i18n="footer.feature1">16 категорій інформації</span></li>
-        <li><i class="fa-check"></i> <span data-i18n="footer.feature2">Markdown форматування</span></li>
-        <li><i class="fa-check"></i> <span data-i18n="footer.feature3">Google Sheets синхронізація</span></li>
-        <li><i class="fa-check"></i> <span data-i18n="footer.feature4">AES-256 шифрування</span></li>
-      </ul>
-    </div>
-    
-    <div class="footer-section">
-      <h4 class="footer-title" data-i18n="footer.stats">Статистика</h4>
-      <div class="footer-stats">
-        <div class="footer-stat">
-          <div class="footer-stat-icon">
-            <i class="fa-list"></i>
-          </div>
-          <div class="footer-stat-content">
-            <div class="footer-stat-value" id="footerTotalFields">0</div>
-            <div class="footer-stat-label" data-i18n="footer.totalFields">Всього полів</div>
-          </div>
-        </div>
-        <div class="footer-stat">
-          <div class="footer-stat-icon">
-            <i class="fa-check-circle"></i>
-          </div>
-          <div class="footer-stat-content">
-            <div class="footer-stat-value" id="footerFilledFields">0</div>
-            <div class="footer-stat-label" data-i18n="footer.filledFields">Заповнено</div>
-          </div>
-        </div>
-        <div class="footer-stat">
-          <div class="footer-stat-icon">
-            <i class="fa-chart-line"></i>
-          </div>
-          <div class="footer-stat-content">
-            <div class="footer-stat-value" id="footerProgress">0%</div>
-            <div class="footer-stat-label" data-i18n="footer.progress">Прогрес</div>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <div class="footer-section">
-      <h4 class="footer-title" data-i18n="footer.author">Автор</h4>
-      <div class="footer-author">
-        <div class="footer-author-info">
-          <div class="footer-author-name">@apostll3</div>
-          <p class="footer-author-desc" data-i18n="footer.authorDesc">Створено з любов'ю для тих, хто цінує деталі</p>
-        </div>
-        <div class="footer-social">
-          <a href="https://t.me/apostll3" target="_blank" rel="noopener noreferrer" class="footer-social-link" title="Telegram">
-            <i class="fa-telegram"></i>
-          </a>
-          <a href="https://t.me/apostlenote" target="_blank" rel="noopener noreferrer" class="footer-social-link" title="Telegram Group">
-            <i class="fa-users"></i>
-          </a>
-          <a href="https://instagram.com/apostll3" target="_blank" rel="noopener noreferrer" class="footer-social-link" title="Instagram">
-            <i class="fa-instagram"></i>
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <div class="footer-bottom">
-    <div class="footer-bottom-content">
-      <p class="footer-copyright">
-        <i class="fa-code"></i>
-        <span data-i18n="footer.madeWith">Зроблено з</span>
-        <i class="fa-heart" style="color: var(--danger);"></i>
-        <span data-i18n="footer.forLove">для кохання</span>
-      </p>
-      <div class="footer-language-selector" id="footerLanguageSelector">
-        <div class="footer-language-trigger" id="footerLanguageTrigger" data-i18n-title="tooltips.changeLanguage">
-          <span class="language-flag" id="footerCurrentLanguage">
-            <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
-              <rect width="800" height="600" fill="#0057B7" rx="50"/>
-              <rect y="300" width="800" height="300" fill="#FFD700"/>
-            </svg>
-          </span>
-        </div>
-        <div class="footer-language-dropdown" id="footerLanguageDropdown">
-          <div class="language-option" data-lang="uk">
-            <span class="language-flag">
-              <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
-                <rect width="800" height="600" fill="#0057B7" rx="50"/>
-                <rect y="300" width="800" height="300" fill="#FFD700"/>
-              </svg>
-            </span>
-            <span class="language-name">Українська</span>
-            <i class="fa-check language-check" style="visibility: visible;"></i>
-          </div>
-          <div class="language-option" data-lang="en">
-            <span class="language-flag">
-              <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
-                <rect width="800" height="600" fill="#f0f0f0" rx="50"/>
-                <g fill="#B22234">
-                  <rect width="800" height="46.15"/>
-                  <rect y="92.31" width="800" height="46.15"/>
-                  <rect y="184.62" width="800" height="46.15"/>
-                  <rect y="276.92" width="800" height="46.15"/>
-                  <rect y="369.23" width="800" height="46.15"/>
-                  <rect y="461.54" width="800" height="46.15"/>
-                  <rect y="553.85" width="800" height="46.15"/>
-                </g>
-                <rect width="342.86" height="323.08" fill="#3C3B6E"/>
-                <g fill="#fff">
-                  <circle cx="57.14" cy="40" r="15"/>
-                  <circle cx="128.57" cy="40" r="15"/>
-                  <circle cx="200" cy="40" r="15"/>
-                  <circle cx="271.43" cy="40" r="15"/>
-                  <circle cx="92.86" cy="100" r="15"/>
-                  <circle cx="164.29" cy="100" r="15"/>
-                  <circle cx="235.71" cy="100" r="15"/>
-                  <circle cx="57.14" cy="160" r="15"/>
-                  <circle cx="128.57" cy="160" r="15"/>
-                  <circle cx="200" cy="160" r="15"/>
-                  <circle cx="271.43" cy="160" r="15"/>
-                  <circle cx="92.86" cy="220" r="15"/>
-                  <circle cx="164.29" cy="220" r="15"/>
-                  <circle cx="235.71" cy="220" r="15"/>
-                  <circle cx="57.14" cy="280" r="15"/>
-                  <circle cx="128.57" cy="280" r="15"/>
-                  <circle cx="200" cy="280" r="15"/>
-                  <circle cx="271.43" cy="280" r="15"/>
-                </g>
-              </svg>
-            </span>
-            <span class="language-name">English</span>
-            <i class="fa-check language-check"></i>
-          </div>
-          <div class="language-option" data-lang="ru">
-            <span class="language-flag">
-              <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
-                <rect width="800" height="600" fill="white" rx="50"/>
-                <rect y="200" width="800" height="200" fill="#0039A6"/>
-                <rect y="400" width="800" height="200" fill="#D52B1E"/>
-              </svg>
-            </span>
-            <span class="language-name">Русский</span>
-            <i class="fa-check language-check"></i>
-          </div>
-          <div class="language-option" data-lang="pl">
-            <span class="language-flag">
-              <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
-                <rect width="800" height="600" fill="white" rx="50"/>
-                <rect y="300" width="800" height="300" fill="#DC143C"/>
-              </svg>
-            </span>
-            <span class="language-name">Polski</span>
-            <i class="fa-check language-check"></i>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</footer>
 
 <script>
 (function() {
@@ -10618,6 +10757,55 @@ i[class*="fa-"] svg {
     },
   };
 
+  // ============= APP LOADER =============
+  const AppLoader = {
+    show(text = 'Завантаження...') {
+      const loader = document.getElementById('appLoader');
+      const loaderText = document.getElementById('loaderText');
+      
+      if (loader) {
+        if (loaderText) loaderText.textContent = text;
+        loader.classList.remove('fade-out');
+        loader.style.display = 'flex';
+      }
+    },
+    
+    hide() {
+      const loader = document.getElementById('appLoader');
+      if (loader) {
+        loader.classList.add('fade-out');
+        // Видаляємо після анімації
+        setTimeout(() => {
+          loader.style.display = 'none';
+        }, 500);
+      }
+    },
+    
+    showContentWithAnimation() {
+      const container = document.querySelector('.container');
+      if (container) {
+        // Спочатку ховаємо loader
+        this.hide();
+        
+        // Затримка перед показом контенту
+        setTimeout(() => {
+          container.classList.add('fade-in');
+          
+          // Додаємо клас animate-item до елементів для послідовної анімації
+          setTimeout(() => {
+            const header = document.querySelector('.header');
+            const sidebar = document.querySelector('.sidebar');
+            const content = document.querySelector('.content');
+            
+            if (header) header.classList.add('animate-item');
+            if (sidebar) sidebar.classList.add('animate-item');
+            if (content) content.classList.add('animate-item');
+          }, 100);
+        }, 300);
+      }
+    }
+  };
+
   // ============= WELCOME MODAL =============
   const WelcomeModal = {
     selectedLanguage: 'uk',
@@ -10915,6 +11103,13 @@ i[class*="fa-"] svg {
       Renderer.renderCategories();
       Renderer.renderContent();
       Progress.update();
+      App.updateFooterStats();
+      
+      // Замінюємо іконки
+      replaceIconsWithSVG();
+      
+      // Показуємо контент з анімацією
+      AppLoader.showContentWithAnimation();
     },
     
     close() {
@@ -12453,6 +12648,9 @@ i[class*="fa-"] svg {
   // ============= APP =============
   const App = {
     async init() {
+      // Показуємо loader відразу
+      AppLoader.show('Завантаження...');
+      
       // Ініціалізація системи тем
       ThemeManager.init();
       
@@ -12467,6 +12665,9 @@ i[class*="fa-"] svg {
       const isFirstTime = !localStorage.getItem('onboarding_completed');
       
       if (isFirstTime) {
+        // Ховаємо loader перед показом Welcome Modal
+        AppLoader.hide();
+        
         // Показуємо вітальне вікно для нових користувачів
         WelcomeModal.show();
         return; // Зупиняємо ініціалізацію, вона продовжиться після завершення onboarding
@@ -12535,6 +12736,9 @@ i[class*="fa-"] svg {
       
       // Замінюємо Font Awesome іконки на SVG
       replaceIconsWithSVG();
+      
+      // Показуємо контент з анімацією
+      AppLoader.showContentWithAnimation();
     },
     
     bindEvents() {
