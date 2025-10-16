@@ -10096,10 +10096,27 @@ i[class*="fa-"] svg {
       }
       
       const category = State.config.categories.find(c => c.id === State.ui.activeCategory);
+      
+      // Якщо категорія не знайдена, показуємо повідомлення
+      if (!category) {
+        contentTitle.innerHTML = `
+          <i class="fa-exclamation-triangle">${getIcon('exclamation-triangle')}</i>
+          <span>${i18n.t('ui.categoryNotFound') || 'Категорію не знайдено'}</span>
+        `;
+        contentActions.innerHTML = '';
+        contentBody.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon"><i class="fa-exclamation-triangle">${getIcon('exclamation-triangle')}</i></div>
+            <div class="empty-state-text">${i18n.t('ui.selectCategoryLeft')}</div>
+          </div>
+        `;
+        return;
+      }
+      
       const fields = State.config.fields.filter(f => f.category === State.ui.activeCategory);
       
       // Приховуємо приватні категорії якщо потрібно
-      const isPrivateCategory = category && category.isPrivate;
+      const isPrivateCategory = category.isPrivate;
       
       contentTitle.innerHTML = `
         <i class="${category.icon}">${getIcon(category.icon)}</i>
