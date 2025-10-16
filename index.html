@@ -11090,6 +11090,15 @@ i[class*="fa-"] svg {
         return;
       }
       
+      // Показуємо loader
+      AppLoader.show(this.getTranslation('ui.loading') || 'Завантаження...');
+      
+      // Закриваємо модалку
+      this.close();
+      
+      // Невелика затримка для анімації закриття модалки
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
       // Зберігаємо вибрану мову
       State.language = this.selectedLanguage;
       try {
@@ -11127,9 +11136,6 @@ i[class*="fa-"] svg {
         Debug.error('localStorage error:', e);
       }
       
-      // Закриваємо модалку
-      this.close();
-      
       // Повна ініціалізація UI (як в App.init())
       i18n.applyTranslations();
       i18n.updateLanguageUI();
@@ -11156,6 +11162,12 @@ i[class*="fa-"] svg {
       
       // Показуємо контент з анімацією
       AppLoader.showContentWithAnimation();
+      
+      // Після показу контенту відкриваємо модальне вікно вибору теми
+      // Чекаємо завершення анімації (loader hide 500ms + content show 150ms + animations 250ms)
+      setTimeout(() => {
+        ThemeManager.showThemeModal();
+      }, 1000);
     },
     
     close() {
@@ -12543,13 +12555,26 @@ i[class*="fa-"] svg {
           document.querySelectorAll('.theme-card').forEach(card => {
             card.addEventListener('click', () => {
               const themeName = card.dataset.theme;
-              this.startPreview(themeName);
               
               // Встановлюємо флаг що модалка закривається після вибору теми
               this.closingAfterThemeSelection = true;
               
-              // Закриваємо модалку
-              Modal.close();
+              // Додаємо візуальну анімацію вибору
+              card.style.transform = 'scale(0.95)';
+              setTimeout(() => {
+                card.style.transform = '';
+              }, 150);
+              
+              // Затримка перед закриттям модалки для плавності
+              setTimeout(() => {
+                // Закриваємо модалку з анімацією
+                Modal.close();
+                
+                // Після закриття модалки запускаємо preview теми
+                setTimeout(() => {
+                  this.startPreview(themeName);
+                }, 300); // Час на закриття модалки
+              }, 200); // Коротка затримка після кліку
             });
           });
           
