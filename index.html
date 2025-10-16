@@ -4787,6 +4787,7 @@ i[class*="fa-"] svg {
   border-top-color: var(--primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
+  display: none;
 }
 
 @keyframes spin {
@@ -10780,6 +10781,9 @@ i[class*="fa-"] svg {
 
   // ============= APP LOADER =============
   const AppLoader = {
+    startTime: null,
+    minDisplayTime: 1000, // Мінімум 1 секунда
+    
     show(text = 'Завантаження...') {
       const loader = document.getElementById('appLoader');
       const loaderText = document.getElementById('loaderText');
@@ -10788,6 +10792,7 @@ i[class*="fa-"] svg {
         if (loaderText) loaderText.textContent = text;
         loader.classList.remove('fade-out');
         loader.style.display = 'flex';
+        this.startTime = Date.now(); // Запам'ятовуємо час показу
       }
     },
     
@@ -10805,38 +10810,44 @@ i[class*="fa-"] svg {
     showContentWithAnimation() {
       const container = document.querySelector('.container');
       if (container) {
-        // Спочатку ховаємо loader
-        this.hide();
+        // Перевіряємо скільки часу минуло з моменту показу loader'а
+        const elapsedTime = this.startTime ? Date.now() - this.startTime : this.minDisplayTime;
+        const remainingTime = Math.max(0, this.minDisplayTime - elapsedTime);
         
-        // Затримка перед показом контенту
+        // Чекаємо залишок часу (якщо потрібно), потім ховаємо loader
         setTimeout(() => {
-          container.classList.add('fade-in');
+          this.hide();
           
-          // Додаємо клас animate-item до елементів для послідовної анімації
+          // Затримка перед показом контенту
           setTimeout(() => {
-            const header = document.querySelector('.header');
-            const sidebar = document.querySelector('.sidebar');
-            const content = document.querySelector('.content');
-            const footer = document.querySelector('.app-footer');
+            container.classList.add('fade-in');
             
-            if (header) {
-              header.classList.add('animate-item');
-              header.style.animationDelay = '0.05s';
-            }
-            if (sidebar) {
-              sidebar.classList.add('animate-item');
-              sidebar.style.animationDelay = '0.1s';
-            }
-            if (content) {
-              content.classList.add('animate-item');
-              content.style.animationDelay = '0.15s';
-            }
-            if (footer) {
-              footer.classList.add('animate-item');
-              footer.style.animationDelay = '0.2s';
-            }
-          }, 50);
-        }, 150);
+            // Додаємо клас animate-item до елементів для послідовної анімації
+            setTimeout(() => {
+              const header = document.querySelector('.header');
+              const sidebar = document.querySelector('.sidebar');
+              const content = document.querySelector('.content');
+              const footer = document.querySelector('.app-footer');
+              
+              if (header) {
+                header.classList.add('animate-item');
+                header.style.animationDelay = '0.05s';
+              }
+              if (sidebar) {
+                sidebar.classList.add('animate-item');
+                sidebar.style.animationDelay = '0.1s';
+              }
+              if (content) {
+                content.classList.add('animate-item');
+                content.style.animationDelay = '0.15s';
+              }
+              if (footer) {
+                footer.classList.add('animate-item');
+                footer.style.animationDelay = '0.2s';
+              }
+            }, 50);
+          }, 150);
+        }, remainingTime);
       }
     }
   };
