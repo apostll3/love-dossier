@@ -129,6 +129,42 @@ body {
   line-height: 1.6;
 }
 
+/* === THEME TRANSITION ANIMATION === */
+/* Тільки найважливіші елементи для кращої продуктивності */
+html.theme-transitioning body,
+html.theme-transitioning .header,
+html.theme-transitioning .sidebar,
+html.theme-transitioning .content,
+html.theme-transitioning .field-card,
+html.theme-transitioning .modal,
+html.theme-transitioning .btn,
+html.theme-transitioning .category-item,
+html.theme-transitioning .category-icon,
+html.theme-transitioning .field-icon,
+html.theme-transitioning .field-value,
+html.theme-transitioning .chip,
+html.theme-transitioning .badge,
+html.theme-transitioning .footer-section,
+html.theme-transitioning .footer-stat,
+html.theme-transitioning .footer-links li,
+html.theme-transitioning .toast,
+html.theme-transitioning .progress-bar-fill,
+html.theme-transitioning .search-input,
+html.theme-transitioning .form-input,
+html.theme-transitioning .form-textarea,
+html.theme-transitioning .custom-select-trigger,
+html.theme-transitioning input,
+html.theme-transitioning textarea,
+html.theme-transitioning select {
+  transition: 
+    background 0.2s ease-out,
+    background-color 0.2s ease-out,
+    background-image 0.2s ease-out,
+    border-color 0.2s ease-out,
+    color 0.2s ease-out,
+    box-shadow 0.2s ease-out !important;
+}
+
 /* 1) Скрыть scrollbar у страницы (html + body) but keep scrolling */
 html, body {
   height: 100%;
@@ -11746,10 +11782,10 @@ i[class*="fa-"] svg {
         this.saveTheme();
         
         if (animate) {
-          // Затримка для анімації (300ms = час transition)
+          // Затримка для анімації (200ms = час transition)
           setTimeout(() => {
             root.classList.remove('theme-transitioning');
-          }, 300);
+          }, 200);
           Toast.show(`Тему "${theme.name}" застосовано`, 'success');
         }
         
