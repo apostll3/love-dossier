@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Reordering Test - Exact Grid</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      text-align: center;
+      margin-bottom: 15px;
+      color: #333;
+    }
+    
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 0.95rem;
+    }
+    
+    .debug-panel {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.85);
+      color: #fff;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.75rem;
+      z-index: 9999;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      max-width: 300px;
+    }
+    
+    .debug-panel h4 {
+      margin: 0 0 8px 0;
+      font-size: 0.85rem;
+      color: #6366f1;
+    }
+    
+    .debug-panel .status {
+      display: flex;
+      justify-content: space-between;
+      margin: 4px 0;
+      padding: 4px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .debug-panel .status:last-child {
+      border-bottom: none;
+    }
+    
+    .debug-panel .label {
+      color: #9ca3af;
+    }
+    
+    .debug-panel .value {
+      color: #10b981;
+      font-weight: bold;
+    }
+    
+    .debug-panel .value.active {
+      color: #f59e0b;
+      animation: blink 1s infinite;
+    }
+    
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    
+    .cards-container {
+      min-height: 400px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 15px;
+      background: #fafafa;
+      position: relative;
+      
+      /* ТОЧНИЙ GRID як в main index.html */
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1rem;
+      z-index: 1;
+      position: relative;
+    }
+    
+    .card {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.95));
+      padding: 16px;
+      border-radius: 12px;
+      border: 2px solid rgba(226, 232, 240, 0.8);
+      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.08);
+      cursor: grab;
+      user-select: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                  border-left 0.15s ease, 
+                  border-right 0.15s ease;
+      position: relative;
+      backdrop-filter: blur(10px);
+      overflow: hidden;
+    }
+    
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.05), transparent);
+      transition: left 0.5s ease;
+    }
+    
+    .card:hover::before {
+      left: 100%;
+    }
+    
+    .card:hover {
+      border-color: rgba(99, 102, 241, 0.4);
+      box-shadow: 0 4px 16px rgba(99, 102, 241, 0.15);
+      transform: translateY(-2px);
+    }
+    
+    /* Drag & Drop стилі - ПРОФЕСІЙНА ВЕРСІЯ */
+    .card.dragging {
+      opacity: 0.5 !important;
+      cursor: grabbing !important;
+      transform: scale(1.08) rotate(3deg) !important;
+      box-shadow: 0 12px 32px rgba(99, 102, 241, 0.35), 
+                  0 6px 12px rgba(0, 0, 0, 0.2) !important;
+      z-index: 1000 !important;
+      border-color: rgba(99, 102, 241, 0.6) !important;
+      transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+    }
+    
+    .card.shifting {
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+      will-change: transform;
+    }
+    
+    /* Візуальний feedback при hover під час драгу */
+    .card:not(.dragging):hover {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 1), rgba(239, 246, 255, 0.95));
+    }
+    
+    /* Placeholder стилі */
+    .card-placeholder {
+      background: rgba(99, 102, 241, 0.08) !important;
+      border: 2px dashed rgba(99, 102, 241, 0.4) !important;
+      border-radius: 12px;
+      animation: pulse-placeholder 1.5s ease-in-out infinite;
+    }
+    
+    @keyframes pulse-placeholder {
+      0%, 100% {
+        background: rgba(99, 102, 241, 0.08);
+        border-color: rgba(99, 102, 241, 0.4);
+      }
+      50% {
+        background: rgba(99, 102, 241, 0.12);
+        border-color: rgba(99, 102, 241, 0.6);
+      }
+    }
+    
+    /* Покращений grabbing cursor */
+    .card:active {
+      cursor: grabbing;
+    }
+    
+    /* Анімація для smooth переходів */
+    .card {
+      will-change: transform;
+    }
+    
+    /* Додатковий feedback для touch */
+    @media (hover: none) and (pointer: coarse) {
+      .card.dragging {
+        opacity: 0.6 !important;
+        transform: scale(1.1) rotate(4deg) !important;
+      }
+    }
+    
+    .card h3 {
+      font-size: 1rem;
+      color: #333;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+    
+    .card p {
+      font-size: 0.85rem;
+      color: #999;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔄 SWAP - Простий обмін місцями v10</h1>
+    <p class="subtitle">
+      Перетягуйте картки - вони просто МІНЯЮТЬСЯ місцями. Без складної логіки!<br>
+      <strong>✨ ПРОСТА АНІМАЦІЯ:</strong> Підсвічування + плавний swap → готово!<br>
+      <strong>📝 DEBUG:</strong> Console (F12) показує swap операції 🚀</strong>
+    </p>
+    
+    <!-- Debug Panel -->
+    <div class="debug-panel" id="debugPanel">
+      <h4>📊 Debug Info</h4>
+      <div class="status">
+        <span class="label">Статус:</span>
+        <span class="value" id="dragStatus">Готовий</span>
+      </div>
+      <div class="status">
+        <span class="label">Режим:</span>
+        <span class="value" id="inputMode">Desktop</span>
+      </div>
+      <div class="status">
+        <span class="label">Переміщень:</span>
+        <span class="value" id="moveCount">0</span>
+      </div>
+      <div class="status">
+        <span class="label">FPS:</span>
+        <span class="value" id="fpsCounter">60</span>
+      </div>
+      <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.7rem; color: #9ca3af; line-height: 1.4;">
+        🔄 <strong style="color: #10b981;">ПРОСТО SWAP!</strong> Наведіть → картка <span style="color: #6366f1;">підсвічується</span> → Відпустіть → <strong>міняються місцями!</strong>
+      </div>
+    </div>
+    
+    <!-- Тільки Live Reordering з точним grid як в main -->
+    <div class="cards-container variant-3" data-variant="3">
+      <div class="card" draggable="true" data-id="1"><h3>📌 Картка 1</h3><p>Перетягніть мене</p></div>
+      <div class="card" draggable="true" data-id="2"><h3>🎯 Картка 2</h3><p>Перетягніть мене</p></div>
+      <div class="card" draggable="true" data-id="3"><h3>⭐ Картка 3</h3><p>Перетягніть мене</p></div>
+      <div class="card" draggable="true" data-id="4"><h3>💎 Картка 4</h3><p>Перетягніть мене</p></div>
+      <div class="card" draggable="true" data-id="5"><h3>🔥 Картка 5</h3><p>Перетягніть мене</p></div>
+      <div class="card" draggable="true" data-id="6"><h3>🎨 Картка 6</h3><p>Перетягніть мене</p></div>
+      <div class="card" draggable="true" data-id="7"><h3>✨ Картка 7</h3><p>Перетягніть мене</p></div>
+      <div class="card" draggable="true" data-id="8"><h3>🚀 Картка 8</h3><p>Перетягніть мене</p></div>
+      <div class="card" draggable="true" data-id="9"><h3>💡 Картка 9</h3><p>Перетягніть мене</p></div>
+      <div class="card" draggable="true" data-id="10"><h3>⚡ Картка 10</h3><p>Перетягніть мене</p></div>
+      <div class="card" draggable="true" data-id="11"><h3>🌟 Картка 11</h3><p>Перетягніть мене</p></div>
+      <div class="card" draggable="true" data-id="12"><h3>🎪 Картка 12</h3><p>Перетягніть мене</p></div>
+    </div>
+  </div>
+
+  <script>
+    /**
+     * ПРОСТИЙ SWAP - DRAG & DROP ДЛЯ GRID LAYOUT
+     * ===========================================
+     * ПРИНЦИП: Картки просто МІНЯЮТЬСЯ місцями (SWAP)
+     * 
+     * 1. Під час drag (handleDragOver / handleTouchMove):
+     *    - Підсвічуємо ВСЮ target картку (border + background + shadow)
+     *    - Зберігаємо currentTargetCard для SWAP
+     *    - Без складної логіки країв (left/right/top/bottom)
+     * 
+     * 2. При drop (handleDrop / endTouchDrag):
+     *    - SWAP: міняємо dragged і target картки місцями в DOM
+     *    - Обробка 3 випадків:
+     *      • Якщо поруч (сусіди) → просто міняємо
+     *      • Загальний випадок → через tempPlaceholder
+     *    - Анімація shifting + оновлення лічильника
+     * 
+     * 3. Візуалізація:
+     *    - Вся target картка світиться синім
+     *    - console.log показує SWAP операцію
+     * 
+     * Підтримка desktop і touch!
+     */
+    
+    class DragDropGrid {
+      constructor(container) {
+        this.container = container;
+        this.draggedElement = null;
+        this.placeholder = null;
+        this.isDragging = false;
+        this.lastOverElement = null;
+        this.touchStartTime = 0;
+        this.touchTimeout = null;
+        
+        // Throttling для оптимізації
+        this.rafId = null;
+        this.pendingUpdate = null;
+        
+        // Збереження target для SWAP
+        this.currentTargetCard = null;
+        
+        // Debug metrics
+        this.moveCount = 0;
+        this.lastFrameTime = performance.now();
+        this.fps = 60;
+        this.debugElements = {
+          status: document.getElementById('dragStatus'),
+          mode: document.getElementById('inputMode'),
+          moves: document.getElementById('moveCount'),
+          fps: document.getElementById('fpsCounter')
+        };
+        
+        this.init();
+        this.startFPSMonitor();
+      }
+      
+      init() {
+        this.createPlaceholder();
+        this.attachEventListeners();
+      }
+      
+      createPlaceholder() {
+        // Створюємо placeholder для візуальної індикації
+        this.placeholder = document.createElement('div');
+        this.placeholder.className = 'card-placeholder';
+        this.placeholder.style.cssText = `
+          background: rgba(99, 102, 241, 0.1);
+          border: 2px dashed rgba(99, 102, 241, 0.5);
+          border-radius: 12px;
+          transition: all 0.2s ease;
+          pointer-events: none;
+        `;
+      }
+      
+      attachEventListeners() {
+        const cards = this.container.querySelectorAll('.card');
+        
+        cards.forEach(card => {
+          // Desktop drag events
+          this.setupDesktopDrag(card);
+          
+          // Touch events для мобільних
+          this.setupTouchDrag(card);
+        });
+      }
+      
+      // ============ DESKTOP DRAG ============
+      setupDesktopDrag(card) {
+        card.addEventListener('dragstart', (e) => this.handleDragStart(e, card));
+        card.addEventListener('dragend', (e) => this.handleDragEnd(e, card));
+        card.addEventListener('dragover', (e) => this.handleDragOver(e, card));
+        card.addEventListener('drop', (e) => this.handleDrop(e, card));
+        card.addEventListener('dragenter', (e) => this.handleDragEnter(e, card));
+        card.addEventListener('dragleave', (e) => this.handleDragLeave(e, card));
+      }
+      
+      handleDragStart(e, card) {
+        this.draggedElement = card;
+        this.isDragging = true;
+        
+        card.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        
+        // Встановлюємо дані для передачі
+        e.dataTransfer.setData('text/html', card.innerHTML);
+        
+        // Додаємо невеликий delay для плавності
+        requestAnimationFrame(() => {
+          card.style.opacity = '0.4';
+        });
+        
+        // Debug update
+        this.updateDebugStatus('Перетягування', true);
+      }
+      
+      handleDragEnd(e, card) {
+        this.cleanup();
+      }
+      
+      handleDragOver(e, targetCard) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        
+        if (!this.draggedElement || this.draggedElement === targetCard) {
+          return;
+        }
+        
+        // Очищаємо попередній індикатор
+        const allCards = this.container.querySelectorAll('.card:not(.dragging)');
+        allCards.forEach(c => {
+          c.style.border = '';
+          c.style.background = '';
+          c.style.boxShadow = '';
+        });
+        
+        // ВІЗУАЛІЗАЦІЯ - підсвічуємо ВСЮ target картку
+        targetCard.style.border = '3px solid rgba(99, 102, 241, 0.8)';
+        targetCard.style.background = 'rgba(99, 102, 241, 0.15)';
+        targetCard.style.boxShadow = '0 0 20px rgba(99, 102, 241, 0.5), inset 0 0 20px rgba(99, 102, 241, 0.2)';
+        
+        // Зберігаємо target для використання при drop - просто SWAP (міняємо місцями)
+        this.currentTargetCard = targetCard;
+        
+        // DEBUG
+        console.log(`🎯 Target: ${targetCard.dataset.id} → SWAP з ${this.draggedElement.dataset.id}`);
+      }
+      
+      handleDragEnter(e, card) {
+        if (!this.draggedElement || this.draggedElement === card) {
+          return;
+        }
+        
+        this.lastOverElement = card;
+      }
+      
+      handleDragLeave(e, card) {
+        if (!this.draggedElement || this.draggedElement === card) {
+          return;
+        }
+        
+        // Прибираємо dragging клас при виході
+        card.classList.remove('dragging');
+      }
+      
+      handleDrop(e, card) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        console.log('🔴 DROP! dragged:', this.draggedElement?.dataset.id, 'target:', this.currentTargetCard?.dataset.id);
+        
+        // SWAP - просто міняємо картки місцями
+        if (this.draggedElement && this.currentTargetCard) {
+          console.log('✅ SWAP місцями!');
+          
+          // Додаємо анімацію shifting
+          const allCards = this.container.querySelectorAll('.card:not(.dragging)');
+          allCards.forEach(c => {
+            c.classList.add('shifting');
+          });
+          
+          // SWAP: зберігаємо позиції
+          const draggedNext = this.draggedElement.nextSibling;
+          const targetNext = this.currentTargetCard.nextSibling;
+          const draggedParent = this.draggedElement.parentNode;
+          const targetParent = this.currentTargetCard.parentNode;
+          
+          // Міняємо місцями
+          if (draggedNext === this.currentTargetCard) {
+            // Якщо dragged перед target - просто вставляємо target перед dragged
+            draggedParent.insertBefore(this.currentTargetCard, this.draggedElement);
+          } else if (targetNext === this.draggedElement) {
+            // Якщо target перед dragged - просто вставляємо dragged перед target
+            targetParent.insertBefore(this.draggedElement, this.currentTargetCard);
+          } else {
+            // Загальний випадок - через тимчасовий placeholder
+            const tempPlaceholder = document.createComment('temp');
+            draggedParent.insertBefore(tempPlaceholder, this.draggedElement);
+            targetParent.insertBefore(this.draggedElement, this.currentTargetCard);
+            draggedParent.insertBefore(this.currentTargetCard, tempPlaceholder);
+            tempPlaceholder.remove();
+          }
+          
+          // Оновлюємо лічильник
+          this.moveCount++;
+          if (this.debugElements.moves) {
+            this.debugElements.moves.textContent = this.moveCount;
+          }
+          
+          // Прибираємо shifting після анімації
+          setTimeout(() => {
+            allCards.forEach(c => c.classList.remove('shifting'));
+          }, 300);
+        }
+        
+        // Cleanup
+        this.cleanup();
+      }
+      
+      // ============ TOUCH DRAG ============
+      setupTouchDrag(card) {
+        let touchStartX, touchStartY;
+        let isLongPress = false;
+        
+        card.addEventListener('touchstart', (e) => {
+          if (e.target.closest('button')) return;
+          
+          const touch = e.touches[0];
+          touchStartX = touch.clientX;
+          touchStartY = touch.clientY;
+          isLongPress = false;
+          
+          // Визначаємо long press
+          this.touchTimeout = setTimeout(() => {
+            isLongPress = true;
+            this.startTouchDrag(card);
+          }, 250); // Скорочено до 250ms для кращої responsiveness
+        }, { passive: false });
+        
+        card.addEventListener('touchmove', (e) => {
+          const touch = e.touches[0];
+          const moveX = Math.abs(touch.clientX - touchStartX);
+          const moveY = Math.abs(touch.clientY - touchStartY);
+          
+          // Скасовуємо long press якщо є помітний рух
+          if (!isLongPress && (moveX > 10 || moveY > 10)) {
+            clearTimeout(this.touchTimeout);
+            return;
+          }
+          
+          if (isLongPress) {
+            e.preventDefault(); // Запобігаємо скролу
+            this.handleTouchMove(e, card);
+          }
+        }, { passive: false });
+        
+        card.addEventListener('touchend', () => {
+          clearTimeout(this.touchTimeout);
+          
+          if (isLongPress) {
+            this.endTouchDrag(card);
+          }
+          
+          isLongPress = false;
+        });
+        
+        card.addEventListener('touchcancel', () => {
+          clearTimeout(this.touchTimeout);
+          this.endTouchDrag(card);
+          isLongPress = false;
+        });
+      }
+      
+      startTouchDrag(card) {
+        this.draggedElement = card;
+        this.isDragging = true;
+        
+        card.classList.add('dragging');
+        card.style.opacity = '0.5';
+        card.style.transform = 'scale(1.05) rotate(2deg)';
+        
+        // Вібрація для feedback
+        if (navigator.vibrate) {
+          navigator.vibrate(50);
+        }
+        
+        // Debug update
+        this.updateDebugStatus('Touch Drag', true);
+        if (this.debugElements.mode) {
+          this.debugElements.mode.textContent = 'Touch';
+        }
+      }
+      
+      handleTouchMove(e, card) {
+        if (!this.isDragging) return;
+        
+        const touch = e.touches[0];
+        
+        // Використовуємо requestAnimationFrame
+        if (this.rafId) {
+          cancelAnimationFrame(this.rafId);
+        }
+        
+        this.rafId = requestAnimationFrame(() => {
+          const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+          const targetCard = elementBelow?.closest('.card');
+          
+          if (targetCard && targetCard !== card && targetCard !== this.draggedElement) {
+            // Очищаємо всі індикатори спочатку
+            const allCards = this.container.querySelectorAll('.card:not(.dragging)');
+            allCards.forEach(c => {
+              c.style.border = '';
+              c.style.background = '';
+              c.style.boxShadow = '';
+            });
+            
+            // ВІЗУАЛІЗАЦІЯ - підсвічуємо ВСЮ target картку
+            targetCard.style.border = '3px solid rgba(99, 102, 241, 0.8)';
+            targetCard.style.background = 'rgba(99, 102, 241, 0.15)';
+            targetCard.style.boxShadow = '0 0 20px rgba(99, 102, 241, 0.5), inset 0 0 20px rgba(99, 102, 241, 0.2)';
+            
+            // Зберігаємо target для SWAP
+            this.currentTargetCard = targetCard;
+            
+            // DEBUG
+            console.log(`🎯 Touch Target: ${targetCard.dataset.id} → SWAP`);
+          }
+          
+          this.rafId = null;
+        });
+      }
+      
+      endTouchDrag(card) {
+        if (!this.isDragging) return;
+        
+        console.log('🔴 TOUCH END! dragged:', this.draggedElement?.dataset.id, 'target:', this.currentTargetCard?.dataset.id);
+        
+        // SWAP - просто міняємо картки місцями
+        if (this.draggedElement && this.currentTargetCard) {
+          console.log('✅ Touch: SWAP місцями!');
+          
+          // Додаємо анімацію shifting
+          const allCards = this.container.querySelectorAll('.card:not(.dragging)');
+          allCards.forEach(c => {
+            c.classList.add('shifting');
+          });
+          
+          // SWAP: зберігаємо позиції
+          const draggedNext = this.draggedElement.nextSibling;
+          const targetNext = this.currentTargetCard.nextSibling;
+          const draggedParent = this.draggedElement.parentNode;
+          const targetParent = this.currentTargetCard.parentNode;
+          
+          // Міняємо місцями
+          if (draggedNext === this.currentTargetCard) {
+            draggedParent.insertBefore(this.currentTargetCard, this.draggedElement);
+          } else if (targetNext === this.draggedElement) {
+            targetParent.insertBefore(this.draggedElement, this.currentTargetCard);
+          } else {
+            const tempPlaceholder = document.createComment('temp');
+            draggedParent.insertBefore(tempPlaceholder, this.draggedElement);
+            targetParent.insertBefore(this.draggedElement, this.currentTargetCard);
+            draggedParent.insertBefore(this.currentTargetCard, tempPlaceholder);
+            tempPlaceholder.remove();
+          }
+          
+          // Оновлюємо лічильник
+          this.moveCount++;
+          if (this.debugElements.moves) {
+            this.debugElements.moves.textContent = this.moveCount;
+          }
+          
+          // Прибираємо shifting після анімації
+          setTimeout(() => {
+            allCards.forEach(c => c.classList.remove('shifting'));
+          }, 300);
+        }
+        
+        this.cleanup();
+      }
+      
+      // ============ DEBUG & MONITORING ============
+      startFPSMonitor() {
+        let frameCount = 0;
+        let lastTime = performance.now();
+        
+        const measureFPS = () => {
+          frameCount++;
+          const currentTime = performance.now();
+          
+          if (currentTime >= lastTime + 1000) {
+            this.fps = Math.round((frameCount * 1000) / (currentTime - lastTime));
+            
+            if (this.debugElements.fps) {
+              this.debugElements.fps.textContent = this.fps;
+              
+              // Змінюємо колір в залежності від FPS
+              if (this.fps >= 55) {
+                this.debugElements.fps.style.color = '#10b981';
+              } else if (this.fps >= 30) {
+                this.debugElements.fps.style.color = '#f59e0b';
+              } else {
+                this.debugElements.fps.style.color = '#ef4444';
+              }
+            }
+            
+            frameCount = 0;
+            lastTime = currentTime;
+          }
+          
+          requestAnimationFrame(measureFPS);
+        };
+        
+        measureFPS();
+      }
+      
+      updateDebugStatus(status, isActive = false) {
+        if (this.debugElements.status) {
+          this.debugElements.status.textContent = status;
+          
+          if (isActive) {
+            this.debugElements.status.classList.add('active');
+          } else {
+            this.debugElements.status.classList.remove('active');
+          }
+        }
+      }
+      
+      cleanup() {
+        if (this.draggedElement) {
+          this.draggedElement.classList.remove('dragging');
+          this.draggedElement.style.opacity = '';
+          this.draggedElement.style.transform = '';
+        }
+        
+        // Debug update
+        this.updateDebugStatus('Готовий', false);
+        
+        if (this.lastOverElement) {
+          this.lastOverElement.style.transform = '';
+        }
+        
+        // Прибираємо всі shifting і dragging класи та border стилі
+        const allCards = this.container.querySelectorAll('.card');
+        allCards.forEach(c => {
+          c.classList.remove('shifting');
+          c.classList.remove('dragging');
+          c.style.transform = '';
+          c.style.borderLeftWidth = '';
+          c.style.borderRightWidth = '';
+          c.style.borderLeftColor = '';
+          c.style.borderRightColor = '';
+          c.style.border = '';
+          c.style.background = '';
+          c.style.boxShadow = '';
+        });
+        
+        if (this.rafId) {
+          cancelAnimationFrame(this.rafId);
+          this.rafId = null;
+        }
+        
+        this.draggedElement = null;
+        this.isDragging = false;
+        this.lastOverElement = null;
+        this.currentTargetCard = null;
+        
+        clearTimeout(this.touchTimeout);
+      }
+    }
+    
+    // ============ ІНІЦІАЛІЗАЦІЯ ============
+    document.addEventListener('DOMContentLoaded', () => {
+      const container = document.querySelector('.cards-container');
+      
+      if (container) {
+        const dragDrop = new DragDropGrid(container);
+        
+        // Додаємо індикатор готовності
+        console.log('✅ Drag & Drop Grid ініціалізовано професійно');
+      }
+    });
+  </script>
+</body>
+</html>
