@@ -1,7 +1,7 @@
 // Love Dossier - Service Worker
-// Version 2.0.0
+// Version 2.1.0 - Updated drag & drop system
 
-const CACHE_NAME = 'love-dossier-v2.0.0';
+const CACHE_NAME = 'love-dossier-v2.1.0';
 const urlsToCache = [
   './',
   './index.html',

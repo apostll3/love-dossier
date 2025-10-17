@@ -32,7 +32,7 @@ git push
 
 # 4. Перевірити доступність:
 # https://apostll3.github.io/love-dossier/google1234567890abcdef.html
-
+# 
 # 5. Натиснути "Verify" в Search Console
 ```
 
