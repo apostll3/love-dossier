@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Drag Scroll Варіанти</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #333;
+    }
+    
+    .variants {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 30px;
+      margin-bottom: 50px;
+    }
+    
+    .variant {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .variant h2 {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+      color: #6366f1;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .variant-tag {
+      display: inline-block;
+      padding: 4px 12px;
+      background: #e0e7ff;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #4f46e5;
+    }
+    
+    .variant p {
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 15px;
+      line-height: 1.5;
+    }
+    
+    .scroll-container {
+      height: 400px;
+      overflow-y: auto;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 15px;
+      background: #fafafa;
+      position: relative;
+    }
+    
+    .card {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.95));
+      padding: 16px;
+      margin-bottom: 15px;
+      border-radius: 12px;
+      border: 2px solid rgba(226, 232, 240, 0.8);
+      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.08);
+      cursor: grab;
+      user-select: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      backdrop-filter: blur(10px);
+      overflow: hidden;
+    }
+    
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.05), transparent);
+      transition: left 0.5s ease;
+    }
+    
+    .card:hover::before {
+      left: 100%;
+    }
+    
+    .card:hover {
+      border-color: rgba(99, 102, 241, 0.4);
+      box-shadow: 0 4px 16px rgba(99, 102, 241, 0.15);
+      transform: translateY(-2px);
+    }
+    
+    .card.dragging {
+      opacity: 0.4;
+      cursor: grabbing;
+      transform: scale(1.05) rotate(2deg);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+      z-index: 1000;
+    }
+    
+    .card h3 {
+      font-size: 1rem;
+      color: #333;
+      margin-bottom: 5px;
+    }
+    
+    .card p {
+      font-size: 0.85rem;
+      color: #999;
+      margin: 0;
+    }
+    
+    /* Індикатор скролу */
+    .scroll-indicator {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 60px;
+      pointer-events: none;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: white;
+      z-index: 100;
+    }
+    
+    .scroll-indicator.active {
+      display: flex;
+    }
+    
+    .scroll-indicator.top {
+      top: 0;
+      background: linear-gradient(to bottom, rgba(99, 102, 241, 0.8), transparent);
+    }
+    
+    .scroll-indicator.bottom {
+      bottom: 0;
+      background: linear-gradient(to top, rgba(99, 102, 241, 0.8), transparent);
+    }
+    
+    code {
+      background: #f1f5f9;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+      color: #6366f1;
+    }
+    
+    .pros-cons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-top: 15px;
+      font-size: 0.85rem;
+    }
+    
+    .pros, .cons {
+      padding: 10px;
+      border-radius: 6px;
+    }
+    
+    .pros {
+      background: #ecfdf5;
+      border-left: 3px solid #10b981;
+    }
+    
+    .cons {
+      background: #fef2f2;
+      border-left: 3px solid #ef4444;
+    }
+    
+    .pros strong, .cons strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 0.9rem;
+    }
+    
+    .pros ul, .cons ul {
+      margin-left: 18px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎯 Варіанти Auto-Scroll для Drag & Drop</h1>
+    <p style="text-align: center; color: #666; margin-bottom: 30px;">
+      Перетягніть картки до верхнього або нижнього краю контейнера, щоб побачити різні варіанти auto-scroll.<br>
+      <strong>Виберіть варіант, який вам найбільше подобається!</strong>
+    </p>
+    
+    <div class="variants">
+      <!-- Варіант 1: Плавний прогресивний -->
+      <div class="variant">
+        <h2>
+          <span>Варіант 1</span>
+          <span class="variant-tag">Рекомендую</span>
+        </h2>
+        <p><strong>Плавний прогресивний скрол</strong> - швидкість залежить від відстані до краю. Чим ближче до краю, тим швидше скрол.</p>
+        
+        <div class="scroll-container" data-variant="1">
+          <div class="scroll-indicator top">↑ Скролить вгору</div>
+          <div class="scroll-indicator bottom">↓ Скролить вниз</div>
+          <div class="card" draggable="true"><h3>Картка 1</h3><p>Перетягніть до краю</p></div>
+          <div class="card" draggable="true"><h3>Картка 2</h3><p>Перетягніть до краю</p></div>
+          <div class="card" draggable="true"><h3>Картка 3</h3><p>Перетягніть до краю</p></div>
+          <div class="card" draggable="true"><h3>Картка 4</h3><p>Перетягніть до краю</p></div>
+          <div class="card" draggable="true"><h3>Картка 5</h3><p>Перетягніть до краю</p></div>
+          <div class="card" draggable="true"><h3>Картка 6</h3><p>Перетягніть до краю</p></div>
+          <div class="card" draggable="true"><h3>Картка 7</h3><p>Перетягніть до краю</p></div>
+          <div class="card" draggable="true"><h3>Картка 8</h3><p>Перетягніть до краю</p></div>
+          <div class="card" draggable="true"><h3>Картка 9</h3><p>Перетягніть до краю</p></div>
+          <div class="card" draggable="true"><h3>Картка 10</h3><p>Перетягніть до краю</p></div>
+        </div>
+        
+        <div class="pros-cons">
+          <div class="pros">
+            <strong>✅ Плюси:</strong>
+            <ul>
+              <li>Дуже природний</li>
+              <li>Плавний контроль</li>
+              <li>Інтуїтивний</li>
+            </ul>
+          </div>
+          <div class="cons">
+            <strong>❌ Мінуси:</strong>
+            <ul>
+              <li>Складніша логіка</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Варіант 2: Фіксована швидкість -->
+      <div class="variant">
+        <h2>
+          <span>Варіант 2</span>
+          <span class="variant-tag">Простий</span>
+        </h2>
+        <p><strong>Фіксована швидкість</strong> - скрол з постійною швидкістю, коли курсор в зоні (50px від краю).</p>
+        
+        <div class="scroll-container" data-variant="2">
+          <div class="scroll-indicator top">↑ Скролить вгору</div>
+          <div class="scroll-indicator bottom">↓ Скролить вниз</div>
+          <div class="card" draggable="true"><h3>Картка 1</h3><p>Перетягніть до краю</p></div>
+          <div class="card" draggable="true"><h3>Картка 2</h3><p>Перетягніть до краю</p></div>
+          <div class="card" draggable="true"><h3>Картка 3</h3><p>Перетягніть до краю</p></div>
+          <div class="card" draggable="true"><h3>Картка 4</h3><p>Перетягніть до краю</p></div>
+          <div class="card" draggable="true"><h3>Картка 5</h3><p>Перетягніть до краю</p></div>
+          <div class="card" draggable="true"><h3>Картка 6</h3><p>Перетягніть до краю</p></div>
+          <div class="card" draggable="true"><h3>Картка 7</h3><p>Перетягніть до краю</p></div>
+          <div class="card" draggable="true"><h3>Картка 8</h3><p>Перетягніть до краю</p></div>
+          <div class="card" draggable="true"><h3>Картка 9</h3><p>Перетягніть до краю</p></div>
+          <div class="card" draggable="true"><h3>Картка 10</h3><p>Перетягніть до краю</p></div>
+        </div>
+        
+        <div class="pros-cons">
+          <div class="pros">
+            <strong>✅ Плюси:</strong>
+            <ul>
+              <li>Проста реалізація</li>
+              <li>Передбачувана швидкість</li>
+            </ul>
+          </div>
+          <div class="cons">
+            <strong>❌ Мінуси:</strong>
+            <ul>
+              <li>Менш природний</li>
+              <li>Немає контролю</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Варіант 3: Ступінчастий -->
+      <div class="variant">
+        <h2>
+          <span>Варіант 3</span>
+          <span class="variant-tag">Гібрид</span>
+        </h2>
+        <p><strong>Ступінчастий скрол</strong> - 3 зони зі своєю швидкістю (повільно, середньо, швидко).</p>
+        
+        <div class="scroll-container" data-variant="3">
+          <div class="scroll-indicator top">↑ Скролить вгору</div>
+          <div class="scroll-indicator bottom">↓ Скролить вниз</div>
+          <div class="card" draggable="true"><h3>Картка 1</h3><p>Перетягніть до краю</p></div>
+          <div class="card" draggable="true"><h3>Картка 2</h3><p>Перетягніть до краю</p></div>
+          <div class="card" draggable="true"><h3>Картка 3</h3><p>Перетягніть до краю</p></div>
+          <div class="card" draggable="true"><h3>Картка 4</h3><p>Перетягніть до краю</p></div>
+          <div class="card" draggable="true"><h3>Картка 5</h3><p>Перетягніть до краю</p></div>
+          <div class="card" draggable="true"><h3>Картка 6</h3><p>Перетягніть до краю</p></div>
+          <div class="card" draggable="true"><h3>Картка 7</h3><p>Перетягніть до краю</p></div>
+          <div class="card" draggable="true"><h3>Картка 8</h3><p>Перетягніть до краю</p></div>
+          <div class="card" draggable="true"><h3>Картка 9</h3><p>Перетягніть до краю</p></div>
+          <div class="card" draggable="true"><h3>Картка 10</h3><p>Перетягніть до краю</p></div>
+        </div>
+        
+        <div class="pros-cons">
+          <div class="pros">
+            <strong>✅ Плюси:</strong>
+            <ul>
+              <li>Баланс простоти і контролю</li>
+              <li>Зрозумілі зони</li>
+            </ul>
+          </div>
+          <div class="cons">
+            <strong>❌ Мінуси:</strong>
+            <ul>
+              <li>Різкі переходи швидкості</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Варіант 1: Плавний прогресивний
+    function initVariant1(container) {
+      const scrollZone = 80; // px від краю де починається скрол
+      const maxSpeed = 15; // максимальна швидкість
+      let scrollInterval = null;
+      let isDragging = false;
+      
+      const cards = container.querySelectorAll('.card');
+      const topIndicator = container.querySelector('.scroll-indicator.top');
+      const bottomIndicator = container.querySelector('.scroll-indicator.bottom');
+      
+      cards.forEach(card => {
+        card.addEventListener('dragstart', (e) => {
+          isDragging = true;
+          card.classList.add('dragging');
+          e.dataTransfer.effectAllowed = 'move';
+        });
+        
+        card.addEventListener('dragend', (e) => {
+          isDragging = false;
+          card.classList.remove('dragging');
+          if (scrollInterval) {
+            clearInterval(scrollInterval);
+            scrollInterval = null;
+          }
+          topIndicator.classList.remove('active');
+          bottomIndicator.classList.remove('active');
+        });
+      });
+      
+      container.addEventListener('dragover', (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        
+        const rect = container.getBoundingClientRect();
+        const y = e.clientY - rect.top;
+        const distanceFromTop = y;
+        const distanceFromBottom = rect.height - y;
+        
+        // Скрол вгору
+        if (distanceFromTop < scrollZone) {
+          const intensity = 1 - (distanceFromTop / scrollZone);
+          const speed = Math.max(2, intensity * maxSpeed);
+          
+          topIndicator.classList.add('active');
+          bottomIndicator.classList.remove('active');
+          
+          if (!scrollInterval) {
+            scrollInterval = setInterval(() => {
+              container.scrollTop -= speed;
+            }, 16);
+          }
+        }
+        // Скрол вниз
+        else if (distanceFromBottom < scrollZone) {
+          const intensity = 1 - (distanceFromBottom / scrollZone);
+          const speed = Math.max(2, intensity * maxSpeed);
+          
+          bottomIndicator.classList.add('active');
+          topIndicator.classList.remove('active');
+          
+          if (!scrollInterval) {
+            scrollInterval = setInterval(() => {
+              container.scrollTop += speed;
+            }, 16);
+          }
+        }
+        // Без скролу
+        else {
+          if (scrollInterval) {
+            clearInterval(scrollInterval);
+            scrollInterval = null;
+          }
+          topIndicator.classList.remove('active');
+          bottomIndicator.classList.remove('active');
+        }
+      });
+    }
+    
+    // Варіант 2: Фіксована швидкість
+    function initVariant2(container) {
+      const scrollZone = 50;
+      const fixedSpeed = 8;
+      let scrollInterval = null;
+      let currentCard = null;
+      
+      const cards = container.querySelectorAll('.card');
+      const topIndicator = container.querySelector('.scroll-indicator.top');
+      const bottomIndicator = container.querySelector('.scroll-indicator.bottom');
+      
+      cards.forEach(card => {
+        card.addEventListener('mousedown', (e) => {
+          currentCard = card;
+          card.classList.add('dragging');
+        });
+      });
+      
+      container.addEventListener('mousemove', (e) => {
+        if (!currentCard) return;
+        
+        const rect = container.getBoundingClientRect();
+        const y = e.clientY - rect.top;
+        const distanceFromTop = y;
+        const distanceFromBottom = rect.height - y;
+        
+        if (distanceFromTop < scrollZone) {
+          topIndicator.classList.add('active');
+          bottomIndicator.classList.remove('active');
+          
+          if (!scrollInterval) {
+            scrollInterval = setInterval(() => {
+              container.scrollTop -= fixedSpeed;
+            }, 16);
+          }
+        }
+        else if (distanceFromBottom < scrollZone) {
+          bottomIndicator.classList.add('active');
+          topIndicator.classList.remove('active');
+          
+          if (!scrollInterval) {
+            scrollInterval = setInterval(() => {
+              container.scrollTop += fixedSpeed;
+            }, 16);
+          }
+        }
+        else {
+          if (scrollInterval) {
+            clearInterval(scrollInterval);
+            scrollInterval = null;
+          }
+          topIndicator.classList.remove('active');
+          bottomIndicator.classList.remove('active');
+        }
+      });
+      
+      document.addEventListener('mouseup', () => {
+        if (currentCard) {
+          currentCard.classList.remove('dragging');
+          currentCard = null;
+        }
+        if (scrollInterval) {
+          clearInterval(scrollInterval);
+          scrollInterval = null;
+        }
+        topIndicator.classList.remove('active');
+        bottomIndicator.classList.remove('active');
+      });
+    }
+    
+    // Варіант 3: Ступінчастий
+    function initVariant3(container) {
+      const zones = {
+        fast: 30,    // 0-30px - швидко
+        medium: 60,  // 30-60px - середньо
+        slow: 100    // 60-100px - повільно
+      };
+      const speeds = { fast: 12, medium: 7, slow: 3 };
+      let scrollInterval = null;
+      let currentCard = null;
+      
+      const cards = container.querySelectorAll('.card');
+      const topIndicator = container.querySelector('.scroll-indicator.top');
+      const bottomIndicator = container.querySelector('.scroll-indicator.bottom');
+      
+      cards.forEach(card => {
+        card.addEventListener('mousedown', (e) => {
+          currentCard = card;
+          card.classList.add('dragging');
+        });
+      });
+      
+      container.addEventListener('mousemove', (e) => {
+        if (!currentCard) return;
+        
+        const rect = container.getBoundingClientRect();
+        const y = e.clientY - rect.top;
+        const distanceFromTop = y;
+        const distanceFromBottom = rect.height - y;
+        
+        let speed = 0;
+        
+        if (distanceFromTop < zones.slow) {
+          if (distanceFromTop < zones.fast) speed = speeds.fast;
+          else if (distanceFromTop < zones.medium) speed = speeds.medium;
+          else speed = speeds.slow;
+          
+          topIndicator.classList.add('active');
+          bottomIndicator.classList.remove('active');
+          
+          if (!scrollInterval) {
+            scrollInterval = setInterval(() => {
+              container.scrollTop -= speed;
+            }, 16);
+          }
+        }
+        else if (distanceFromBottom < zones.slow) {
+          if (distanceFromBottom < zones.fast) speed = speeds.fast;
+          else if (distanceFromBottom < zones.medium) speed = speeds.medium;
+          else speed = speeds.slow;
+          
+          bottomIndicator.classList.add('active');
+          topIndicator.classList.remove('active');
+          
+          if (!scrollInterval) {
+            scrollInterval = setInterval(() => {
+              container.scrollTop += speed;
+            }, 16);
+          }
+        }
+        else {
+          if (scrollInterval) {
+            clearInterval(scrollInterval);
+            scrollInterval = null;
+          }
+          topIndicator.classList.remove('active');
+          bottomIndicator.classList.remove('active');
+        }
+      });
+      
+      document.addEventListener('mouseup', () => {
+        if (currentCard) {
+          currentCard.classList.remove('dragging');
+          currentCard = null;
+        }
+        if (scrollInterval) {
+          clearInterval(scrollInterval);
+          scrollInterval = null;
+        }
+        topIndicator.classList.remove('active');
+        bottomIndicator.classList.remove('active');
+      });
+    }
+    
+    // Ініціалізуємо всі варіанти
+    const containers = document.querySelectorAll('.scroll-container');
+    containers.forEach(container => {
+      const variant = container.dataset.variant;
+      if (variant === '1') initVariant1(container);
+      else if (variant === '2') initVariant2(container);
+      else if (variant === '3') initVariant3(container);
+    });
+  </script>
+</body>
+</html>
