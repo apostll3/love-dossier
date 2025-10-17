@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Додаткові типи - Minimal Modern</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --card-bg: #ffffff;
+            --card-border: rgba(99, 102, 241, 0.15);
+            --text-primary: #1a202c;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --primary: #667eea;
+            --primary-light: rgba(102, 126, 234, 0.1);
+            --accent: #764ba2;
+            --danger: #ef4444;
+            --success: #10b981;
+            --border-light: rgba(0,0,0,0.06);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 0.5rem;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 2rem;
+        }
+
+        .field-card {
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-left: 4px solid var(--primary);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .field-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            border-color: var(--primary);
+        }
+
+        .floating-actions {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            z-index: 10;
+        }
+
+        .action-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            border: none;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            color: var(--primary);
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            opacity: 0;
+            transform: scale(0.3) rotate(180deg);
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        .field-card:hover .action-btn {
+            opacity: 1;
+            transform: scale(1) rotate(0deg);
+        }
+
+        .action-btn:nth-child(1) { transition-delay: 0.05s; }
+        .action-btn:nth-child(2) { transition-delay: 0.1s; }
+        .action-btn:nth-child(3) { transition-delay: 0.15s; }
+
+        .action-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.15) rotate(-5deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .action-btn.btn-danger:hover {
+            background: var(--danger);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .icon-wrapper {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            flex-shrink: 0;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .icon-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+
+        .field-card:hover .icon-wrapper::before {
+            transform: translateX(100%);
+        }
+
+        .field-card:hover .icon-wrapper {
+            transform: rotate(10deg) scale(1.1);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+        }
+
+        .title-section {
+            flex: 1;
+        }
+
+        .field-label {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.4rem;
+        }
+
+        .badges-inline {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .badge {
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-importance {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            color: white;
+        }
+
+        .badge-type {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .type-label {
+            display: inline-block;
+            background: rgba(102, 126, 234, 0.1);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        /* TYPE: Color Picker */
+        .color-palette {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .color-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .color-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15), inset 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .color-item:hover .color-circle {
+            transform: scale(1.15);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+        }
+
+        .color-name {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        /* TYPE: Location */
+        .location-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .location-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(102, 126, 234, 0.02);
+            border-radius: 12px;
+            border: 1px solid var(--border-light);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .location-item:hover {
+            background: rgba(102, 126, 234, 0.05);
+            border-color: var(--primary);
+            transform: translateX(4px);
+        }
+
+        .location-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary-light), rgba(118, 75, 162, 0.08));
+            color: var(--primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+
+        .location-info {
+            flex: 1;
+        }
+
+        .location-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .location-address {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* TYPE: Mood Tracker */
+        .mood-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .mood-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            background: rgba(102, 126, 234, 0.02);
+            border-radius: 12px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .mood-item:hover {
+            background: rgba(102, 126, 234, 0.08);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .mood-emoji {
+            font-size: 2.5rem;
+            line-height: 1;
+        }
+
+        .mood-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        /* TYPE: Counter */
+        .counter-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .counter-value {
+            font-size: 4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+
+        .counter-label {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .counter-controls {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .counter-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            border: 2px solid var(--primary);
+            background: white;
+            color: var(--primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .counter-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        /* TYPE: Multi-Select */
+        .multiselect-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .selected-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .multiselect-chip {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: var(--primary-light);
+            color: var(--primary);
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            transition: all 0.2s ease;
+        }
+
+        .multiselect-chip:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .chip-remove {
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .chip-remove:hover {
+            opacity: 1;
+        }
+
+        .dropdown-toggle {
+            padding: 0.75rem 1rem;
+            background: rgba(102, 126, 234, 0.02);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-toggle:hover {
+            background: rgba(102, 126, 234, 0.05);
+            border-color: var(--primary);
+        }
+
+        /* TYPE: Currency */
+        .currency-display {
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, var(--primary-light), rgba(118, 75, 162, 0.08));
+            border-radius: 12px;
+            justify-content: center;
+        }
+
+        .currency-symbol {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .currency-amount {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .currency-code {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        /* TYPE: Rich Text */
+        .richtext-preview {
+            padding: 1rem;
+            background: rgba(102, 126, 234, 0.02);
+            border-radius: 10px;
+            border: 1px solid var(--border-light);
+            line-height: 1.8;
+        }
+
+        .richtext-preview h3 {
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .richtext-preview p {
+            color: var(--text-secondary);
+            margin-bottom: 0.75rem;
+        }
+
+        .richtext-preview strong {
+            color: var(--text-primary);
+        }
+
+        .richtext-preview em {
+            color: var(--primary);
+        }
+
+        .richtext-preview ul {
+            margin-left: 1.5rem;
+            color: var(--text-secondary);
+        }
+
+        /* TYPE: Weather */
+        .weather-display {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.08), rgba(118, 75, 162, 0.05));
+            border-radius: 12px;
+        }
+
+        .weather-icon {
+            font-size: 5rem;
+        }
+
+        .weather-info {
+            flex: 1;
+        }
+
+        .weather-temp {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .weather-desc {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .weather-details {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .weather-detail {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Додаткові типи полів</h1>
+        <p class="subtitle">8 нових типів у Minimal Modern стилі</p>
+
+        <div class="cards-grid">
+            <!-- TYPE: Color Picker -->
+            <div>
+                <div class="type-label">🎨 TYPE: Color Picker</div>
+                <div class="field-card">
+                    <div class="floating-actions">
+                        <button class="action-btn"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn"><i class="fas fa-cog"></i></button>
+                        <button class="action-btn btn-danger"><i class="fas fa-trash"></i></button>
+                    </div>
+
+                    <div class="card-header">
+                        <div class="icon-wrapper">
+                            <i class="fas fa-palette"></i>
+                        </div>
+                        <div class="title-section">
+                            <div class="field-label">Улюблені кольори</div>
+                            <div class="badges-inline">
+                                <span class="badge badge-importance">High</span>
+                                <span class="badge badge-type">Color</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="color-palette">
+                        <div class="color-item">
+                            <div class="color-circle" style="background: #667eea;"></div>
+                            <span class="color-name">#667eea</span>
+                        </div>
+                        <div class="color-item">
+                            <div class="color-circle" style="background: #764ba2;"></div>
+                            <span class="color-name">#764ba2</span>
+                        </div>
+                        <div class="color-item">
+                            <div class="color-circle" style="background: #f093fb;"></div>
+                            <span class="color-name">#f093fb</span>
+                        </div>
+                        <div class="color-item">
+                            <div class="color-circle" style="background: #4facfe;"></div>
+                            <span class="color-name">#4facfe</span>
+                        </div>
+                        <div class="color-item">
+                            <div class="color-circle" style="background: #43e97b;"></div>
+                            <span class="color-name">#43e97b</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TYPE: Location -->
+            <div>
+                <div class="type-label">📍 TYPE: Location</div>
+                <div class="field-card">
+                    <div class="floating-actions">
+                        <button class="action-btn"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn"><i class="fas fa-cog"></i></button>
+                        <button class="action-btn btn-danger"><i class="fas fa-trash"></i></button>
+                    </div>
+
+                    <div class="card-header">
+                        <div class="icon-wrapper">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="title-section">
+                            <div class="field-label">Улюблені місця</div>
+                            <div class="badges-inline">
+                                <span class="badge badge-importance">High</span>
+                                <span class="badge badge-type">Location</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="location-list">
+                        <div class="location-item">
+                            <div class="location-icon">
+                                <i class="fas fa-utensils"></i>
+                            </div>
+                            <div class="location-info">
+                                <div class="location-name">Ресторан "La Bella Vita"</div>
+                                <div class="location-address">вул. Хрещатик, 22, Київ</div>
+                            </div>
+                        </div>
+                        <div class="location-item">
+                            <div class="location-icon">
+                                <i class="fas fa-coffee"></i>
+                            </div>
+                            <div class="location-info">
+                                <div class="location-name">Кафе "Coffeelove"</div>
+                                <div class="location-address">вул. Саксаганського, 41, Київ</div>
+                            </div>
+                        </div>
+                        <div class="location-item">
+                            <div class="location-icon">
+                                <i class="fas fa-tree"></i>
+                            </div>
+                            <div class="location-info">
+                                <div class="location-name">Парк "Маріїнський"</div>
+                                <div class="location-address">вул. Грушевського, 5А, Київ</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TYPE: Mood Tracker -->
+            <div>
+                <div class="type-label">😊 TYPE: Mood</div>
+                <div class="field-card">
+                    <div class="floating-actions">
+                        <button class="action-btn"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn"><i class="fas fa-cog"></i></button>
+                        <button class="action-btn btn-danger"><i class="fas fa-trash"></i></button>
+                    </div>
+
+                    <div class="card-header">
+                        <div class="icon-wrapper">
+                            <i class="fas fa-smile"></i>
+                        </div>
+                        <div class="title-section">
+                            <div class="field-label">Емоційний стан</div>
+                            <div class="badges-inline">
+                                <span class="badge badge-importance">High</span>
+                                <span class="badge badge-type">Mood</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mood-grid">
+                        <div class="mood-item">
+                            <div class="mood-emoji">😊</div>
+                            <div class="mood-label">Радість</div>
+                        </div>
+                        <div class="mood-item">
+                            <div class="mood-emoji">😍</div>
+                            <div class="mood-label">Закоханість</div>
+                        </div>
+                        <div class="mood-item">
+                            <div class="mood-emoji">🤗</div>
+                            <div class="mood-label">Тепло</div>
+                        </div>
+                        <div class="mood-item">
+                            <div class="mood-emoji">😌</div>
+                            <div class="mood-label">Спокій</div>
+                        </div>
+                        <div class="mood-item">
+                            <div class="mood-emoji">🥰</div>
+                            <div class="mood-label">Ніжність</div>
+                        </div>
+                        <div class="mood-item">
+                            <div class="mood-emoji">😎</div>
+                            <div class="mood-label">Впевненість</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TYPE: Counter -->
+            <div>
+                <div class="type-label">🔢 TYPE: Counter</div>
+                <div class="field-card">
+                    <div class="floating-actions">
+                        <button class="action-btn"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn"><i class="fas fa-cog"></i></button>
+                        <button class="action-btn btn-danger"><i class="fas fa-trash"></i></button>
+                    </div>
+
+                    <div class="card-header">
+                        <div class="icon-wrapper">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="title-section">
+                            <div class="field-label">Дні разом</div>
+                            <div class="badges-inline">
+                                <span class="badge badge-importance">High</span>
+                                <span class="badge badge-type">Counter</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="counter-display">
+                        <div class="counter-value">1247</div>
+                        <div class="counter-label">днів щастя</div>
+                        <div class="counter-controls">
+                            <button class="counter-btn">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <button class="counter-btn">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TYPE: Multi-Select -->
+            <div>
+                <div class="type-label">☑️ TYPE: Multi-Select</div>
+                <div class="field-card">
+                    <div class="floating-actions">
+                        <button class="action-btn"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn"><i class="fas fa-cog"></i></button>
+                        <button class="action-btn btn-danger"><i class="fas fa-trash"></i></button>
+                    </div>
+
+                    <div class="card-header">
+                        <div class="icon-wrapper">
+                            <i class="fas fa-list-check"></i>
+                        </div>
+                        <div class="title-section">
+                            <div class="field-label">Категорії подарунків</div>
+                            <div class="badges-inline">
+                                <span class="badge badge-importance">High</span>
+                                <span class="badge badge-type">Multi-Select</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="multiselect-container">
+                        <div class="selected-items">
+                            <div class="multiselect-chip">
+                                <span>Одяг</span>
+                                <span class="chip-remove">×</span>
+                            </div>
+                            <div class="multiselect-chip">
+                                <span>Косметика</span>
+                                <span class="chip-remove">×</span>
+                            </div>
+                            <div class="multiselect-chip">
+                                <span>Книги</span>
+                                <span class="chip-remove">×</span>
+                            </div>
+                            <div class="multiselect-chip">
+                                <span>Подорожі</span>
+                                <span class="chip-remove">×</span>
+                            </div>
+                        </div>
+                        <div class="dropdown-toggle">
+                            <span>Додати категорію...</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TYPE: Currency -->
+            <div>
+                <div class="type-label">💰 TYPE: Currency</div>
+                <div class="field-card">
+                    <div class="floating-actions">
+                        <button class="action-btn"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn"><i class="fas fa-cog"></i></button>
+                        <button class="action-btn btn-danger"><i class="fas fa-trash"></i></button>
+                    </div>
+
+                    <div class="card-header">
+                        <div class="icon-wrapper">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="title-section">
+                            <div class="field-label">Бюджет на подарунок</div>
+                            <div class="badges-inline">
+                                <span class="badge badge-importance">High</span>
+                                <span class="badge badge-type">Currency</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="currency-display">
+                        <span class="currency-symbol">₴</span>
+                        <span class="currency-amount">2,500</span>
+                        <span class="currency-code">UAH</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TYPE: Rich Text -->
+            <div>
+                <div class="type-label">📝 TYPE: Rich Text</div>
+                <div class="field-card">
+                    <div class="floating-actions">
+                        <button class="action-btn"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn"><i class="fas fa-cog"></i></button>
+                        <button class="action-btn btn-danger"><i class="fas fa-trash"></i></button>
+                    </div>
+
+                    <div class="card-header">
+                        <div class="icon-wrapper">
+                            <i class="fas fa-align-left"></i>
+                        </div>
+                        <div class="title-section">
+                            <div class="field-label">Особливі спогади</div>
+                            <div class="badges-inline">
+                                <span class="badge badge-importance">High</span>
+                                <span class="badge badge-type">Rich Text</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="richtext-preview">
+                        <h3>Перша зустріч</h3>
+                        <p>
+                            Це було <strong>незабутньо</strong>! Ми познайомились у маленькому <em>кафе на Подолі</em>, 
+                            де пахло свіжою кавою та круасанами. Пам'ятаю кожну деталь того дня:
+                        </p>
+                        <ul>
+                            <li>Сонячна погода і легкий вітерець</li>
+                            <li>Її посмішка, яка зачарувала з першої секунди</li>
+                            <li>Розмова, що тривала 4 години</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TYPE: Weather -->
+            <div>
+                <div class="type-label">🌡️ TYPE: Weather</div>
+                <div class="field-card">
+                    <div class="floating-actions">
+                        <button class="action-btn"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn"><i class="fas fa-cog"></i></button>
+                        <button class="action-btn btn-danger"><i class="fas fa-trash"></i></button>
+                    </div>
+
+                    <div class="card-header">
+                        <div class="icon-wrapper">
+                            <i class="fas fa-cloud-sun"></i>
+                        </div>
+                        <div class="title-section">
+                            <div class="field-label">Улюблена погода</div>
+                            <div class="badges-inline">
+                                <span class="badge badge-importance">High</span>
+                                <span class="badge badge-type">Weather</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="weather-display">
+                        <div class="weather-icon">☀️</div>
+                        <div class="weather-info">
+                            <div class="weather-temp">24°C</div>
+                            <div class="weather-desc">Сонячно та тепло</div>
+                            <div class="weather-details">
+                                <div class="weather-detail">
+                                    <i class="fas fa-wind"></i>
+                                    <span>10 км/год</span>
+                                </div>
+                                <div class="weather-detail">
+                                    <i class="fas fa-tint"></i>
+                                    <span>45%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎨 Всі типи полів - Minimal Modern</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --card-bg: #ffffff;
+            --card-border: rgba(99, 102, 241, 0.15);
+            --text-primary: #1a202c;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --primary: #667eea;
+            --primary-light: rgba(102, 126, 234, 0.1);
+            --accent: #764ba2;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --border-light: rgba(0,0,0,0.06);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container { max-width: 1600px; margin: 0 auto; }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 0.5rem;
+            font-size: 2.8rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            font-weight: 800;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .info-banner {
+            max-width: 800px;
+            margin: 0 auto 3rem;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+            text-align: center;
+        }
+
+        .info-stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #fbbf24;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 2rem;
+        }
+
+        .field-card {
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-left: 4px solid var(--primary);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .field-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            border-color: var(--primary);
+        }
+
+        .floating-actions {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            z-index: 10;
+        }
+
+        .action-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            border: none;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            color: var(--primary);
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            opacity: 0;
+            transform: scale(0.3) rotate(180deg);
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        .field-card:hover .action-btn {
+            opacity: 1;
+            transform: scale(1) rotate(0deg);
+        }
+
+        .action-btn:nth-child(1) { transition-delay: 0.05s; }
+        .action-btn:nth-child(2) { transition-delay: 0.1s; }
+        .action-btn:nth-child(3) { transition-delay: 0.15s; }
+
+        .action-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.15) rotate(-5deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .action-btn.btn-danger:hover {
+            background: var(--danger);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .icon-wrapper {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            flex-shrink: 0;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .icon-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+
+        .field-card:hover .icon-wrapper::before {
+            transform: translateX(100%);
+        }
+
+        .field-card:hover .icon-wrapper {
+            transform: rotate(10deg) scale(1.1);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+        }
+
+        .title-section {
+            flex: 1;
+        }
+
+        .field-label {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.4rem;
+        }
+
+        .required {
+            color: var(--danger);
+        }
+
+        .badges-inline {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .badge {
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-importance {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            color: white;
+        }
+
+        .badge-type {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .type-label {
+            display: inline-block;
+            background: rgba(102, 126, 234, 0.1);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        /* ===== TYPE STYLES ===== */
+
+        @media (max-width: 768px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .nav-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            border-left: 4px solid var(--primary);
+        }
+
+        .nav-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .nav-icon {
+            font-size: 3rem;
+        }
+
+        .nav-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .nav-desc {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .nav-count {
+            display: inline-block;
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Бібліотека типів полів</h1>
+        <p class="subtitle">Повна колекція з 21 типу полів у Minimal Modern стилі</p>
+
+        <div class="info-banner">
+            <p><strong>Система гнучких полів для Love Dossier</strong></p>
+            <p>Кожен тип має Corner Expand кнопки, Shimmer ефекти та адаптивний дизайн</p>
+            <div class="info-stats">
+                <div class="stat-item">
+                    <div class="stat-number">21</div>
+                    <div class="stat-label">Типів полів</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">4</div>
+                    <div class="stat-label">Категорії</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Адаптивні</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-grid">
+            <a href="field-card-minimal-modern-all-types.html" class="nav-card">
+                <div class="nav-icon">📝</div>
+                <div class="nav-title">Базові типи</div>
+                <div class="nav-desc">
+                    Text, Text Area, Date, Tags, Nested - фундаментальні типи для будь-якого додатку
+                </div>
+                <span class="nav-count">5 типів</span>
+            </a>
+
+            <a href="field-card-new-types-visual.html" class="nav-card">
+                <div class="nav-icon">⭐</div>
+                <div class="nav-title">Розширені типи</div>
+                <div class="nav-desc">
+                    Rating, Links, Checklist, Progress, Timeline - популярні додаткові функції
+                </div>
+                <span class="nav-count">5 типів</span>
+            </a>
+
+            <a href="field-card-additional-types.html" class="nav-card">
+                <div class="nav-icon">🎨</div>
+                <div class="nav-title">Додаткові типи</div>
+                <div class="nav-desc">
+                    Color Picker, Location, Mood, Counter, Multi-Select, Currency, Rich Text, Weather
+                </div>
+                <span class="nav-count">8 типів</span>
+            </a>
+
+            <a href="field-card-final-types.html" class="nav-card">
+                <div class="nav-icon">🔐</div>
+                <div class="nav-title">Спеціальні типи</div>
+                <div class="nav-desc">
+                    Password, Recipe, Birthday Countdown - унікальні спеціалізовані поля
+                </div>
+                <span class="nav-count">3 типи</span>
+            </a>
+        </div>
+
+        <div style="background: white; border-radius: 16px; padding: 2rem; margin-top: 2rem;">
+            <h2 style="color: var(--text-primary); margin-bottom: 1.5rem; font-size: 1.8rem;">📚 Швидкий довідник</h2>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+                <div>
+                    <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 0.75rem;">✨ Спільні фічі</h3>
+                    <ul style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.8; list-style-position: inside;">
+                        <li>Corner Expand кнопки</li>
+                        <li>Shimmer на іконках</li>
+                        <li>Border-left 4px accent</li>
+                        <li>Адаптивний дизайн</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 0.75rem;">🎯 Top-5 для початку</h3>
+                    <ul style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.8; list-style-position: inside;">
+                        <li>⭐ Rating - оцінки</li>
+                        <li>🔗 Links - соцмережі</li>
+                        <li>🎂 Countdown - події</li>
+                        <li>🕐 Timeline - історія</li>
+                        <li>✅ Checklist - списки</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 0.75rem;">🔧 Технічні деталі</h3>
+                    <ul style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.8; list-style-position: inside;">
+                        <li>CSS змінні для тем</li>
+                        <li>Font Awesome іконки</li>
+                        <li>Cubic-bezier анімації</li>
+                        <li>Flexbox + Grid layout</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 0.75rem;">💡 Документація</h3>
+                    <ul style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.8; list-style-position: inside;">
+                        <li>📄 ALL-FIELD-TYPES.md</li>
+                        <li>📘 SYSTEM-README.md</li>
+                        <li>🎨 Живі приклади</li>
+                        <li>📦 Готові до копіювання</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div style="margin-top: 2rem; padding: 1.5rem; background: linear-gradient(135deg, var(--primary-light), rgba(118, 75, 162, 0.05)); border-radius: 12px; text-align: center;">
+                <h3 style="color: var(--primary); margin-bottom: 0.5rem;">🚀 Готово до використання!</h3>
+                <p style="color: var(--text-secondary);">Вибери категорію вище та почни створювати красиві поля для свого додатку</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
