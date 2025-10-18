@@ -920,5 +920,340 @@
             </div>
         </div>
     </div>
+
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+
+    <script>
+        // ============================================
+        // COMMUNICATION LOG PRO - JavaScript
+        // ============================================
+
+        // 1. CONFIGURATION
+        const CONFIG = {
+            storageKey: 'loveDossier_communication',
+            moodEmojis: {
+                happy: '😊',
+                love: '❤️',
+                sad: '😔',
+                angry: '😡',
+                hug: '🤗'
+            }
+        };
+
+        // 2. STATE MANAGEMENT
+        let state = {
+            messages: [],
+            currentMood: 'love',
+            filter: 'all',
+            streak: 0
+        };
+
+        // 3. LOCALSTORAGE FUNCTIONS
+        function saveToStorage() {
+            localStorage.setItem(CONFIG.storageKey, JSON.stringify(state.messages));
+        }
+
+        function loadFromStorage() {
+            const saved = localStorage.getItem(CONFIG.storageKey);
+            if (saved) {
+                state.messages = JSON.parse(saved);
+                calculateStreak();
+            }
+        }
+
+        // 4. UTILITY FUNCTIONS
+        function calculateStreak() {
+            if (state.messages.length === 0) {
+                state.streak = 0;
+                return;
+            }
+
+            const sortedMessages = [...state.messages].sort((a, b) => 
+                new Date(b.date) - new Date(a.date)
+            );
+
+            let streak = 0;
+            let currentDate = new Date();
+            currentDate.setHours(0, 0, 0, 0);
+
+            for (let msg of sortedMessages) {
+                const msgDate = new Date(msg.date);
+                msgDate.setHours(0, 0, 0, 0);
+                
+                const diffDays = Math.floor((currentDate - msgDate) / (1000 * 60 * 60 * 24));
+                
+                if (diffDays === streak || (streak === 0 && diffDays === 0)) {
+                    streak++;
+                    currentDate.setDate(currentDate.getDate() - 1);
+                } else {
+                    break;
+                }
+            }
+
+            state.streak = streak;
+        }
+
+        function formatDate(date) {
+            const d = new Date(date);
+            const today = new Date();
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+
+            if (d.toDateString() === today.toDateString()) {
+                return 'Сьогодні • ' + d.toLocaleDateString('uk-UA', { day: 'numeric', month: 'long', year: 'numeric' });
+            } else if (d.toDateString() === yesterday.toDateString()) {
+                return 'Вчора • ' + d.toLocaleDateString('uk-UA', { day: 'numeric', month: 'long', year: 'numeric' });
+            } else {
+                return d.toLocaleDateString('uk-UA', { day: 'numeric', month: 'long', year: 'numeric' });
+            }
+        }
+
+        function formatTime(date) {
+            return new Date(date).toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // 5. UI RENDERING FUNCTIONS
+        function updateStats() {
+            const totalMessages = state.messages.length;
+            const voiceNotes = state.messages.filter(m => m.hasVoiceNote).length;
+            const positiveCount = state.messages.filter(m => 
+                ['happy', 'love', 'hug'].includes(m.mood)
+            ).length;
+            const positivePercent = totalMessages > 0 
+                ? Math.round((positiveCount / totalMessages) * 100) 
+                : 0;
+            const conflictsResolved = state.messages.filter(m => m.conflict).length;
+
+            document.querySelectorAll('.stat-value')[0].textContent = totalMessages;
+            document.querySelectorAll('.stat-value')[1].textContent = voiceNotes;
+            document.querySelectorAll('.stat-value')[2].textContent = positivePercent + '%';
+            document.querySelectorAll('.stat-value')[3].textContent = conflictsResolved;
+
+            // Update streak
+            const streakNumber = document.querySelector('.streak-number');
+            if (streakNumber) {
+                streakNumber.textContent = state.streak;
+            }
+        }
+
+        function renderMessages() {
+            const timeline = document.querySelector('.messages-timeline');
+            
+            // Group messages by date
+            const grouped = {};
+            state.messages.forEach(msg => {
+                const dateKey = formatDate(msg.date);
+                if (!grouped[dateKey]) {
+                    grouped[dateKey] = [];
+                }
+                grouped[dateKey].push(msg);
+            });
+
+            // Sort groups by date (newest first)
+            const sortedGroups = Object.entries(grouped).sort((a, b) => {
+                const dateA = new Date(a[1][0].date);
+                const dateB = new Date(b[1][0].date);
+                return dateB - dateA;
+            });
+
+            timeline.innerHTML = sortedGroups.map(([dateKey, messages]) => `
+                <div class="message-group">
+                    <div class="date-marker">${dateKey}</div>
+                    ${messages.sort((a, b) => new Date(b.date) - new Date(a.date)).map(msg => `
+                        <div class="message-item ${msg.conflict ? 'conflict' : 'positive'}">
+                            <div class="message-card">
+                                <div class="message-header">
+                                    <div class="message-mood">${CONFIG.moodEmojis[msg.mood] || '😊'}</div>
+                                    <div class="message-time">${formatTime(msg.date)}</div>
+                                </div>
+                                <div class="message-text">${msg.text}</div>
+                                ${msg.hasVoiceNote ? `
+                                    <div class="voice-note">
+                                        <div class="voice-controls">
+                                            <button class="play-btn" onclick="playVoiceNote(${msg.id})">
+                                                <i class="fas fa-play"></i>
+                                            </button>
+                                            <div class="waveform">
+                                                <div class="wave-bars">
+                                                    ${Array(8).fill().map(() => '<div class="wave-bar"></div>').join('')}
+                                                </div>
+                                            </div>
+                                            <div class="voice-duration">${msg.voiceDuration || '0:42'}</div>
+                                        </div>
+                                    </div>
+                                ` : ''}
+                                <div class="message-tags">
+                                    ${msg.conflict ? '<span class="message-tag conflict">Конфлікт вирішено</span>' : '<span class="message-tag appreciation">Подяка</span>'}
+                                    ${msg.hasVoiceNote ? '<span class="message-tag">🎤 Voice</span>' : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `).join('');
+        }
+
+        function renderMoodChart() {
+            const ctx = document.getElementById('moodChart');
+            if (!ctx) return;
+
+            // Count moods by day of week
+            const moodsByDay = {
+                'Пн': 0, 'Вт': 0, 'Ср': 0, 'Чт': 0, 'Пт': 0, 'Сб': 0, 'Нд': 0
+            };
+
+            state.messages.forEach(msg => {
+                const date = new Date(msg.date);
+                const dayNames = ['Нд', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+                const day = dayNames[date.getDay()];
+                if (['happy', 'love', 'hug'].includes(msg.mood)) {
+                    moodsByDay[day]++;
+                }
+            });
+
+            // Simple bar chart visualization (without Chart.js dependency for now)
+            const chartContainer = document.querySelector('.mood-chart');
+            if (chartContainer) {
+                const maxValue = Math.max(...Object.values(moodsByDay), 1);
+                chartContainer.innerHTML = Object.entries(moodsByDay).map(([day, count]) => `
+                    <div class="mood-bar-group">
+                        <div class="mood-bar" style="height: ${(count / maxValue) * 100}%;"></div>
+                        <div class="mood-day-label">${day}</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // 6. CRUD OPERATIONS
+        function addMessage(text, mood, hasVoiceNote = false, conflict = false) {
+            if (!text.trim()) return;
+
+            const message = {
+                id: Date.now(),
+                text: text,
+                mood: mood,
+                date: new Date().toISOString(),
+                hasVoiceNote: hasVoiceNote,
+                conflict: conflict,
+                voiceDuration: hasVoiceNote ? '0:' + Math.floor(Math.random() * 60) : null
+            };
+
+            state.messages.push(message);
+            saveToStorage();
+            calculateStreak();
+            updateUI();
+
+            // Clear input
+            document.querySelector('.add-input').value = '';
+        }
+
+        function deleteMessage(id) {
+            state.messages = state.messages.filter(m => m.id !== id);
+            saveToStorage();
+            updateUI();
+        }
+
+        window.playVoiceNote = function(id) {
+            console.log('Playing voice note:', id);
+            // Simulate voice note playback
+            alert('Відтворення голосової нотатки #' + id);
+        };
+
+        // 7. EVENT HANDLERS
+        function attachEventListeners() {
+            // Add message button
+            const addBtn = document.querySelector('.add-btn');
+            const textArea = document.querySelector('.add-input');
+            
+            addBtn.addEventListener('click', () => {
+                const text = textArea.value;
+                addMessage(text, state.currentMood);
+            });
+
+            // Enter to submit
+            textArea.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    const text = textArea.value;
+                    addMessage(text, state.currentMood);
+                }
+            });
+
+            // Mood selector
+            document.querySelectorAll('.mood-btn').forEach((btn, index) => {
+                const moods = ['happy', 'love', 'sad', 'angry', 'hug'];
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    state.currentMood = moods[index];
+                });
+            });
+
+            // Search functionality
+            const searchInput = document.querySelector('.search-input');
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    const query = e.target.value.toLowerCase();
+                    // Simple search filter (can be enhanced)
+                    console.log('Searching for:', query);
+                });
+            }
+
+            // Export button
+            const exportBtn = document.querySelector('.export-btn');
+            if (exportBtn) {
+                exportBtn.addEventListener('click', exportToPDF);
+            }
+
+            // Tab navigation
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                });
+            });
+        }
+
+        function exportToPDF() {
+            // Simulate PDF export
+            const dataStr = JSON.stringify(state.messages, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = 'communication-log-' + new Date().toISOString().split('T')[0] + '.json';
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+
+            alert('✅ Експорт завершено! Завантажено як JSON (для PDF потрібна додаткова бібліотека)');
+        }
+
+        // 8. UPDATE UI
+        function updateUI() {
+            updateStats();
+            renderMessages();
+            renderMoodChart();
+        }
+
+        // 9. INITIALIZATION
+        function init() {
+            loadFromStorage();
+            updateUI();
+            attachEventListeners();
+            
+            console.log('✅ Communication Log PRO initialized');
+            console.log('📊 Messages loaded:', state.messages.length);
+            console.log('🔥 Current streak:', state.streak, 'days');
+        }
+
+        // Start the app when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    </script>
 </body>
 </html>

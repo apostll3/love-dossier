@@ -1,0 +1,1979 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Love Dossier - Всі типи</title>
+    
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#667eea">
+    <link rel="icon" href="LoveDossier.ico">
+    
+    <!-- Font Awesome для іконок -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ============================================
+           COLOR THEMES SYSTEM
+           ============================================ */
+        
+        /* Default Theme - Purple Gradient */
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5568d3;
+            --secondary: #764ba2;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            
+            --bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text: #1f2937;
+            --text-secondary: #6b7280;
+            --border: #e5e7eb;
+            
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            
+            --radius: 12px;
+            --radius-sm: 8px;
+        }
+        
+        /* Dark Mode */
+        [data-theme="dark"] {
+            --bg: #111827;
+            --card-bg: #1f2937;
+            --text: #f9fafb;
+            --text-secondary: #9ca3af;
+            --border: #374151;
+        }
+        
+        /* Pink Love Theme */
+        [data-color-theme="pink"] {
+            --primary: #ec4899;
+            --primary-dark: #db2777;
+            --secondary: #f472b6;
+        }
+        
+        /* Ocean Blue Theme */
+        [data-color-theme="ocean"] {
+            --primary: #0ea5e9;
+            --primary-dark: #0284c7;
+            --secondary: #38bdf8;
+        }
+        
+        /* Sunset Orange Theme */
+        [data-color-theme="sunset"] {
+            --primary: #f97316;
+            --primary-dark: #ea580c;
+            --secondary: #fb923c;
+        }
+        
+        /* Forest Green Theme */
+        [data-color-theme="forest"] {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --secondary: #34d399;
+        }
+        
+        /* Royal Purple (default) */
+        [data-color-theme="purple"] {
+            --primary: #667eea;
+            --primary-dark: #5568d3;
+            --secondary: #764ba2;
+        }
+        
+        /* Romantic Red Theme */
+        [data-color-theme="romantic"] {
+            --primary: #ef4444;
+            --primary-dark: #dc2626;
+            --secondary: #f87171;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        /* Приховати scrollbar для всіх браузерів */
+        * {
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE and Edge */
+        }
+        
+        *::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        
+        /* Header - Compact */
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .header-icon {
+            font-size: 1.75rem;
+        }
+        
+        .header-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        .header-subtitle {
+            font-size: 0.875rem;
+            opacity: 0.9;
+            margin: 0;
+        }
+        
+        /* Toolbar - Compact inline with stats */
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 2rem;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            gap: 1.5rem;
+        }
+        
+        .search-box {
+            flex: 1;
+            max-width: 350px;
+            position: relative;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 0.5rem 1rem 0.5rem 2.25rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            background: var(--bg);
+            color: var(--text);
+            transition: all 0.2s;
+        }
+        
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+        
+        .toolbar-center {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+        
+        .mini-stat {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: var(--bg);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+        }
+        
+        .mini-stat-icon {
+            font-size: 1rem;
+            opacity: 0.7;
+        }
+        
+        .mini-stat-value {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 0.95rem;
+        }
+        
+        .mini-stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+        
+        .toolbar-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            opacity: 0.9;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-icon {
+            background: transparent;
+            border: none;
+            color: var(--text);
+            padding: 0.5rem;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-sm);
+            transition: all 0.2s;
+        }
+        
+        .btn-icon:hover {
+            background: var(--bg);
+        }
+        
+        /* Types Grid */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem;
+        }
+        
+        .types-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        
+        .type-card {
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .type-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .type-card:hover {
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary);
+        }
+        
+        .type-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .type-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .type-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+        
+        .type-description {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+        
+        .type-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: rgba(102, 126, 234, 0.1);
+            color: var(--primary);
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+        
+        .type-badge.priority {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+        
+        .type-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+        
+        .type-status {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+        
+        .type-status.has-data {
+            color: var(--success);
+            font-weight: 600;
+        }
+        
+        /* Footer - Compact */
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border);
+            background: var(--card-bg);
+            font-size: 0.875rem;
+        }
+        
+        .footer p {
+            margin: 0.25rem 0;
+        }
+        
+        /* Responsive - compact mode */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .types-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+        
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* PWA Install Banner */
+        .install-banner {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            display: none;
+            align-items: center;
+            gap: 1rem;
+            z-index: 1000;
+        }
+        
+        .install-banner.show {
+            display: flex;
+        }
+        
+        /* Settings Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            animation: fadeIn 0.2s ease;
+        }
+        
+        .modal-overlay.show {
+            display: flex;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+        
+        .modal-close:hover {
+            background: var(--bg);
+            color: var(--text);
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+        }
+        
+        .setting-group {
+            margin-bottom: 2rem;
+        }
+        
+        .setting-group:last-child {
+            margin-bottom: 0;
+        }
+        
+        .setting-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+        
+        .setting-description {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.75rem;
+        }
+        
+        .theme-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+        }
+        
+        .theme-option {
+            padding: 1rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            position: relative;
+        }
+        
+        .theme-option:hover {
+            border-color: var(--primary);
+            opacity: 0.9;
+        }
+        
+        .theme-option.active {
+            border-color: var(--primary);
+            background: rgba(102, 126, 234, 0.1);
+        }
+        
+        .theme-option.active::after {
+            content: '✓';
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+        }
+        
+        .theme-preview {
+            width: 100%;
+            height: 40px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 0.5rem;
+        }
+        
+        .theme-name {
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .language-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            background: var(--bg);
+            color: var(--text);
+            cursor: pointer;
+        }
+        
+        .language-select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        /* Drag & Drop */
+        .type-card.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+        }
+        
+        .type-card.drag-over {
+            border-color: var(--primary);
+            border-style: dashed;
+        }
+        
+        .drag-handle {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            cursor: grab;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .type-card:hover .drag-handle {
+            opacity: 1;
+        }
+        
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+        
+        .edit-mode-banner {
+            background: var(--warning);
+            color: white;
+            padding: 0.75rem;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+        }
+        
+        .edit-mode-banner.show {
+            display: block;
+        }
+        
+        /* ============================================
+           LOADER & WELCOME SCREENS
+           ============================================ */
+        
+        /* Loader Screen */
+        .loader-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loader-screen.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .loader-logo {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .loader-title {
+            color: white;
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+        
+        .loader-subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .loader-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .loader-progress {
+            margin-top: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.875rem;
+        }
+        
+        /* Welcome Screen */
+        .welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg);
+            z-index: 9999;
+            overflow-y: auto;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            pointer-events: none;
+        }
+        
+        .welcome-screen.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .welcome-screen.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .welcome-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .welcome-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .welcome-icon {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+            animation: pulseSlow 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulseSlow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .welcome-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .welcome-description {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        
+        .welcome-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        .welcome-step {
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            animation: fadeIn 0.5s ease forwards;
+            opacity: 0;
+        }
+        
+        .welcome-step:nth-child(1) { animation-delay: 0.1s; }
+        .welcome-step:nth-child(2) { animation-delay: 0.2s; }
+        .welcome-step:nth-child(3) { animation-delay: 0.3s; }
+        .welcome-step:nth-child(4) { animation-delay: 0.4s; }
+        
+        .welcome-step-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .welcome-step-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+        
+        .welcome-step-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+        
+        .welcome-step-content {
+            padding-left: 3rem;
+        }
+        
+        .theme-mode-btn {
+            position: relative;
+        }
+        
+        .theme-mode-btn.active {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .theme-mode-btn:hover {
+            opacity: 0.9;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .welcome-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 3rem;
+            animation: fadeIn 0.5s ease 0.5s forwards;
+            opacity: 0;
+        }
+        
+        .btn-large {
+            padding: 1rem 2.5rem;
+            font-size: 1.125rem;
+            border-radius: var(--radius);
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .btn-large.btn-gradient {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        
+        .btn-large.btn-gradient:hover {
+            opacity: 0.9;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .btn-large.btn-outline {
+            background: transparent;
+            border: 2px solid var(--border);
+            color: var(--text);
+        }
+        
+        .btn-large.btn-outline:hover {
+            border-color: var(--primary);
+            background: rgba(102, 126, 234, 0.1);
+        }
+        
+        /* Main App - hidden by default but preloaded */
+        .main-app {
+            position: relative;
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .main-app.show {
+            opacity: 1;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                padding: 0.75rem 1rem;
+            }
+            
+            .header-title {
+                font-size: 1.25rem;
+            }
+            
+            .header-icon {
+                font-size: 1.5rem;
+            }
+            
+            .toolbar {
+                padding: 0.75rem 1rem;
+                flex-wrap: wrap;
+                gap: 0.75rem;
+            }
+            
+            .search-box {
+                order: 1;
+                width: 100%;
+                max-width: 100%;
+            }
+            
+            .toolbar-center {
+                order: 3;
+                width: 100%;
+                justify-content: space-between;
+                gap: 0.5rem;
+            }
+            
+            .mini-stat {
+                flex: 1;
+                padding: 0.4rem 0.5rem;
+                justify-content: center;
+            }
+            
+            .mini-stat-value {
+                font-size: 0.875rem;
+            }
+            
+            .mini-stat-label {
+                font-size: 0.65rem;
+            }
+            
+            .toolbar-actions {
+                order: 2;
+            }
+            
+            #installBtn {
+                order: 4;
+                width: 100%;
+            }
+            
+            .welcome-icon {
+                font-size: 3.5rem;
+            }
+            
+            .welcome-title {
+                font-size: 2rem;
+            }
+            
+            .welcome-container {
+                padding: 2rem 1rem;
+            }
+            
+            .welcome-step {
+                padding: 1.5rem;
+            }
+            
+            .welcome-step-content {
+                padding-left: 0;
+                margin-top: 1rem;
+            }
+            
+            .welcome-actions {
+                flex-direction: column;
+            }
+            
+            .btn-large {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- LOADER SCREEN -->
+    <div class="loader-screen" id="loaderScreen">
+        <div class="loader-logo">💕</div>
+        <h1 class="loader-title">Love Dossier</h1>
+        <p class="loader-subtitle">Loading your memories...</p>
+        <div class="loader-spinner"></div>
+        <p class="loader-progress" id="loaderProgress">Initializing...</p>
+    </div>
+    
+    <!-- WELCOME SCREEN (First time only) -->
+    <div class="welcome-screen" id="welcomeScreen">
+        <div class="welcome-container">
+            <div class="welcome-header">
+                <div class="welcome-icon">💕</div>
+                <h1 class="welcome-title">Welcome to Love Dossier!</h1>
+                <p class="welcome-description">
+                    Your private space to organize everything about your loved one. 
+                    32 types of information, all stored locally on your device.
+                </p>
+            </div>
+            
+            <div class="welcome-steps">
+                <!-- Step 1: Language -->
+                <div class="welcome-step">
+                    <div class="welcome-step-header">
+                        <div class="welcome-step-number">1</div>
+                        <h2 class="welcome-step-title">Choose Your Language</h2>
+                    </div>
+                    <div class="welcome-step-content">
+                        <select class="language-select" id="welcomeLanguage">
+                            <option value="en">🇬🇧 English</option>
+                            <option value="uk">🇺🇦 Українська</option>
+                            <option value="ru">🇷🇺 Русский</option>
+                            <option value="pl">🇵🇱 Polski</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Step 2: Color Theme -->
+                <div class="welcome-step">
+                    <div class="welcome-step-header">
+                        <div class="welcome-step-number">2</div>
+                        <h2 class="welcome-step-title">Pick Your Favorite Color</h2>
+                    </div>
+                    <div class="welcome-step-content">
+                        <div class="theme-grid" id="welcomeThemes">
+                            <div class="theme-option active" data-theme="purple">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #667eea, #764ba2);"></div>
+                                <div class="theme-name">Purple</div>
+                            </div>
+                            <div class="theme-option" data-theme="pink">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #ec4899, #f472b6);"></div>
+                                <div class="theme-name">Pink</div>
+                            </div>
+                            <div class="theme-option" data-theme="ocean">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #0ea5e9, #38bdf8);"></div>
+                                <div class="theme-name">Ocean</div>
+                            </div>
+                            <div class="theme-option" data-theme="sunset">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #f97316, #fb923c);"></div>
+                                <div class="theme-name">Sunset</div>
+                            </div>
+                            <div class="theme-option" data-theme="forest">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #10b981, #34d399);"></div>
+                                <div class="theme-name">Forest</div>
+                            </div>
+                            <div class="theme-option" data-theme="romantic">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #ef4444, #f87171);"></div>
+                                <div class="theme-name">Red</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 3: Dark/Light Mode -->
+                <div class="welcome-step">
+                    <div class="welcome-step-header">
+                        <div class="welcome-step-number">3</div>
+                        <h2 class="welcome-step-title">Choose Your Theme</h2>
+                    </div>
+                    <div class="welcome-step-content">
+                        <div style="display: flex; gap: 1rem;">
+                            <button class="theme-mode-btn active" data-mode="light" style="flex: 1; padding: 1rem; border: 2px solid var(--border); border-radius: var(--radius-sm); background: white; cursor: pointer; transition: all 0.2s;">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">☀️</div>
+                                <div style="font-weight: 600;">Light Mode</div>
+                                <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.25rem;">Bright & clear</div>
+                            </button>
+                            <button class="theme-mode-btn" data-mode="dark" style="flex: 1; padding: 1rem; border: 2px solid var(--border); border-radius: var(--radius-sm); background: #1f2937; color: white; cursor: pointer; transition: all 0.2s;">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">🌙</div>
+                                <div style="font-weight: 600;">Dark Mode</div>
+                                <div style="font-size: 0.8rem; color: #9ca3af; margin-top: 0.25rem;">Easy on eyes</div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 4: Privacy -->
+                <div class="welcome-step">
+                    <div class="welcome-step-header">
+                        <div class="welcome-step-number">4</div>
+                        <h2 class="welcome-step-title">Your Privacy Matters</h2>
+                    </div>
+                    <div class="welcome-step-content">
+                        <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.75rem;">
+                            <li style="display: flex; align-items: center; gap: 0.75rem;">
+                                <i class="fas fa-shield-alt" style="color: var(--success);"></i>
+                                <span>All data stored locally on your device</span>
+                            </li>
+                            <li style="display: flex; align-items: center; gap: 0.75rem;">
+                                <i class="fas fa-lock" style="color: var(--success);"></i>
+                                <span>No backend, no servers, no tracking</span>
+                            </li>
+                            <li style="display: flex; align-items: center; gap: 0.75rem;">
+                                <i class="fas fa-wifi-slash" style="color: var(--success);"></i>
+                                <span>Works completely offline</span>
+                            </li>
+                            <li style="display: flex; align-items: center; gap: 0.75rem;">
+                                <i class="fas fa-heart" style="color: var(--danger);"></i>
+                                <span>100% free and private forever</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="welcome-actions">
+                <button class="btn-large btn-gradient" id="startBtn">
+                    <i class="fas fa-heart"></i>
+                    Let's Start!
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- MAIN APP -->
+    <div class="main-app" id="mainApp">
+    <!-- Header - Compact -->
+    <header class="header">
+        <div class="header-left">
+            <div class="header-icon">💕</div>
+            <div>
+                <h1 class="header-title">Love Dossier</h1>
+            </div>
+        </div>
+        <div class="toolbar-actions">
+            <button class="btn-icon" id="editModeBtn" title="Edit Layout">
+                <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn-icon" id="themeToggle" title="Toggle Dark Mode">
+                <i class="fas fa-moon"></i>
+            </button>
+            <button class="btn-icon" id="settingsBtn" title="Settings">
+                <i class="fas fa-cog"></i>
+            </button>
+        </div>
+    </header>
+    
+    <!-- Edit Mode Banner -->
+    <div class="edit-mode-banner" id="editModeBanner">
+        <i class="fas fa-grip-vertical"></i> Edit Mode: Drag cards to reorder • <button onclick="exitEditMode()" style="background:none;border:none;color:white;text-decoration:underline;cursor:pointer;">Save & Exit</button>
+    </div>
+    
+    <!-- Toolbar with inline stats -->
+    <div class="toolbar">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search types..." data-i18n-placeholder="search">
+        </div>
+        
+        <div class="toolbar-center">
+            <div class="mini-stat">
+                <div>
+                    <div class="mini-stat-value">32</div>
+                    <div class="mini-stat-label">Types</div>
+                </div>
+            </div>
+            <div class="mini-stat">
+                <div>
+                    <div class="mini-stat-value" id="filledTypes">0</div>
+                    <div class="mini-stat-label">Filled</div>
+                </div>
+            </div>
+            <div class="mini-stat">
+                <div>
+                    <div class="mini-stat-value" id="totalRecords">0</div>
+                    <div class="mini-stat-label">Records</div>
+                </div>
+            </div>
+            <div class="mini-stat">
+                <div>
+                    <div class="mini-stat-value" id="storageSize">0 KB</div>
+                    <div class="mini-stat-label">Storage</div>
+                </div>
+            </div>
+        </div>
+        
+        <button class="btn btn-primary" id="installBtn" style="display: none; padding: 0.5rem 1rem; font-size: 0.875rem;">
+            <i class="fas fa-download"></i>
+            Install
+        </button>
+    </div>
+    
+    <!-- Types Grid -->
+    <div class="container">
+        <div class="types-grid" id="typesGrid">
+            <!-- Типи будуть додані через JavaScript -->
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Made with ❤️ for couples • Version 3.0.0</p>
+        <p style="margin-top: 0.5rem; font-size: 0.875rem;">
+            All data stored locally • No backend • 100% Private
+        </p>
+    </footer>
+    </div><!-- End Main App -->
+    
+    <!-- PWA Install Banner -->
+    <div class="install-banner" id="installBanner">
+        <div>
+            <strong>Install app?</strong>
+            <p style="font-size: 0.875rem; opacity: 0.9; margin-top: 0.25rem;">
+                Works offline, like a native app
+            </p>
+        </div>
+        <button class="btn btn-primary" id="installBannerBtn">
+            Install
+        </button>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-cog"></i> Settings</h2>
+                <button class="modal-close" onclick="closeSettings()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Color Theme -->
+                <div class="setting-group">
+                    <label class="setting-label">Color Theme</label>
+                    <div class="setting-description">Choose your favorite color scheme</div>
+                    <div class="theme-grid">
+                        <div class="theme-option" data-theme="purple">
+                            <div class="theme-preview" style="background: linear-gradient(135deg, #667eea, #764ba2);"></div>
+                            <div class="theme-name">Purple</div>
+                        </div>
+                        <div class="theme-option" data-theme="pink">
+                            <div class="theme-preview" style="background: linear-gradient(135deg, #ec4899, #f472b6);"></div>
+                            <div class="theme-name">Pink Love</div>
+                        </div>
+                        <div class="theme-option" data-theme="ocean">
+                            <div class="theme-preview" style="background: linear-gradient(135deg, #0ea5e9, #38bdf8);"></div>
+                            <div class="theme-name">Ocean</div>
+                        </div>
+                        <div class="theme-option" data-theme="sunset">
+                            <div class="theme-preview" style="background: linear-gradient(135deg, #f97316, #fb923c);"></div>
+                            <div class="theme-name">Sunset</div>
+                        </div>
+                        <div class="theme-option" data-theme="forest">
+                            <div class="theme-preview" style="background: linear-gradient(135deg, #10b981, #34d399);"></div>
+                            <div class="theme-name">Forest</div>
+                        </div>
+                        <div class="theme-option" data-theme="romantic">
+                            <div class="theme-preview" style="background: linear-gradient(135deg, #ef4444, #f87171);"></div>
+                            <div class="theme-name">Romantic</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Language -->
+                <div class="setting-group">
+                    <label class="setting-label">Language</label>
+                    <div class="setting-description">Select interface language</div>
+                    <select class="language-select" id="languageSelect">
+                        <option value="en">English</option>
+                        <option value="uk">Українська</option>
+                        <option value="ru">Русский</option>
+                        <option value="pl">Polski</option>
+                    </select>
+                </div>
+
+                <!-- Dark Mode -->
+                <div class="setting-group">
+                    <label class="setting-label">Dark Mode</label>
+                    <div class="setting-description">Toggle light/dark theme</div>
+                    <button class="btn btn-primary" onclick="toggleTheme()">
+                        <i class="fas fa-adjust"></i> Toggle Dark Mode
+                    </button>
+                </div>
+
+                <!-- Reset Order -->
+                <div class="setting-group">
+                    <label class="setting-label">Reset Card Order</label>
+                    <div class="setting-description">Restore default card layout</div>
+                    <button class="btn btn-primary" onclick="resetCardOrder()">
+                        <i class="fas fa-undo"></i> Reset to Default
+                    </button>
+                </div>
+
+                <!-- Clear All Data -->
+                <div class="setting-group">
+                    <label class="setting-label" style="color: var(--danger);">Danger Zone</label>
+                    <div class="setting-description">Clear all stored data (cannot be undone!)</div>
+                    <button class="btn" style="background: var(--danger); color: white;" onclick="clearAllData()">
+                        <i class="fas fa-trash"></i> Clear All Data
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // LOVE DOSSIER - INDEX.HTML JavaScript
+        // ============================================
+        
+        // 0. LOADER & WELCOME FLOW
+        const AppFlow = {
+            isFirstVisit: !localStorage.getItem('lovedossier_initialized'),
+            selectedLang: 'en',
+            selectedTheme: 'purple',
+            selectedMode: 'light',
+            
+            // Loader simulation
+            async showLoader() {
+                const loader = document.getElementById('loaderScreen');
+                const progress = document.getElementById('loaderProgress');
+                
+                const steps = [
+                    'Loading resources...',
+                    'Initializing app...',
+                    'Preparing your space...',
+                    'Almost ready...'
+                ];
+                
+                for (let i = 0; i < steps.length; i++) {
+                    progress.textContent = steps[i];
+                    await this.delay(600);
+                }
+                
+                // CROSSFADE: Show next screen BEFORE hiding loader
+                if (this.isFirstVisit) {
+                    this.showWelcome();
+                } else {
+                    this.showMainApp();
+                }
+                
+                // Small delay to let next screen start appearing
+                await this.delay(50);
+                
+                // Now fade out loader (crossfade happening)
+                loader.classList.add('fade-out');
+                await this.delay(500);
+                
+                // Remove from DOM after animation
+                loader.remove();
+            },
+            
+            // Welcome screen
+            showWelcome() {
+                const welcome = document.getElementById('welcomeScreen');
+                
+                // Setup event listeners first (only once)
+                if (!welcome.dataset.initialized) {
+                    // Setup color theme selection
+                    const welcomeThemes = document.querySelectorAll('#welcomeThemes .theme-option');
+                    welcomeThemes.forEach(option => {
+                        option.addEventListener('click', () => {
+                            welcomeThemes.forEach(o => o.classList.remove('active'));
+                            option.classList.add('active');
+                            this.selectedTheme = option.getAttribute('data-theme');
+                            document.documentElement.setAttribute('data-color-theme', this.selectedTheme);
+                        });
+                    });
+                    
+                    // Setup dark/light mode selection
+                    const modeBtns = document.querySelectorAll('.theme-mode-btn');
+                    modeBtns.forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            modeBtns.forEach(b => b.classList.remove('active'));
+                            btn.classList.add('active');
+                            this.selectedMode = btn.getAttribute('data-mode');
+                            
+                            if (this.selectedMode === 'dark') {
+                                document.documentElement.setAttribute('data-theme', 'dark');
+                            } else {
+                                document.documentElement.removeAttribute('data-theme');
+                            }
+                        });
+                    });
+                    
+                    // Setup language selection
+                    const welcomeLang = document.getElementById('welcomeLanguage');
+                    welcomeLang.addEventListener('change', (e) => {
+                        this.selectedLang = e.target.value;
+                    });
+                    
+                    // Start button
+                    document.getElementById('startBtn').addEventListener('click', () => {
+                        this.finishWelcome();
+                    });
+                    
+                    welcome.dataset.initialized = 'true';
+                }
+                
+                // Trigger show animation
+                setTimeout(() => {
+                    welcome.classList.add('show');
+                }, 50);
+            },
+            
+            // Finish welcome and show main app
+            async finishWelcome() {
+                const welcome = document.getElementById('welcomeScreen');
+                
+                // Save settings
+                localStorage.setItem('language', this.selectedLang);
+                localStorage.setItem('colorTheme', this.selectedTheme);
+                localStorage.setItem('theme', this.selectedMode);
+                localStorage.setItem('lovedossier_initialized', 'true');
+                
+                // CROSSFADE: Show main app BEFORE fading out welcome
+                this.showMainApp();
+                
+                // Small delay to let main app start appearing
+                await this.delay(50);
+                
+                // Now fade out welcome (crossfade happening)
+                welcome.classList.add('fade-out');
+                await this.delay(500);
+                
+                // Remove from DOM after animation
+                welcome.remove();
+            },
+            
+            // Show main app
+            showMainApp() {
+                const mainApp = document.getElementById('mainApp');
+                
+                // Small delay for smooth transition
+                setTimeout(() => {
+                    mainApp.classList.add('show');
+                    
+                    // Initialize app (existing init function)
+                    init();
+                }, 50);
+            },
+            
+            delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+        };
+        
+        // Start app flow on page load
+        window.addEventListener('load', () => {
+            AppFlow.showLoader();
+        });
+        
+        // 1. INTERNATIONALIZATION (i18n)
+        const i18n = {
+            en: {
+                title: '💕 Love Dossier',
+                subtitle: '32 types for organizing information about your loved one',
+                search: 'Search types...',
+                totalTypes: 'Total Types',
+                filled: 'Filled',
+                totalRecords: 'Total Records',
+                storageSize: 'Storage Size',
+                empty: 'Empty',
+                records: 'records',
+                settings: 'Settings',
+                colorTheme: 'Color Theme',
+                language: 'Language',
+                darkMode: 'Dark Mode',
+                resetOrder: 'Reset Card Order',
+                clearData: 'Clear All Data',
+                install: 'Install PWA'
+            },
+            uk: {
+                title: '💕 Досьє коханої',
+                subtitle: '32 типи для організації інформації про вашу кохану людину',
+                search: 'Пошук типів...',
+                totalTypes: 'Всього типів',
+                filled: 'Заповнено',
+                totalRecords: 'Всього записів',
+                storageSize: 'Розмір даних',
+                empty: 'Порожньо',
+                records: 'записів',
+                settings: 'Налаштування',
+                colorTheme: 'Кольорова тема',
+                language: 'Мова',
+                darkMode: 'Темна тема',
+                resetOrder: 'Скинути порядок',
+                clearData: 'Очистити дані',
+                install: 'Встановити PWA'
+            },
+            ru: {
+                title: '💕 Досье любимого',
+                subtitle: '32 типа для организации информации о вашем любимом человеке',
+                search: 'Поиск типов...',
+                totalTypes: 'Всего типов',
+                filled: 'Заполнено',
+                totalRecords: 'Всего записей',
+                storageSize: 'Размер данных',
+                empty: 'Пусто',
+                records: 'записей',
+                settings: 'Настройки',
+                colorTheme: 'Цветовая тема',
+                language: 'Язык',
+                darkMode: 'Темная тема',
+                resetOrder: 'Сбросить порядок',
+                clearData: 'Очистить данные',
+                install: 'Установить PWA'
+            },
+            pl: {
+                title: '💕 Dossier ukochanej',
+                subtitle: '32 typy do organizacji informacji o ukochanej osobie',
+                search: 'Szukaj typów...',
+                totalTypes: 'Wszystkie typy',
+                filled: 'Wypełnione',
+                totalRecords: 'Wszystkie wpisy',
+                storageSize: 'Rozmiar danych',
+                empty: 'Puste',
+                records: 'wpisów',
+                settings: 'Ustawienia',
+                colorTheme: 'Kolorowy motyw',
+                language: 'Język',
+                darkMode: 'Tryb ciemny',
+                resetOrder: 'Resetuj kolejność',
+                clearData: 'Wyczyść dane',
+                install: 'Zainstaluj PWA'
+            }
+        };
+        
+        let currentLang = localStorage.getItem('language') || 'en';
+        
+        function t(key) {
+            return i18n[currentLang][key] || i18n.en[key] || key;
+        }
+        
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('language', lang);
+            updateUIText();
+        }
+        
+        function updateUIText() {
+            const headerTitle = document.querySelector('.header-title');
+            if (headerTitle) headerTitle.textContent = t('title').replace('💕 ', '');
+            
+            document.querySelector('#searchInput').placeholder = t('search');
+            
+            const labels = document.querySelectorAll('.mini-stat-label');
+            if (labels.length >= 4) {
+                labels[0].textContent = t('totalTypes');
+                labels[1].textContent = t('filled');
+                labels[2].textContent = t('totalRecords');
+                labels[3].textContent = t('storageSize');
+            }
+        }
+        
+        // 1. СПИСОК ВСІХ 32 ТИПІВ
+        const TYPES_LIST = [
+            // Top-5 Priority
+            { id: 'communication-log', icon: '💬', title: 'Communication Log PRO', description: 'Voice notes, Analytics, Mood charts', path: './types/enhanced-communication-log.html', priority: true },
+            { id: 'finances', icon: '💰', title: 'Finances Together PRO', description: 'Budget, Bills, Savings tracker', path: './types/enhanced-finances.html', priority: true },
+            { id: 'relationship-goals', icon: '🎯', title: 'Relationship Goals PRO', description: 'Achievements, Vision board, Progress', path: './types/enhanced-relationship-goals.html', priority: true },
+            { id: 'shopping-list', icon: '🛒', title: 'Shopping List PRO', description: 'Barcode scanner, Recipe integration', path: './types/enhanced-shopping-list.html', priority: true },
+            { id: 'travel-planner', icon: '✈️', title: 'Travel Planner PRO', description: 'Countdown, Weather, Budget breakdown', path: './types/enhanced-travel-planner.html', priority: true },
+            
+            // Enhanced Types (6-21)
+            { id: 'date-ideas', icon: '💡', title: 'Date Ideas', description: 'Filters, Seasonal suggestions', path: './types/enhanced-date-ideas.html' },
+            { id: 'memory-album', icon: '📸', title: 'Memory Album', description: 'Timeline, Photo slideshow', path: './types/enhanced-memory-album.html' },
+            { id: 'recipe-book', icon: '🍽️', title: 'Recipe Book', description: 'Nutrition, Meal planner', path: './types/enhanced-recipe-book.html' },
+            { id: 'gift-registry', icon: '🎁', title: 'Gift Registry', description: 'Wishlist, Price tracking', path: './types/enhanced-gift-registry.html' },
+            { id: 'mood-tracker', icon: '😊', title: 'Mood Tracker', description: 'Emotional analytics, Patterns', path: './types/enhanced-mood-tracker.html' },
+            { id: 'books-movies', icon: '🎬', title: 'Books & Movies', description: 'Watchlist, Ratings, Reviews', path: './types/enhanced-books-movies.html' },
+            { id: 'bucket-list', icon: '🪣', title: 'Bucket List', description: 'Life goals, Adventure tracker', path: './types/enhanced-bucket-list.html' },
+            { id: 'event-countdown', icon: '⏰', title: 'Event Countdown', description: 'Multi-event timers', path: './types/enhanced-event-countdown.html' },
+            { id: 'timeline', icon: '📅', title: 'Timeline', description: 'Interactive journey visualization', path: './types/enhanced-timeline.html' },
+            { id: 'smart-checklist', icon: '✅', title: 'Smart Checklist', description: 'Task manager, Subtasks', path: './types/enhanced-smart-checklist.html' },
+            { id: 'progress', icon: '📊', title: 'Progress Tracker', description: 'Visual bars, Milestones', path: './types/enhanced-progress.html' },
+            { id: 'interactive-map', icon: '🗺️', title: 'Interactive Map', description: 'Location pins, Travel history', path: './types/enhanced-interactive-map.html' },
+            { id: 'smart-date', icon: '📆', title: 'Smart Date', description: 'Date picker, Event planning', path: './types/enhanced-smart-date.html' },
+            { id: 'social-links', icon: '🔗', title: 'Social Links', description: 'Profile links, QR codes', path: './types/enhanced-social-links.html' },
+            { id: 'tags', icon: '🏷️', title: 'Tags', description: 'Tag management, Categories', path: './types/enhanced-tags.html' },
+            { id: 'rating', icon: '⭐', title: 'Rating System', description: 'Star ratings, Reviews', path: './types/enhanced-rating.html' },
+            
+            // Basic Types (22-32)
+            { id: 'multi-select', icon: '☑️', title: 'Multi-Select', description: 'Checkbox groups, Bulk actions', path: './types/enhanced-multi-select.html' },
+            { id: 'currency-manager', icon: '💱', title: 'Currency Manager', description: 'Conversion, Exchange rates', path: './types/enhanced-currency-manager.html' },
+            { id: 'password-vault', icon: '🔒', title: 'Password Vault', description: 'Secure password storage', path: './types/enhanced-password-vault.html' },
+            { id: 'rich-text', icon: '📝', title: 'Rich Text Editor', description: 'Text formatting', path: './types/enhanced-rich-text.html' },
+            { id: 'smart-phone', icon: '📞', title: 'Smart Phone', description: 'Phone validation', path: './types/enhanced-smart-phone.html' },
+            { id: 'smart-email', icon: '📧', title: 'Smart Email', description: 'Email validation, Contact groups', path: './types/enhanced-smart-email.html' },
+            { id: 'smart-time', icon: '🕐', title: 'Smart Time', description: 'Time picker', path: './types/enhanced-smart-time.html' },
+            { id: 'smart-number', icon: '🔢', title: 'Smart Number', description: 'Number validation', path: './types/enhanced-smart-number.html' },
+            { id: 'color-picker', icon: '🎨', title: 'Color Picker', description: 'Color selection, Mood board', path: './types/enhanced-color-picker.html' },
+            { id: 'document-vault', icon: '📄', title: 'Document Vault', description: 'File upload, Document storage', path: './types/enhanced-document-vault.html' },
+            { id: 'image-gallery', icon: '🖼️', title: 'Image Gallery', description: 'Photo gallery, Image viewer', path: './types/enhanced-image-gallery.html' }
+        ];
+        
+        // 2. РЕНДЕРИНГ ТИПІВ
+        let customOrder = JSON.parse(localStorage.getItem('typesOrder') || '[]');
+        let isEditMode = false;
+        
+        function getOrderedTypes() {
+            if (customOrder.length === 0) return TYPES_LIST;
+            
+            const ordered = [];
+            customOrder.forEach(id => {
+                const type = TYPES_LIST.find(t => t.id === id);
+                if (type) ordered.push(type);
+            });
+            
+            // Додати нові типи, яких немає в збереженому порядку
+            TYPES_LIST.forEach(type => {
+                if (!customOrder.includes(type.id)) {
+                    ordered.push(type);
+                }
+            });
+            
+            return ordered;
+        }
+        
+        function renderTypesGrid(types = null) {
+            const typesToRender = types || getOrderedTypes();
+            const grid = document.getElementById('typesGrid');
+            
+            grid.innerHTML = typesToRender.map((type, index) => `
+                <div class="type-card" data-type-id="${type.id}" data-index="${index}" 
+                     draggable="${isEditMode}" 
+                     onclick="${isEditMode ? '' : `openType('${type.path}')`}">
+                    ${isEditMode ? '<div class="drag-handle"><i class="fas fa-grip-vertical"></i></div>' : ''}
+                    ${type.priority ? '<span class="type-badge priority">⚡ Priority</span>' : '<span class="type-badge">Enhanced</span>'}
+                    <div class="type-icon">${type.icon}</div>
+                    <h3 class="type-title">${type.title}</h3>
+                    <p class="type-description">${type.description}</p>
+                    <div class="type-footer">
+                        <span class="type-status" id="status-${type.id}">${t('empty')}</span>
+                        ${!isEditMode ? '<i class="fas fa-arrow-right" style="color: var(--primary);"></i>' : ''}
+                    </div>
+                </div>
+            `).join('');
+            
+            if (isEditMode) {
+                setupDragAndDrop();
+            }
+        }
+        
+        // 3. ВІДКРИТТЯ ТИПУ
+        function openType(path) {
+            window.open(path, '_blank');
+        }
+        
+        // 4. ПОШУК
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+                
+                const filtered = TYPES_LIST.filter(type => 
+                    type.title.toLowerCase().includes(query) ||
+                    type.description.toLowerCase().includes(query)
+                );
+                
+                renderTypesGrid(filtered);
+            });
+        }
+        
+        // 5. СТАТИСТИКА
+        function updateStats() {
+            let totalRecords = 0;
+            let filledTypes = 0;
+            
+            // Перебираємо всі ключі LocalStorage
+            TYPES_LIST.forEach(type => {
+                const storageKey = `loveDossier_${type.id.replace(/-/g, '_')}`;
+                const data = localStorage.getItem(storageKey);
+                
+                if (data) {
+                    try {
+                        const parsed = JSON.parse(data);
+                        const count = Array.isArray(parsed) ? parsed.length : 
+                                     (parsed.items && Array.isArray(parsed.items)) ? parsed.items.length :
+                                     (parsed.messages && Array.isArray(parsed.messages)) ? parsed.messages.length :
+                                     (parsed.transactions && Array.isArray(parsed.transactions)) ? parsed.transactions.length : 0;
+                        
+                        if (count > 0) {
+                            totalRecords += count;
+                            filledTypes++;
+                            
+                            // Оновлюємо статус картки
+                            const statusEl = document.getElementById(`status-${type.id}`);
+                            if (statusEl) {
+                                statusEl.textContent = `${count} ${t('records')}`;
+                                statusEl.classList.add('has-data');
+                            }
+                        }
+                    } catch (e) {
+                        console.log('Parse error for', storageKey);
+                    }
+                }
+            });
+            
+            // Розмір LocalStorage
+            let storageSize = 0;
+            for (let key in localStorage) {
+                if (localStorage.hasOwnProperty(key)) {
+                    storageSize += localStorage[key].length + key.length;
+                }
+            }
+            storageSize = (storageSize / 1024).toFixed(1); // KB
+            
+            // Оновлюємо UI
+            const filledEl = document.getElementById('filledTypes');
+            const recordsEl = document.getElementById('totalRecords');
+            const sizeEl = document.getElementById('storageSize');
+            
+            if (filledEl) filledEl.textContent = filledTypes;
+            if (recordsEl) recordsEl.textContent = totalRecords;
+            if (sizeEl) sizeEl.textContent = storageSize + ' KB';
+        }
+        
+        // 6. THEME TOGGLE
+        function setupTheme() {
+            const themeToggle = document.getElementById('themeToggle');
+            const savedTheme = localStorage.getItem('theme');
+            
+            if (savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            }
+            
+            themeToggle.addEventListener('click', () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                
+                themeToggle.innerHTML = newTheme === 'dark' 
+                    ? '<i class="fas fa-sun"></i>' 
+                    : '<i class="fas fa-moon"></i>';
+            });
+        }
+        
+        // 7. PWA INSTALL
+        let deferredPrompt;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            const installBtn = document.getElementById('installBtn');
+            const installBanner = document.getElementById('installBanner');
+            
+            installBtn.style.display = 'flex';
+            
+            setTimeout(() => {
+                installBanner.classList.add('show');
+            }, 3000);
+        });
+        
+        function setupPWAInstall() {
+            const installBtn = document.getElementById('installBtn');
+            const installBannerBtn = document.getElementById('installBannerBtn');
+            const installBanner = document.getElementById('installBanner');
+            
+            [installBtn, installBannerBtn].forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    if (!deferredPrompt) return;
+                    
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    
+                    console.log(`PWA install: ${outcome}`);
+                    
+                    deferredPrompt = null;
+                    installBtn.style.display = 'none';
+                    installBanner.classList.remove('show');
+                });
+            });
+        }
+        
+        // 8. SERVICE WORKER
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then(reg => console.log('✅ Service Worker registered'))
+                    .catch(err => console.error('❌ SW registration failed:', err));
+            });
+        }
+        
+        // 9. COLOR THEMES
+        function setupColorThemes() {
+            const savedTheme = localStorage.getItem('colorTheme') || 'purple';
+            document.documentElement.setAttribute('data-color-theme', savedTheme);
+            
+            document.querySelectorAll('.theme-option').forEach(option => {
+                const theme = option.getAttribute('data-theme');
+                if (theme === savedTheme) {
+                    option.classList.add('active');
+                }
+                
+                option.addEventListener('click', () => {
+                    document.querySelectorAll('.theme-option').forEach(o => o.classList.remove('active'));
+                    option.classList.add('active');
+                    
+                    document.documentElement.setAttribute('data-color-theme', theme);
+                    localStorage.setItem('colorTheme', theme);
+                });
+            });
+        }
+        
+        // 10. SETTINGS MODAL
+        function openSettings() {
+            document.getElementById('settingsModal').classList.add('show');
+            setupColorThemes();
+            
+            // Set current language
+            document.getElementById('languageSelect').value = currentLang;
+        }
+        
+        window.closeSettings = function() {
+            document.getElementById('settingsModal').classList.remove('show');
+        };
+        
+        window.toggleTheme = function() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            const themeToggle = document.getElementById('themeToggle');
+            themeToggle.innerHTML = newTheme === 'dark' 
+                ? '<i class="fas fa-sun"></i>' 
+                : '<i class="fas fa-moon"></i>';
+        };
+        
+        window.resetCardOrder = function() {
+            if (confirm('Reset card order to default?')) {
+                localStorage.removeItem('typesOrder');
+                customOrder = [];
+                renderTypesGrid();
+                alert('✅ Card order reset!');
+            }
+        };
+        
+        window.clearAllData = function() {
+            if (confirm('⚠️ This will delete ALL your data! Are you sure?')) {
+                if (confirm('Really sure? This cannot be undone!')) {
+                    localStorage.clear();
+                    location.reload();
+                }
+            }
+        };
+        
+        // 11. DRAG & DROP
+        let draggedElement = null;
+        
+        function setupDragAndDrop() {
+            const cards = document.querySelectorAll('.type-card');
+            
+            cards.forEach(card => {
+                card.addEventListener('dragstart', handleDragStart);
+                card.addEventListener('dragover', handleDragOver);
+                card.addEventListener('drop', handleDrop);
+                card.addEventListener('dragend', handleDragEnd);
+                card.addEventListener('dragenter', handleDragEnter);
+                card.addEventListener('dragleave', handleDragLeave);
+            });
+        }
+        
+        function handleDragStart(e) {
+            draggedElement = this;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+        
+        function handleDragOver(e) {
+            if (e.preventDefault) e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            return false;
+        }
+        
+        function handleDragEnter(e) {
+            if (this !== draggedElement) {
+                this.classList.add('drag-over');
+            }
+        }
+        
+        function handleDragLeave(e) {
+            this.classList.remove('drag-over');
+        }
+        
+        function handleDrop(e) {
+            if (e.stopPropagation) e.stopPropagation();
+            
+            if (draggedElement !== this) {
+                const draggedId = draggedElement.getAttribute('data-type-id');
+                const targetId = this.getAttribute('data-type-id');
+                
+                // Swap positions
+                const types = getOrderedTypes();
+                const draggedIndex = types.findIndex(t => t.id === draggedId);
+                const targetIndex = types.findIndex(t => t.id === targetId);
+                
+                [types[draggedIndex], types[targetIndex]] = [types[targetIndex], types[draggedIndex]];
+                
+                // Save new order
+                customOrder = types.map(t => t.id);
+                localStorage.setItem('typesOrder', JSON.stringify(customOrder));
+                
+                renderTypesGrid();
+            }
+            
+            this.classList.remove('drag-over');
+            return false;
+        }
+        
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+            document.querySelectorAll('.type-card').forEach(card => {
+                card.classList.remove('drag-over');
+            });
+        }
+        
+        // 12. EDIT MODE
+        function enterEditMode() {
+            isEditMode = true;
+            document.getElementById('editModeBanner').classList.add('show');
+            renderTypesGrid();
+        }
+        
+        window.exitEditMode = function() {
+            isEditMode = false;
+            document.getElementById('editModeBanner').classList.remove('show');
+            renderTypesGrid();
+        };
+        
+        // 13. LANGUAGE CHANGE
+        function setupLanguageSelect() {
+            const select = document.getElementById('languageSelect');
+            select.addEventListener('change', (e) => {
+                setLanguage(e.target.value);
+                renderTypesGrid(); // Re-render з новим текстом
+            });
+        }
+        
+        // 14. ІНІЦІАЛІЗАЦІЯ
+        function init() {
+            // Load saved language
+            currentLang = localStorage.getItem('language') || 'en';
+            
+            renderTypesGrid();
+            setupSearch();
+            setupTheme();
+            setupPWAInstall();
+            setupColorThemes();
+            setupLanguageSelect();
+            updateStats();
+            updateUIText();
+            
+            // Event listeners
+            document.getElementById('settingsBtn').addEventListener('click', openSettings);
+            document.getElementById('editModeBtn').addEventListener('click', enterEditMode);
+            
+            // Close modal on overlay click
+            document.getElementById('settingsModal').addEventListener('click', (e) => {
+                if (e.target.id === 'settingsModal') {
+                    closeSettings();
+                }
+            });
+            
+            // Оновлювати статистику кожні 5 секунд
+            setInterval(updateStats, 5000);
+            
+            console.log('✅ Love Dossier Main App initialized');
+            console.log('📊 Total types:', TYPES_LIST.length);
+            console.log('🌐 Language:', currentLang);
+        }
+        
+        // ❌ НЕ запускаємо init автоматично - тільки через AppFlow!
+        // init() буде викликаний з AppFlow.showMainApp()
+    </script>
+</body>
+</html>

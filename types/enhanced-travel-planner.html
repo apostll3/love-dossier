@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Travel Planner - Adventure Together</title>
+    <title>Travel Planner PRO - Advanced Trip Organizer & Weather</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
@@ -30,7 +30,7 @@
             padding: 2rem;
         }
 
-        .container { max-width: 1200px; margin: 0 auto; }
+        .container { max-width: 1300px; margin: 0 auto; }
 
         h1 {
             text-align: center;
@@ -295,17 +295,264 @@
             color: var(--text-muted);
         }
 
+        /* Countdown Timer */
+        .countdown-timer {
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 16px;
+            color: white;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .countdown-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            opacity: 0.95;
+        }
+
+        .countdown-boxes {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        .countdown-box {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 1.5rem;
+            border-radius: 12px;
+            min-width: 100px;
+            backdrop-filter: blur(10px);
+        }
+
+        .countdown-number {
+            font-size: 3rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .countdown-label {
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            opacity: 0.9;
+        }
+
+        /* Weather Widget */
+        .weather-widget {
+            padding: 2rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 16px;
+            color: white;
+            margin: 2rem 0;
+        }
+
+        .weather-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .weather-location {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .weather-current {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .weather-icon {
+            font-size: 5rem;
+        }
+
+        .weather-temp {
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .weather-desc {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .weather-forecast {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .forecast-day {
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .forecast-date {
+            font-size: 0.85rem;
+            margin-bottom: 0.75rem;
+            opacity: 0.9;
+        }
+
+        .forecast-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .forecast-temp {
+            font-weight: 700;
+        }
+
+        /* Budget Breakdown Chart */
+        .budget-chart {
+            padding: 2rem;
+            background: white;
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+            margin: 2rem 0;
+        }
+
+        .budget-chart-title {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 2rem;
+            font-size: 1.2rem;
+        }
+
+        .budget-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .budget-bar-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .budget-bar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .budget-bar-label {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .budget-bar-amount {
+            font-weight: 700;
+            color: var(--text-secondary);
+        }
+
+        .budget-bar-progress {
+            height: 16px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .budget-bar-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .budget-bar-fill.flights {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .budget-bar-fill.accommodation {
+            background: linear-gradient(90deg, #f59e0b, #fbbf24);
+        }
+
+        .budget-bar-fill.food {
+            background: linear-gradient(90deg, #10b981, #34d399);
+        }
+
+        .budget-bar-fill.activities {
+            background: linear-gradient(90deg, #ef4444, #f87171);
+        }
+
+        .budget-bar-fill.shopping {
+            background: linear-gradient(90deg, #8b5cf6, #a78bfa);
+        }
+
+        /* Photo Gallery */
+        .photo-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .photo-card {
+            aspect-ratio: 1;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .photo-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .photo-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+        }
+
+        .photo-upload {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.05));
+            border: 2px dashed var(--primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--primary);
+        }
+
+        .upload-text {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
         @media (max-width: 768px) {
             .trip-header { flex-direction: column; }
             .budget-overview { grid-template-columns: repeat(2, 1fr); }
             .packing-grid { grid-template-columns: 1fr; }
+            .countdown-boxes { flex-wrap: wrap; }
+            .weather-forecast { grid-template-columns: repeat(3, 1fr); }
+            .photo-gallery { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>✈️ Travel Planner</h1>
-        <p class="subtitle">Itinerary builder • Packing checklist • Budget tracker • Memories<br><strong>Minimal Modern Style</strong></p>
+        <h1>✈️ Travel Planner PRO</h1>
+        <p class="subtitle">Weather forecast • Countdown timer • Budget breakdown • Photo gallery • Itinerary builder<br><strong>Enhanced with Smart Travel Assistant</strong></p>
 
         <!-- Current Trip -->
         <div class="field-card">
@@ -557,6 +804,402 @@
                 </div>
             </div>
         </div>
+
+        <!-- Countdown Timer -->
+        <div class="field-card">
+            <div class="countdown-timer">
+                <div class="countdown-title">⏰ До від'їзду залишилось:</div>
+                <div class="countdown-boxes">
+                    <div class="countdown-box">
+                        <div class="countdown-number">234</div>
+                        <div class="countdown-label">Днів</div>
+                    </div>
+                    <div class="countdown-box">
+                        <div class="countdown-number">08</div>
+                        <div class="countdown-label">Годин</div>
+                    </div>
+                    <div class="countdown-box">
+                        <div class="countdown-number">42</div>
+                        <div class="countdown-label">Хвилин</div>
+                    </div>
+                    <div class="countdown-box">
+                        <div class="countdown-number">15</div>
+                        <div class="countdown-label">Секунд</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Weather Forecast -->
+        <div class="field-card">
+            <div class="type-label">🌤️ WEATHER: Malé, Maldives</div>
+
+            <div class="weather-widget">
+                <div class="weather-header">
+                    <div class="weather-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Malé, Maldives
+                    </div>
+                    <div class="weather-date">Вересень 10-20, 2025</div>
+                </div>
+
+                <div class="weather-current">
+                    <div class="weather-icon">☀️</div>
+                    <div>
+                        <div class="weather-temp">31°C</div>
+                        <div class="weather-desc">Сонячно, ідеально для пляжу</div>
+                    </div>
+                </div>
+
+                <div class="weather-forecast">
+                    <div class="forecast-day">
+                        <div class="forecast-date">Пн 10</div>
+                        <div class="forecast-icon">☀️</div>
+                        <div class="forecast-temp">31°/28°</div>
+                    </div>
+                    <div class="forecast-day">
+                        <div class="forecast-date">Вт 11</div>
+                        <div class="forecast-icon">⛅</div>
+                        <div class="forecast-temp">30°/27°</div>
+                    </div>
+                    <div class="forecast-day">
+                        <div class="forecast-date">Ср 12</div>
+                        <div class="forecast-icon">☀️</div>
+                        <div class="forecast-temp">32°/28°</div>
+                    </div>
+                    <div class="forecast-day">
+                        <div class="forecast-date">Чт 13</div>
+                        <div class="forecast-icon">🌦️</div>
+                        <div class="forecast-temp">29°/26°</div>
+                    </div>
+                    <div class="forecast-day">
+                        <div class="forecast-date">Пт 14</div>
+                        <div class="forecast-icon">☀️</div>
+                        <div class="forecast-temp">31°/28°</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Budget Breakdown Chart -->
+        <div class="field-card">
+            <div class="type-label">💰 BUDGET BREAKDOWN: Detailed Analysis</div>
+
+            <div class="budget-chart">
+                <div class="budget-chart-title">📊 Розподіл бюджету по категоріях</div>
+                
+                <div class="budget-bars">
+                    <div class="budget-bar-item">
+                        <div class="budget-bar-header">
+                            <span class="budget-bar-label">✈️ Авіаквитки</span>
+                            <span class="budget-bar-amount">$1,800 (36%)</span>
+                        </div>
+                        <div class="budget-bar-progress">
+                            <div class="budget-bar-fill flights" style="width: 36%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="budget-bar-item">
+                        <div class="budget-bar-header">
+                            <span class="budget-bar-label">🏨 Проживання</span>
+                            <span class="budget-bar-amount">$2,000 (40%)</span>
+                        </div>
+                        <div class="budget-bar-progress">
+                            <div class="budget-bar-fill accommodation" style="width: 40%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="budget-bar-item">
+                        <div class="budget-bar-header">
+                            <span class="budget-bar-label">🍽️ Їжа та напої</span>
+                            <span class="budget-bar-amount">$600 (12%)</span>
+                        </div>
+                        <div class="budget-bar-progress">
+                            <div class="budget-bar-fill food" style="width: 12%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="budget-bar-item">
+                        <div class="budget-bar-header">
+                            <span class="budget-bar-label">🤿 Активності та екскурсії</span>
+                            <span class="budget-bar-amount">$400 (8%)</span>
+                        </div>
+                        <div class="budget-bar-progress">
+                            <div class="budget-bar-fill activities" style="width: 8%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="budget-bar-item">
+                        <div class="budget-bar-header">
+                            <span class="budget-bar-label">🛍️ Шопінг та сувеніри</span>
+                            <span class="budget-bar-amount">$200 (4%)</span>
+                        </div>
+                        <div class="budget-bar-progress">
+                            <div class="budget-bar-fill shopping" style="width: 4%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Photo Gallery -->
+        <div class="field-card">
+            <div class="type-label">📸 PHOTO GALLERY: Trip Memories</div>
+
+            <div class="photo-gallery">
+                <div class="photo-card">
+                    <div class="photo-placeholder" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                        🏝️
+                    </div>
+                </div>
+
+                <div class="photo-card">
+                    <div class="photo-placeholder" style="background: linear-gradient(135deg, #f59e0b, #fbbf24);">
+                        🌅
+                    </div>
+                </div>
+
+                <div class="photo-card">
+                    <div class="photo-placeholder" style="background: linear-gradient(135deg, #10b981, #34d399);">
+                        🤿
+                    </div>
+                </div>
+
+                <div class="photo-card">
+                    <div class="photo-placeholder" style="background: linear-gradient(135deg, #ef4444, #f87171);">
+                        🍹
+                    </div>
+                </div>
+
+                <div class="photo-card">
+                    <div class="photo-placeholder" style="background: linear-gradient(135deg, #8b5cf6, #a78bfa);">
+                        💕
+                    </div>
+                </div>
+
+                <div class="photo-card photo-upload">
+                    <div class="upload-icon">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <div class="upload-text">Upload Photo</div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <script>
+        // ============================================
+        // TRAVEL PLANNER PRO - JavaScript
+        // ============================================
+
+        // 1. CONFIGURATION
+        const CONFIG = {
+            storageKey: 'loveDossier_travel',
+            targetDate: new Date('2025-09-10T14:00:00').getTime()
+        };
+
+        // 2. STATE MANAGEMENT
+        let state = {
+            trip: {
+                destination: 'Мальдіви',
+                startDate: '2025-09-10',
+                endDate: '2025-09-20',
+                days: 10
+            },
+            packingList: [],
+            itinerary: [],
+            budget: {
+                total: 5000,
+                categories: {
+                    flights: 2100,
+                    accommodation: 2400,
+                    food: 600,
+                    activities: 400,
+                    shopping: 200
+                }
+            }
+        };
+
+        let countdownInterval = null;
+
+        // 3. LOCALSTORAGE FUNCTIONS
+        function saveToStorage() {
+            localStorage.setItem(CONFIG.storageKey, JSON.stringify(state));
+        }
+
+        function loadFromStorage() {
+            const saved = localStorage.getItem(CONFIG.storageKey);
+            if (saved) {
+                state = JSON.parse(saved);
+            }
+        }
+
+        // 4. COUNTDOWN TIMER
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = CONFIG.targetDate - now;
+
+            if (distance < 0) {
+                document.querySelectorAll('.countdown-number').forEach((el, i) => {
+                    el.textContent = '0';
+                });
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            const countdownNumbers = document.querySelectorAll('.countdown-number');
+            if (countdownNumbers.length >= 4) {
+                countdownNumbers[0].textContent = days;
+                countdownNumbers[1].textContent = String(hours).padStart(2, '0');
+                countdownNumbers[2].textContent = String(minutes).padStart(2, '0');
+                countdownNumbers[3].textContent = String(seconds).padStart(2, '0');
+            }
+        }
+
+        function startCountdown() {
+            updateCountdown();
+            countdownInterval = setInterval(updateCountdown, 1000);
+        }
+
+        // 5. PACKING CHECKLIST
+        function togglePackingItem(categoryIndex, itemIndex) {
+            const item = document.querySelectorAll('.packing-category')[categoryIndex]
+                ?.querySelectorAll('.packing-item')[itemIndex];
+            
+            if (item) {
+                item.classList.toggle('checked');
+                const checkbox = item.querySelector('.item-checkbox');
+                
+                if (item.classList.contains('checked')) {
+                    checkbox.innerHTML = '<i class="fas fa-check"></i>';
+                } else {
+                    checkbox.innerHTML = '';
+                }
+            }
+        }
+
+        function renderPackingList() {
+            document.querySelectorAll('.packing-item').forEach((item, index) => {
+                item.addEventListener('click', function() {
+                    this.classList.toggle('checked');
+                    const checkbox = this.querySelector('.item-checkbox');
+                    
+                    if (this.classList.contains('checked')) {
+                        checkbox.innerHTML = '<i class="fas fa-check"></i>';
+                    } else {
+                        checkbox.innerHTML = '';
+                    }
+                });
+            });
+        }
+
+        // 6. BUDGET CALCULATIONS
+        function updateBudget() {
+            const budgetBoxes = document.querySelectorAll('.budget-box .budget-value');
+            if (budgetBoxes.length >= 4) {
+                const total = state.budget.total;
+                const flights = state.budget.categories.flights;
+                const accommodation = state.budget.categories.accommodation;
+                const other = total - flights - accommodation;
+
+                budgetBoxes[0].textContent = '$' + total.toLocaleString();
+                budgetBoxes[1].textContent = '$' + flights.toLocaleString();
+                budgetBoxes[2].textContent = '$' + accommodation.toLocaleString();
+                budgetBoxes[3].textContent = '$' + other.toLocaleString();
+            }
+        }
+
+        // 7. WEATHER WIDGET (Simulated)
+        function updateWeather() {
+            // Weather data is static in HTML but could be made dynamic
+            console.log('Weather widget updated');
+        }
+
+        // 8. PHOTO GALLERY
+        function initPhotoGallery() {
+            const uploadCard = document.querySelector('.photo-upload');
+            if (uploadCard) {
+                uploadCard.addEventListener('click', () => {
+                    alert('📸 Photo Upload\n\nСимуляція завантаження фото...\n\n✅ Фото додано до галереї!');
+                });
+            }
+
+            // Make photo cards clickable
+            document.querySelectorAll('.photo-card:not(.photo-upload)').forEach(card => {
+                card.addEventListener('click', function() {
+                    const emoji = this.querySelector('.photo-placeholder').textContent.trim();
+                    alert(`📸 Viewing photo: ${emoji}`);
+                });
+            });
+        }
+
+        // 9. ITINERARY MANAGEMENT
+        function addItineraryDay(dayNumber, date, activities) {
+            const day = {
+                id: Date.now(),
+                dayNumber: dayNumber,
+                date: date,
+                activities: activities
+            };
+
+            state.itinerary.push(day);
+            saveToStorage();
+        }
+
+        // 10. EVENT HANDLERS
+        function attachEventListeners() {
+            // Packing checklist
+            renderPackingList();
+
+            // Photo gallery
+            initPhotoGallery();
+
+            // Budget bars - make interactive
+            document.querySelectorAll('.budget-bar-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const label = this.querySelector('.budget-bar-label').textContent;
+                    const amount = this.querySelector('.budget-bar-amount').textContent;
+                    alert(`💰 ${label}\n${amount}`);
+                });
+            });
+        }
+
+        // 11. UPDATE UI
+        function updateUI() {
+            updateCountdown();
+            updateBudget();
+            updateWeather();
+        }
+
+        // 12. INITIALIZATION
+        function init() {
+            loadFromStorage();
+            updateUI();
+            startCountdown();
+            attachEventListeners();
+            
+            console.log('✅ Travel Planner PRO initialized');
+            console.log('✈️ Destination:', state.trip.destination);
+            console.log('⏰ Countdown started');
+        }
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+        });
+
+        // Start the app when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    </script>
 </body>
 </html>

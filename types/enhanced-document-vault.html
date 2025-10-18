@@ -588,5 +588,46 @@
             </div>
         </div>
     </div>
+
+    <script>
+        const CONFIG = { storageKey: 'loveDossier_documents' };
+        let state = { documents: [], folders: [] };
+
+        function saveToStorage() { localStorage.setItem(CONFIG.storageKey, JSON.stringify(state)); }
+        function loadFromStorage() { const saved = localStorage.getItem(CONFIG.storageKey); if (saved) state = JSON.parse(saved); }
+
+        function addDocument(name, type, size, category) {
+            state.documents.push({ id: Date.now(), name, type, size, category: category || 'Загальні', uploadDate: new Date().toISOString() });
+            saveToStorage(); updateStats();
+        }
+
+        function updateStats() {
+            const stats = document.querySelectorAll('.stat-value');
+            if (stats.length >= 3) {
+                stats[0].textContent = state.documents.length;
+                stats[1].textContent = state.folders.length;
+                const totalSize = state.documents.reduce((sum, d) => sum + (d.size || 0), 0);
+                stats[2].textContent = (totalSize / 1024 / 1024).toFixed(1) + ' MB';
+            }
+        }
+
+        function attachEventListeners() {
+            const uploadBtn = document.querySelector('.upload-btn');
+            if (uploadBtn) uploadBtn.addEventListener('click', () => {
+                alert('📎 Upload Document\n\nСимуляція завантаження...\n✅ Документ додано!');
+                addDocument('Новий документ.pdf', 'pdf', 1024000);
+            });
+
+            document.querySelectorAll('.doc-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const name = this.querySelector('.doc-name')?.textContent || 'Document';
+                    alert('📄 ' + name);
+                });
+            });
+        }
+
+        function init() { loadFromStorage(); updateStats(); attachEventListeners(); console.log('✅ Document Vault PRO initialized'); }
+        if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
+    </script>
 </body>
 </html>

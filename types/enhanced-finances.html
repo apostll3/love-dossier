@@ -958,5 +958,316 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // ============================================
+        // FINANCES TOGETHER PRO - JavaScript
+        // ============================================
+
+        // 1. CONFIGURATION
+        const CONFIG = {
+            storageKey: 'loveDossier_finances',
+            budgetKey: 'loveDossier_budgets',
+            goalsKey: 'loveDossier_savings_goals',
+            categories: {
+                'Продукти': '🛒',
+                'Житло': '🏠',
+                'Транспорт': '🚗',
+                'Розваги': '🎉',
+                'Інше': '💰'
+            }
+        };
+
+        // 2. STATE MANAGEMENT
+        let state = {
+            transactions: [],
+            budgets: {
+                'Житло': { limit: 1500, spent: 0 },
+                'Продукти': { limit: 800, spent: 0 },
+                'Транспорт': { limit: 400, spent: 0 },
+                'Розваги': { limit: 500, spent: 0 },
+                'Накопичення': { limit: 2000, spent: 0 }
+            },
+            savingsGoals: [
+                { name: '💍 Весілля', current: 7200, target: 15000 },
+                { name: '🏡 Перший внесок на квартиру', current: 9600, target: 20000 },
+                { name: '✈️ Медовий місяць (Мальдіви)', current: 3200, target: 5000 }
+            ]
+        };
+
+        // 3. LOCALSTORAGE FUNCTIONS
+        function saveToStorage() {
+            localStorage.setItem(CONFIG.storageKey, JSON.stringify(state.transactions));
+            localStorage.setItem(CONFIG.budgetKey, JSON.stringify(state.budgets));
+            localStorage.setItem(CONFIG.goalsKey, JSON.stringify(state.savingsGoals));
+        }
+
+        function loadFromStorage() {
+            const savedTransactions = localStorage.getItem(CONFIG.storageKey);
+            const savedBudgets = localStorage.getItem(CONFIG.budgetKey);
+            const savedGoals = localStorage.getItem(CONFIG.goalsKey);
+
+            if (savedTransactions) {
+                state.transactions = JSON.parse(savedTransactions);
+            }
+            if (savedBudgets) {
+                state.budgets = JSON.parse(savedBudgets);
+            }
+            if (savedGoals) {
+                state.savingsGoals = JSON.parse(savedGoals);
+            }
+
+            recalculateBudgets();
+        }
+
+        // 4. UTILITY FUNCTIONS
+        function recalculateBudgets() {
+            // Reset spent amounts
+            Object.keys(state.budgets).forEach(cat => {
+                state.budgets[cat].spent = 0;
+            });
+
+            // Calculate spent from transactions
+            state.transactions.forEach(t => {
+                if (t.type === 'expense' && state.budgets[t.category]) {
+                    state.budgets[t.category].spent += t.amount;
+                }
+            });
+        }
+
+        function calculateBalance() {
+            const income = state.transactions
+                .filter(t => t.type === 'income')
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            const expenses = state.transactions
+                .filter(t => t.type === 'expense')
+                .reduce((sum, t) => sum + t.amount, 0);
+
+            return income - expenses;
+        }
+
+        function calculateTotalIncome() {
+            return state.transactions
+                .filter(t => t.type === 'income')
+                .reduce((sum, t) => sum + t.amount, 0);
+        }
+
+        function calculateTotalExpense() {
+            return state.transactions
+                .filter(t => t.type === 'expense')
+                .reduce((sum, t) => sum + t.amount, 0);
+        }
+
+        function formatCurrency(amount) {
+            return '$' + amount.toLocaleString('en-US');
+        }
+
+        function formatDate(date) {
+            return new Date(date).toLocaleDateString('uk-UA', { 
+                day: 'numeric', 
+                month: 'long', 
+                year: 'numeric' 
+            });
+        }
+
+        // 5. UI RENDERING FUNCTIONS
+        function updateBalance() {
+            const balance = calculateBalance();
+            const balanceElement = document.querySelector('.balance-amount');
+            if (balanceElement) {
+                balanceElement.textContent = formatCurrency(balance);
+            }
+
+            const income = calculateTotalIncome();
+            const expense = calculateTotalExpense();
+
+            const incomeElements = document.querySelectorAll('.finance-amount');
+            if (incomeElements[0]) incomeElements[0].textContent = formatCurrency(income);
+            if (incomeElements[1]) incomeElements[1].textContent = formatCurrency(expense);
+        }
+
+        function renderBudgets() {
+            const budgetList = document.querySelector('.budget-list');
+            if (!budgetList) return;
+
+            budgetList.innerHTML = Object.entries(state.budgets).map(([category, data]) => {
+                const percentage = data.limit > 0 ? (data.spent / data.limit) * 100 : 0;
+                const remaining = data.limit - data.spent;
+                const statusClass = percentage >= 90 ? 'danger' : percentage >= 75 ? 'warning' : '';
+
+                return `
+                    <div class="budget-item">
+                        <div class="budget-header">
+                            <div class="budget-title">
+                                <span class="budget-icon">${CONFIG.categories[category] || '💰'}</span>
+                                <span>${category}</span>
+                            </div>
+                            <div class="budget-amount">${formatCurrency(data.spent)} / ${formatCurrency(data.limit)}</div>
+                        </div>
+                        <div class="budget-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill ${statusClass}" style="width: ${Math.min(percentage, 100)}%"></div>
+                            </div>
+                            <div class="progress-text">
+                                <span>${Math.round(percentage)}% використано</span>
+                                <span>${formatCurrency(Math.max(remaining, 0))} залишилось</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderTransactions() {
+            const transactionsList = document.querySelector('.transactions-list');
+            if (!transactionsList) return;
+
+            const sortedTransactions = [...state.transactions]
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 10); // Last 10 transactions
+
+            transactionsList.innerHTML = sortedTransactions.map(t => `
+                <div class="transaction-item">
+                    <div class="transaction-icon ${t.type}">
+                        <i class="fas fa-${t.type === 'income' ? 'plus' : 'minus'}"></i>
+                    </div>
+                    <div class="transaction-content">
+                        <div class="transaction-title">${t.description}</div>
+                        <div class="transaction-date">${formatDate(t.date)}</div>
+                    </div>
+                    <div class="transaction-amount ${t.type}">
+                        ${t.type === 'income' ? '+' : '-'}${formatCurrency(t.amount)}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderSavingsGoals() {
+            const goalsContainer = document.querySelector('.savings-goals');
+            if (!goalsContainer) return;
+
+            goalsContainer.innerHTML = state.savingsGoals.map((goal, index) => {
+                const percentage = (goal.current / goal.target) * 100;
+                const remaining = goal.target - goal.current;
+
+                return `
+                    <div class="savings-goal">
+                        <div class="goal-header">
+                            <div class="goal-title">${goal.name}</div>
+                            <div class="goal-target">${formatCurrency(goal.current)} / ${formatCurrency(goal.target)}</div>
+                        </div>
+                        <div class="goal-progress-bar">
+                            <div class="goal-progress-fill" style="width: ${percentage}%;"></div>
+                        </div>
+                        <div class="goal-info">
+                            <span>${Math.round(percentage)}% досягнуто</span>
+                            <span>Залишилось: ${formatCurrency(remaining)}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 6. CRUD OPERATIONS
+        function addTransaction(description, amount, category, type = 'expense') {
+            if (!description.trim() || !amount || amount <= 0) {
+                alert('Будь ласка, заповніть всі поля коректно');
+                return;
+            }
+
+            const transaction = {
+                id: Date.now(),
+                description: description,
+                amount: parseFloat(amount),
+                category: category,
+                type: type,
+                date: new Date().toISOString()
+            };
+
+            state.transactions.push(transaction);
+            recalculateBudgets();
+            saveToStorage();
+            updateUI();
+
+            // Clear form
+            document.querySelector('.form-input').value = '';
+            document.querySelectorAll('.form-input')[1].value = '';
+        }
+
+        function deleteTransaction(id) {
+            state.transactions = state.transactions.filter(t => t.id !== id);
+            recalculateBudgets();
+            saveToStorage();
+            updateUI();
+        }
+
+        // 7. EVENT HANDLERS
+        function attachEventListeners() {
+            // Add expense button
+            const addBtn = document.querySelector('.add-expense-btn');
+            if (addBtn) {
+                addBtn.addEventListener('click', () => {
+                    const description = document.querySelectorAll('.form-input')[0].value;
+                    const amount = document.querySelectorAll('.form-input')[1].value;
+                    const category = document.querySelector('.form-select').value;
+
+                    addTransaction(description, amount, category, 'expense');
+                });
+            }
+
+            // Export buttons
+            document.querySelectorAll('.export-btn').forEach(btn => {
+                btn.addEventListener('click', exportData);
+            });
+        }
+
+        function exportData() {
+            const data = {
+                transactions: state.transactions,
+                budgets: state.budgets,
+                savingsGoals: state.savingsGoals,
+                exportDate: new Date().toISOString()
+            };
+
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = 'finances-' + new Date().toISOString().split('T')[0] + '.json';
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+
+            alert('✅ Експорт завершено!');
+        }
+
+        // 8. UPDATE UI
+        function updateUI() {
+            updateBalance();
+            renderBudgets();
+            renderTransactions();
+            renderSavingsGoals();
+        }
+
+        // 9. INITIALIZATION
+        function init() {
+            loadFromStorage();
+            updateUI();
+            attachEventListeners();
+            
+            console.log('✅ Finances Together PRO initialized');
+            console.log('💰 Balance:', formatCurrency(calculateBalance()));
+            console.log('📊 Transactions:', state.transactions.length);
+        }
+
+        // Start the app when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    </script>
 </body>
 </html>

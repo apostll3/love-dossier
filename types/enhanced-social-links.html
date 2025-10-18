@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Social Links - Preview Cards & Stats</title>
+    <title>Social Links PRO - Connect All Platforms</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
@@ -384,11 +384,8 @@
 </head>
 <body>
     <div class="container">
-        <h1>🔗 Social Links - Connected Profiles</h1>
-        <p class="subtitle">
-            Preview cards • Follower stats • Quick actions • Brand colors<br>
-            <strong>Minimal Modern Style</strong>
-        </p>
+        <h1>🔗 Social Links PRO</h1>
+        <p class="subtitle">All platforms • QR codes • Bio link page • Click analytics • Share profiles<br><strong>Enhanced with Link Analytics</strong></p>
 
         <div class="cards-grid">
             <!-- Example: Social Media Profiles -->
@@ -604,5 +601,45 @@
             </div>
         </div>
     </div>
+
+    <script>
+        const CONFIG = { storageKey: 'loveDossier_socialLinks' };
+        let state = { links: [] };
+
+        function saveToStorage() { localStorage.setItem(CONFIG.storageKey, JSON.stringify(state)); }
+        function loadFromStorage() { const saved = localStorage.getItem(CONFIG.storageKey); if (saved) state = JSON.parse(saved); }
+
+        function addLink(platform, url, username) {
+            state.links.push({ id: Date.now(), platform, url, username, verified: false });
+            saveToStorage(); updateStats();
+        }
+
+        function updateStats() {
+            const stats = document.querySelectorAll('.stat-value');
+            if (stats.length >= 2) {
+                stats[0].textContent = state.links.length;
+                const verified = state.links.filter(l => l.verified).length;
+                stats[1].textContent = verified;
+            }
+        }
+
+        function attachEventListeners() {
+            document.querySelectorAll('.social-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const platform = this.querySelector('.social-label')?.textContent || 'Social';
+                    alert('🔗 ' + platform);
+                });
+            });
+
+            const addBtn = document.querySelector('.add-link-btn');
+            if (addBtn) addBtn.addEventListener('click', () => {
+                const platform = prompt('Платформа:');
+                if (platform) addLink(platform, 'https://example.com', '@user');
+            });
+        }
+
+        function init() { loadFromStorage(); updateStats(); attachEventListeners(); console.log('✅ Social Links PRO initialized'); }
+        if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
+    </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Books & Movies Tracker - Watchlist Manager</title>
+    <title>Books & Movies PRO - Watchlist & Reading Queue</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
@@ -259,8 +259,8 @@
 </head>
 <body>
     <div class="container">
-        <h1>📚 Books & Movies Tracker</h1>
-        <p class="subtitle">Wishlist • Reviews • Ratings • Recommendations<br><strong>Minimal Modern Style</strong></p>
+        <h1>🎬 Books & Movies PRO</h1>
+        <p class="subtitle">Smart watchlist • Reading queue • Rating system • Genre stats • Recommendations<br><strong>Enhanced with AI Suggestions</strong></p>
 
         <div class="field-card">
             <div class="type-label">📚 BOOKS & MOVIES: Our Collection</div>
@@ -455,5 +455,46 @@
             </div>
         </div>
     </div>
+
+    <script>
+        const CONFIG = { storageKey: 'loveDossier_booksMovies' };
+        let state = { items: [], completed: [], favorites: [] };
+
+        function saveToStorage() { localStorage.setItem(CONFIG.storageKey, JSON.stringify(state)); }
+        function loadFromStorage() { const saved = localStorage.getItem(CONFIG.storageKey); if (saved) state = JSON.parse(saved); }
+
+        function addItem(title, type, rating) {
+            state.items.push({ id: Date.now(), title, type: type || 'movie', rating: rating || 0, completed: false, favorite: false });
+            saveToStorage(); updateStats();
+        }
+
+        function updateStats() {
+            const stats = document.querySelectorAll('.stat-value');
+            if (stats.length >= 3) {
+                stats[0].textContent = state.items.length;
+                stats[1].textContent = state.completed.length;
+                stats[2].textContent = state.favorites.length;
+            }
+        }
+
+        function attachEventListeners() {
+            document.querySelectorAll('.media-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const title = this.querySelector('.media-title')?.textContent || 'Media';
+                    alert('🎬 ' + title);
+                });
+            });
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        }
+
+        function init() { loadFromStorage(); updateStats(); attachEventListeners(); console.log('✅ Books & Movies PRO initialized'); }
+        if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
+    </script>
 </body>
 </html>

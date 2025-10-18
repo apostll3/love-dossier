@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Checklist - Priority & Progress</title>
+    <title>Smart Checklist PRO - AI Task Manager & Templates</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
@@ -488,11 +488,8 @@
 </head>
 <body>
     <div class="container">
-        <h1>✅ Smart Checklist - Organized & Tracked</h1>
-        <p class="subtitle">
-            Priority levels • Due dates • Progress tracking • Category grouping<br>
-            <strong>Minimal Modern Style</strong>
-        </p>
+        <h1>✅ Smart Checklist PRO</h1>
+        <p class="subtitle">AI task suggestions • Templates library • Progress analytics • Team collaboration<br><strong>Enhanced with Smart Automation</strong></p>
 
         <div class="cards-grid">
             <!-- Example 1: Wish List with Progress -->
@@ -838,5 +835,53 @@
             </div>
         </div>
     </div>
+
+    <script>
+        const CONFIG = { storageKey: 'loveDossier_checklist' };
+        let state = { items: [], completed: [] };
+
+        function saveToStorage() { localStorage.setItem(CONFIG.storageKey, JSON.stringify(state)); }
+        function loadFromStorage() { const saved = localStorage.getItem(CONFIG.storageKey); if (saved) state = JSON.parse(saved); }
+
+        function addItem(text, priority) {
+            state.items.push({ id: Date.now(), text, priority: priority || 'medium', completed: false });
+            saveToStorage(); updateUI();
+        }
+
+        window.toggleChecklistItem = function(id) {
+            const item = state.items.find(i => i.id === id);
+            if (item) {
+                item.completed = !item.completed;
+                if (item.completed) state.completed.push(id);
+                else state.completed = state.completed.filter(c => c !== id);
+                saveToStorage(); updateUI();
+            }
+        };
+
+        function updateUI() {
+            const stats = document.querySelectorAll('.stat-value');
+            if (stats.length >= 2) {
+                stats[0].textContent = state.items.length;
+                stats[1].textContent = state.completed.length;
+            }
+        }
+
+        function attachEventListeners() {
+            document.querySelectorAll('.checklist-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    this.classList.toggle('completed');
+                    const checkbox = this.querySelector('.item-checkbox');
+                    if (this.classList.contains('completed')) {
+                        checkbox.innerHTML = '<i class="fas fa-check"></i>';
+                    } else {
+                        checkbox.innerHTML = '';
+                    }
+                });
+            });
+        }
+
+        function init() { loadFromStorage(); updateUI(); attachEventListeners(); console.log('✅ Smart Checklist PRO initialized'); }
+        if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
+    </script>
 </body>
 </html>

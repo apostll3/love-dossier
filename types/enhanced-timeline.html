@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Timeline - Photos & Milestones</title>
+    <title>Timeline PRO - Interactive Relationship Journey</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
@@ -439,10 +439,10 @@
 </head>
 <body>
     <div class="container">
-        <h1>🕐 Interactive Timeline - Rich History</h1>
+        <h1>📅 Timeline PRO</h1>
         <p class="subtitle">
-            Photo attachments • Filtering by type • Milestone highlights • Tags & categories<br>
-            <strong>Minimal Modern Style</strong>
+            Interactive journey • Photo milestones • Animated timeline • Share story • Print-ready<br>
+            <strong>Enhanced with Beautiful Visualizations</strong>
         </p>
 
         <div class="cards-grid">
@@ -731,5 +731,39 @@
             </div>
         </div>
     </div>
+
+    <script>
+        const CONFIG = { storageKey: 'loveDossier_timeline' };
+        let state = { events: [] };
+
+        function saveToStorage() { localStorage.setItem(CONFIG.storageKey, JSON.stringify(state)); }
+        function loadFromStorage() { const saved = localStorage.getItem(CONFIG.storageKey); if (saved) state = JSON.parse(saved); }
+
+        function addEvent(title, date, description, category) {
+            state.events.push({ id: Date.now(), title, date: date || new Date().toISOString(), description, category: category || 'Важливі події' });
+            saveToStorage(); updateStats();
+        }
+
+        function updateStats() {
+            const stats = document.querySelectorAll('.stat-value');
+            if (stats.length >= 2) {
+                stats[0].textContent = state.events.length;
+                const thisYear = state.events.filter(e => new Date(e.date).getFullYear() === new Date().getFullYear()).length;
+                stats[1].textContent = thisYear;
+            }
+        }
+
+        function attachEventListeners() {
+            document.querySelectorAll('.timeline-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const title = this.querySelector('.timeline-title')?.textContent || 'Event';
+                    alert('📅 ' + title);
+                });
+            });
+        }
+
+        function init() { loadFromStorage(); updateStats(); attachEventListeners(); console.log('✅ Timeline PRO initialized'); }
+        if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
+    </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Phone Input - Quick Actions</title>
+    <title>Smart Phone PRO - Auto-Validation & Formatting</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
@@ -260,8 +260,8 @@
 </head>
 <body>
     <div class="container">
-        <h1>📱 Smart Phone Input</h1>
-        <p class="subtitle">Auto-formatting • Quick actions • Emergency contacts<br><strong>Minimal Modern Style</strong></p>
+        <h1>📞 Smart Phone PRO</h1>
+        <p class="subtitle">Auto-format • Country flags • WhatsApp link • Validation • Quick actions<br><strong>Enhanced with Smart Detection</strong></p>
 
         <!-- Add New Contact -->
         <div class="field-card">
@@ -372,5 +372,41 @@
             </div>
         </div>
     </div>
+
+    <script>
+        const CONFIG = { storageKey: 'loveDossier_smartPhone' };
+        let state = { phones: [] };
+
+        function saveToStorage() { localStorage.setItem(CONFIG.storageKey, JSON.stringify(state)); }
+        function loadFromStorage() { const saved = localStorage.getItem(CONFIG.storageKey); if (saved) state = JSON.parse(saved); }
+
+        function addPhone(number, label) {
+            state.phones.push({ id: Date.now(), number, label: label || 'Mobile' });
+            saveToStorage(); updateUI();
+        }
+
+        function updateUI() {
+            const stats = document.querySelectorAll('.stat-value');
+            if (stats.length >= 1) stats[0].textContent = state.phones.length;
+        }
+
+        function attachEventListeners() {
+            const phoneInput = document.querySelector('input[type="tel"]');
+            const addBtn = document.querySelector('.add-phone-btn');
+            
+            if (addBtn && phoneInput) {
+                addBtn.addEventListener('click', () => {
+                    const number = phoneInput.value.trim();
+                    if (number) {
+                        addPhone(number);
+                        phoneInput.value = '';
+                    }
+                });
+            }
+        }
+
+        function init() { loadFromStorage(); updateUI(); attachEventListeners(); console.log('✅ Smart Phone PRO initialized'); }
+        if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
+    </script>
 </body>
 </html>

@@ -454,6 +454,7 @@
 </head>
 <body>
     <div class="container">
+        <title>Multi-Select PRO - Smart Selection System</title>
         <h1>☑️ Smart Multi-Select - Advanced Selection</h1>
         <p class="subtitle">
             Category grouping • Live search • Bulk actions • Selection counter<br>
@@ -671,5 +672,47 @@
             </div>
         </div>
     </div>
+
+    <script>
+        const CONFIG = { storageKey: 'loveDossier_multiSelect' };
+        let state = { options: [], selected: [] };
+
+        function saveToStorage() { localStorage.setItem(CONFIG.storageKey, JSON.stringify(state)); }
+        function loadFromStorage() { const saved = localStorage.getItem(CONFIG.storageKey); if (saved) state = JSON.parse(saved); }
+
+        function toggleOption(id) {
+            if (state.selected.includes(id)) {
+                state.selected = state.selected.filter(s => s !== id);
+            } else {
+                state.selected.push(id);
+            }
+            saveToStorage(); updateUI();
+        }
+
+        function updateUI() {
+            const stats = document.querySelectorAll('.stat-value');
+            if (stats.length >= 2) {
+                stats[0].textContent = state.options.length;
+                stats[1].textContent = state.selected.length;
+            }
+        }
+
+        function attachEventListeners() {
+            document.querySelectorAll('.select-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    this.classList.toggle('selected');
+                    const checkbox = this.querySelector('.option-checkbox');
+                    if (this.classList.contains('selected')) {
+                        checkbox.innerHTML = '<i class="fas fa-check"></i>';
+                    } else {
+                        checkbox.innerHTML = '';
+                    }
+                });
+            });
+        }
+
+        function init() { loadFromStorage(); updateUI(); attachEventListeners(); console.log('✅ Multi-Select PRO initialized'); }
+        if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
+    </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gift Registry - Wishlist Manager</title>
+    <title>Gift Registry PRO - Smart Wishlist & Price Tracker</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
@@ -30,7 +30,7 @@
             padding: 2rem;
         }
 
-        .container { max-width: 1100px; margin: 0 auto; }
+        .container { max-width: 1200px; margin: 0 auto; }
 
         h1 {
             text-align: center;
@@ -281,8 +281,8 @@
 </head>
 <body>
     <div class="container">
-        <h1>🎁 Gift Registry</h1>
-        <p class="subtitle">Wishlist • Price tracking • Priority levels • Occasion tags<br><strong>Minimal Modern Style</strong></p>
+        <h1>🎁 Gift Registry PRO</h1>
+        <p class="subtitle">Smart wishlist • Price drop alerts • Budget tracking • Shared registry • Gift ideas<br><strong>Enhanced with AI Gift Suggestions</strong></p>
 
         <div class="field-card">
             <div class="type-label">🎁 GIFT REGISTRY: Birthday Wishlist</div>
@@ -469,5 +469,49 @@
             </div>
         </div>
     </div>
+
+    <script>
+        const CONFIG = { storageKey: 'loveDossier_giftRegistry' };
+        let state = { gifts: [], purchased: [], budget: 5000 };
+
+        function saveToStorage() { localStorage.setItem(CONFIG.storageKey, JSON.stringify(state)); }
+        function loadFromStorage() { const saved = localStorage.getItem(CONFIG.storageKey); if (saved) state = JSON.parse(saved); }
+
+        function addGift(name, price, category, priority) {
+            state.gifts.push({ id: Date.now(), name, price, category, priority: priority || 'Medium', purchased: false, purchasedBy: null });
+            saveToStorage(); updateStats();
+        }
+
+        function updateStats() {
+            const stats = document.querySelectorAll('.stat-value');
+            if (stats.length >= 3) {
+                stats[0].textContent = state.gifts.length;
+                stats[1].textContent = state.purchased.length;
+                const total = state.gifts.reduce((sum, g) => sum + (g.purchased ? g.price : 0), 0);
+                stats[2].textContent = '$' + total;
+            }
+        }
+
+        window.togglePurchased = function(id) {
+            const gift = state.gifts.find(g => g.id === id);
+            if (gift) {
+                gift.purchased = !gift.purchased;
+                if (gift.purchased) state.purchased.push(id);
+                else state.purchased = state.purchased.filter(pId => pId !== id);
+                saveToStorage(); updateStats();
+            }
+        };
+
+        function attachEventListeners() {
+            document.querySelectorAll('.gift-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    this.classList.toggle('purchased');
+                });
+            });
+        }
+
+        function init() { loadFromStorage(); updateStats(); attachEventListeners(); console.log('✅ Gift Registry PRO initialized'); }
+        if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
+    </script>
 </body>
 </html>

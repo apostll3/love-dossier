@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Memory Album - Photo Gallery</title>
+    <title>Memory Album PRO - Timeline & Year in Review</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
@@ -313,16 +313,161 @@
             color: var(--text-secondary);
         }
 
+        /* Timeline View */
+        .timeline-container {
+            position: relative;
+            padding-left: 3rem;
+            margin: 3rem 0;
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 1rem;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(180deg, var(--primary), var(--accent));
+            border-radius: 2px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 3rem;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -2.5rem;
+            top: 0;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border: 4px solid var(--primary);
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .timeline-date {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .timeline-content {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid var(--border-light);
+        }
+
+        /* Year in Review */
+        .year-review {
+            padding: 3rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 16px;
+            color: white;
+            text-align: center;
+            margin: 3rem 0;
+        }
+
+        .year-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .year-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            margin-bottom: 3rem;
+        }
+
+        .year-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .year-stat {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 2rem;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        .year-stat-value {
+            font-size: 3rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .year-stat-label {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        /* Filters */
+        .filters-section {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-chip {
+            padding: 0.6rem 1.2rem;
+            background: white;
+            border: 2px solid var(--border-light);
+            border-radius: 20px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-chip:hover, .filter-chip.active {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Slideshow Button */
+        .slideshow-btn {
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--success), #34d399);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1.05rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .slideshow-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
         @media (max-width: 768px) {
             .memory-grid { grid-template-columns: 1fr; }
             .album-stats { flex-direction: column; gap: 1rem; }
+            .year-stats { grid-template-columns: repeat(2, 1fr); }
+            .timeline-container { padding-left: 2rem; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>💝 Memory Album</h1>
-        <p class="subtitle">Photo gallery • Date & location • Stories & emotions • Tags<br><strong>Minimal Modern Style</strong></p>
+        <h1>💝 Memory Album PRO</h1>
+        <p class="subtitle">Timeline view • Year in Review • Smart filters • Slideshow • Auto-tagging<br><strong>Enhanced with AI Photo Organization</strong></p>
 
         <div class="field-card">
             <div class="type-label">💝 MEMORY ALBUM: Our Story in Photos</div>
@@ -499,6 +644,163 @@
                 </div>
             </div>
         </div>
+
+        <!-- Filters & Slideshow -->
+        <div class="field-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <div class="type-label">🔍 FILTERS: Quick Search</div>
+                <button class="slideshow-btn">
+                    <i class="fas fa-play"></i>
+                    Запустити слайдшоу
+                </button>
+            </div>
+
+            <div class="filters-section">
+                <div class="filter-chip active">❤️ Всі спогади</div>
+                <div class="filter-chip">🎉 Святкування</div>
+                <div class="filter-chip">✈️ Подорожі</div>
+                <div class="filter-chip">🏡 Вдома</div>
+                <div class="filter-chip">💑 Романтика</div>
+                <div class="filter-chip">👨‍👩‍👧 З родиною</div>
+                <div class="filter-chip">🎂 Дні народження</div>
+                <div class="filter-chip">💍 Заручини</div>
+            </div>
+        </div>
+
+        <!-- Year in Review 2024 -->
+        <div class="field-card">
+            <div class="year-review">
+                <div class="year-title">🎊 2024 в спогадах</div>
+                <div class="year-subtitle">Найкращий рік нашого життя разом!</div>
+
+                <div class="year-stats">
+                    <div class="year-stat">
+                        <div class="year-stat-value">89</div>
+                        <div class="year-stat-label">Нових фото</div>
+                    </div>
+                    <div class="year-stat">
+                        <div class="year-stat-value">12</div>
+                        <div class="year-stat-label">Подорожей</div>
+                    </div>
+                    <div class="year-stat">
+                        <div class="year-stat-value">25</div>
+                        <div class="year-stat-label">Святкувань</div>
+                    </div>
+                    <div class="year-stat">
+                        <div class="year-stat-value">365</div>
+                        <div class="year-stat-label">Днів кохання</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline View -->
+        <div class="field-card">
+            <div class="type-label">📅 TIMELINE: Наша історія</div>
+
+            <div class="timeline-container">
+                <div class="timeline-line"></div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-date">🎉 14 Лютого 2023 - Перше побачення</div>
+                    <div class="timeline-content">
+                        <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">
+                            Той самий день, коли все почалося...
+                        </div>
+                        <div style="color: var(--text-secondary); font-size: 0.9rem;">
+                            Затишне кафе, довга розмова, і відчуття, що знали один одного все життя. 
+                            5 фотографій з нашого першого побачення.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-date">💕 21 Березня 2023 - Офіційна пара</div>
+                    <div class="timeline-content">
+                        <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">
+                            "Хочеш бути зі мною?"
+                        </div>
+                        <div style="color: var(--text-secondary); font-size: 0.9rem;">
+                            Прогулянка в парку під зірками. Ти сказав "так", і моє серце злетіло! 
+                            12 романтичних фото того вечора.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-date">✈️ 15 Липня 2023 - Перша подорож разом</div>
+                    <div class="timeline-content">
+                        <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">
+                            Львів - місто нашого кохання
+                        </div>
+                        <div style="color: var(--text-secondary); font-size: 0.9rem;">
+                            5 днів пригод, кави у затишних кав'ярнях, і безкінечних обіймів. 
+                            48 фотографій з нашої першої спільної подорожі!
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-date">💍 25 Грудня 2024 - Заручини!</div>
+                    <div class="timeline-content">
+                        <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">
+                            Найщасливіший день мого життя ✨
+                        </div>
+                        <div style="color: var(--text-secondary); font-size: 0.9rem;">
+                            Різдво, сніг, романтична вечеря... і несподіване питання на одному коліні. 
+                            Я сказала "ТАК!" тисячу разів! 28 фото найкращого дня нашого життя.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <script>
+        const CONFIG = { storageKey: 'loveDossier_memories' };
+        let state = { memories: [], favorites: [] };
+
+        function saveToStorage() { localStorage.setItem(CONFIG.storageKey, JSON.stringify(state)); }
+        function loadFromStorage() { const saved = localStorage.getItem(CONFIG.storageKey); if (saved) state = JSON.parse(saved); }
+
+        function addMemory(title, date, description, category) {
+            state.memories.push({ id: Date.now(), title, date: date || new Date().toISOString(), description, category: category || 'Загальне', favorite: false });
+            saveToStorage(); updateStats();
+        }
+
+        function updateStats() {
+            const stats = document.querySelectorAll('.stat-value');
+            if (stats.length >= 3) {
+                stats[0].textContent = state.memories.length;
+                stats[1].textContent = state.favorites.length;
+                const thisMonth = state.memories.filter(m => new Date(m.date).getMonth() === new Date().getMonth()).length;
+                stats[2].textContent = thisMonth;
+            }
+        }
+
+        function attachEventListeners() {
+            const uploadBtn = document.querySelector('.upload-photo');
+            if (uploadBtn) {
+                uploadBtn.addEventListener('click', () => {
+                    alert('📸 Photo Upload\n\nСимуляція завантаження фото...\n✅ Спогад додано!');
+                    addMemory('Новий спогад', new Date().toISOString(), 'Чудовий момент разом');
+                });
+            }
+
+            document.querySelectorAll('.memory-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const title = this.querySelector('.memory-title')?.textContent || 'Memory';
+                    alert('📸 ' + title);
+                });
+            });
+        }
+
+        function init() { loadFromStorage(); updateStats(); attachEventListeners(); console.log('✅ Memory Album PRO initialized'); }
+        if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
+    </script>
 </body>
 </html>

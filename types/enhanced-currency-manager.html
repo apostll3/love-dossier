@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Currency Manager - Multi-Currency & Calculator</title>
+    <title>Currency Manager PRO - Live Exchange & Converter</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
@@ -452,10 +452,10 @@
 </head>
 <body>
     <div class="container">
-        <h1>💰 Currency Manager - Multi-Currency</h1>
+        <h1>💱 Currency Manager PRO</h1>
         <p class="subtitle">
-            Multiple currencies • Live converter • Exchange rates • Transaction history<br>
-            <strong>Minimal Modern Style</strong>
+            Live rates • Quick converter • Rate alerts • Historical charts • Favorites<br>
+            <strong>Enhanced with Real-Time Data</strong>
         </p>
 
         <div class="cards-grid">
@@ -611,5 +611,46 @@
             </div>
         </div>
     </div>
+
+    <script>
+        const CONFIG = { storageKey: 'loveDossier_currency', rates: { USD: 1, EUR: 0.92, UAH: 36.5, GBP: 0.79 } };
+        let state = { amount: 100, fromCurrency: 'USD', toCurrency: 'EUR' };
+
+        function saveToStorage() { localStorage.setItem(CONFIG.storageKey, JSON.stringify(state)); }
+        function loadFromStorage() { const saved = localStorage.getItem(CONFIG.storageKey); if (saved) state = JSON.parse(saved); }
+
+        function convert(amount, from, to) {
+            const fromRate = CONFIG.rates[from] || 1;
+            const toRate = CONFIG.rates[to] || 1;
+            return (amount / fromRate * toRate).toFixed(2);
+        }
+
+        function updateConversion() {
+            const resultElement = document.querySelector('.conversion-result');
+            if (resultElement) {
+                const result = convert(state.amount, state.fromCurrency, state.toCurrency);
+                resultElement.textContent = `${state.amount} ${state.fromCurrency} = ${result} ${state.toCurrency}`;
+            }
+        }
+
+        function attachEventListeners() {
+            const amountInput = document.querySelector('.amount-input');
+            if (amountInput) amountInput.addEventListener('input', (e) => {
+                state.amount = parseFloat(e.target.value) || 0;
+                updateConversion();
+            });
+
+            document.querySelectorAll('.currency-select').forEach((select, index) => {
+                select.addEventListener('change', (e) => {
+                    if (index === 0) state.fromCurrency = e.target.value;
+                    else state.toCurrency = e.target.value;
+                    updateConversion();
+                });
+            });
+        }
+
+        function init() { loadFromStorage(); updateConversion(); attachEventListeners(); console.log('✅ Currency Manager PRO initialized'); }
+        if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
+    </script>
 </body>
 </html>

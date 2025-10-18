@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recipe Book - Step-by-Step Cooking</title>
+    <title>Recipe Book PRO - Meal Planner & Nutrition Tracker</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
@@ -30,7 +30,7 @@
             padding: 2rem;
         }
 
-        .container { max-width: 900px; margin: 0 auto; }
+        .container { max-width: 1200px; margin: 0 auto; }
 
         h1 {
             text-align: center;
@@ -281,15 +281,131 @@
             line-height: 1.6;
         }
 
+        /* Meal Planner */
+        .meal-planner {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .day-card {
+            padding: 1rem;
+            background: white;
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .day-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .day-name {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .day-meal {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .meal-name {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Nutrition Facts */
+        .nutrition-card {
+            padding: 2rem;
+            background: white;
+            border: 2px solid var(--border-light);
+            border-left: 4px solid var(--success);
+            border-radius: 12px;
+            margin: 2rem 0;
+        }
+
+        .nutrition-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .nutrition-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+
+        .nutrition-item {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(16, 185, 129, 0.05);
+            border-radius: 10px;
+        }
+
+        .nutrition-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--success);
+            line-height: 1;
+        }
+
+        .nutrition-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        /* Shopping List Generator */
+        .shopping-generator {
+            padding: 2rem;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(251, 191, 36, 0.05));
+            border-left: 4px solid var(--warning);
+            border-radius: 12px;
+            margin: 2rem 0;
+        }
+
+        .generator-title {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .generate-list-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--warning);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .generate-list-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+        }
+
         @media (max-width: 768px) {
             .recipe-stats { grid-template-columns: repeat(2, 1fr); }
+            .meal-planner { grid-template-columns: repeat(2, 1fr); }
+            .nutrition-grid { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🍳 Recipe Book</h1>
-        <p class="subtitle">Step-by-step instructions • Ingredients checklist • Cooking timer<br><strong>Minimal Modern Style</strong></p>
+        <h1>🍳 Recipe Book PRO</h1>
+        <p class="subtitle">Meal planner • Nutrition tracker • Shopping list generator • Step-by-step<br><strong>Enhanced with Smart Cooking Assistant</strong></p>
 
         <div class="field-card">
             <div class="type-label">🍳 RECIPE BOOK: Her Favorite Dish</div>
@@ -468,6 +584,126 @@
                 </div>
             </div>
         </div>
+
+        <!-- Nutrition Facts -->
+        <div class="field-card">
+            <div class="nutrition-card">
+                <div class="nutrition-title">📊 Харчова цінність (на 1 порцію)</div>
+                <div class="nutrition-grid">
+                    <div class="nutrition-item">
+                        <div class="nutrition-value">520</div>
+                        <div class="nutrition-label">Калорії</div>
+                    </div>
+                    <div class="nutrition-item">
+                        <div class="nutrition-value">28г</div>
+                        <div class="nutrition-label">Білки</div>
+                    </div>
+                    <div class="nutrition-item">
+                        <div class="nutrition-value">45г</div>
+                        <div class="nutrition-label">Вуглеводи</div>
+                    </div>
+                    <div class="nutrition-item">
+                        <div class="nutrition-value">22г</div>
+                        <div class="nutrition-label">Жири</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Shopping List Generator -->
+        <div class="field-card">
+            <div class="shopping-generator">
+                <div class="generator-title">🛒 Згенерувати список покупок</div>
+                <div style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                    Автоматично створимо список з усіх інгредієнтів цього рецепту
+                </div>
+                <button class="generate-list-btn">
+                    <i class="fas fa-shopping-cart"></i>
+                    Додати до списку покупок
+                </button>
+            </div>
+        </div>
+
+        <!-- Weekly Meal Planner -->
+        <div class="field-card">
+            <div class="type-label">📅 MEAL PLANNER: This Week</div>
+            
+            <div class="meal-planner">
+                <div class="day-card">
+                    <div class="day-name">Понеділок</div>
+                    <div class="day-meal">🍝</div>
+                    <div class="meal-name">Карбонара</div>
+                </div>
+                <div class="day-card">
+                    <div class="day-name">Вівторок</div>
+                    <div class="day-meal">🍕</div>
+                    <div class="meal-name">Піца</div>
+                </div>
+                <div class="day-card">
+                    <div class="day-name">Середа</div>
+                    <div class="day-meal">🍲</div>
+                    <div class="meal-name">Борщ</div>
+                </div>
+                <div class="day-card">
+                    <div class="day-name">Четвер</div>
+                    <div class="day-meal">🥗</div>
+                    <div class="meal-name">Салат</div>
+                </div>
+                <div class="day-card">
+                    <div class="day-name">П'ятниця</div>
+                    <div class="day-meal">🍣</div>
+                    <div class="meal-name">Суші</div>
+                </div>
+                <div class="day-card">
+                    <div class="day-name">Субота</div>
+                    <div class="day-meal">🥩</div>
+                    <div class="meal-name">Стейк</div>
+                </div>
+                <div class="day-card">
+                    <div class="day-name">Неділя</div>
+                    <div class="day-meal">🍰</div>
+                    <div class="meal-name">Десерт</div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <script>
+        const CONFIG = { storageKey: 'loveDossier_recipes' };
+        let state = { recipes: [], favorites: [] };
+
+        function saveToStorage() { localStorage.setItem(CONFIG.storageKey, JSON.stringify(state)); }
+        function loadFromStorage() { const saved = localStorage.getItem(CONFIG.storageKey); if (saved) state = JSON.parse(saved); }
+
+        function addRecipe(title, category, difficulty, time, servings, ingredients, steps) {
+            state.recipes.push({ id: Date.now(), title, category, difficulty, time, servings, ingredients, steps, favorite: false, cooked: 0 });
+            saveToStorage(); updateStats();
+        }
+
+        function updateStats() {
+            const stats = document.querySelectorAll('.stat-value');
+            if (stats.length >= 3) {
+                stats[0].textContent = state.recipes.length;
+                stats[1].textContent = state.favorites.length;
+                const total = state.recipes.reduce((sum, r) => sum + r.cooked, 0);
+                stats[2].textContent = total;
+            }
+        }
+
+        function attachEventListeners() {
+            document.querySelectorAll('.recipe-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const title = this.querySelector('.recipe-title')?.textContent || 'Recipe';
+                    alert('🍽️ ' + title);
+                });
+            });
+
+            const addBtn = document.querySelector('.add-recipe-btn');
+            if (addBtn) addBtn.addEventListener('click', () => alert('➕ Додати новий рецепт'));
+        }
+
+        function init() { loadFromStorage(); updateStats(); attachEventListeners(); console.log('✅ Recipe Book PRO initialized'); }
+        if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
+    </script>
 </body>
 </html>

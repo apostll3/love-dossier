@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shopping List - Shared Groceries</title>
+    <title>Shopping List PRO - Smart Groceries & Price Tracker</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
@@ -30,7 +30,7 @@
             padding: 2rem;
         }
 
-        .container { max-width: 1000px; margin: 0 auto; }
+        .container { max-width: 1200px; margin: 0 auto; }
 
         h1 {
             text-align: center;
@@ -313,15 +313,235 @@
             border-radius: 10px;
         }
 
+        /* Barcode Scanner */
+        .barcode-scanner {
+            padding: 2rem;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.02));
+            border: 2px dashed var(--primary);
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .scanner-icon {
+            font-size: 4rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .scanner-text {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .scanner-hint {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .scan-btn {
+            margin-top: 1rem;
+            padding: 0.75rem 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .scan-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Price History */
+        .price-chart {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: white;
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+        }
+
+        .price-chart-title {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-line {
+            display: flex;
+            align-items: flex-end;
+            gap: 0.5rem;
+            height: 150px;
+            margin-bottom: 1rem;
+        }
+
+        .price-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .price-bar {
+            width: 100%;
+            background: linear-gradient(180deg, var(--primary), var(--accent));
+            border-radius: 8px 8px 0 0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .price-bar:hover {
+            opacity: 0.8;
+        }
+
+        .price-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .price-trend {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border-radius: 8px;
+            font-weight: 700;
+        }
+
+        .price-trend.up {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        /* Recipe Integration */
+        .recipe-section {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.05), rgba(251, 191, 36, 0.02));
+            border-left: 4px solid var(--warning);
+            border-radius: 12px;
+        }
+
+        .recipe-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .recipe-title {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .add-to-list-btn {
+            padding: 0.6rem 1.2rem;
+            background: var(--warning);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-to-list-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+        }
+
+        .recipe-ingredients {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .ingredient-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .ingredient-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--warning);
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .ingredient-text {
+            flex: 1;
+            color: var(--text-secondary);
+        }
+
+        /* Store Sections */
+        .store-map {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .store-section {
+            padding: 1.25rem;
+            background: white;
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .store-section:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .store-section.active {
+            border-color: var(--success);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(5, 150, 105, 0.02));
+        }
+
+        .section-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .section-name {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .section-count {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
         @media (max-width: 768px) {
             .stats-bar { flex-wrap: wrap; gap: 1rem; }
+            .store-map { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🛒 Shopping List</h1>
-        <p class="subtitle">Shared list • Categories • Budget tracker • Real-time sync<br><strong>Minimal Modern Style</strong></p>
+        <h1>🛒 Shopping List PRO</h1>
+        <p class="subtitle">Smart scanner • Price history • Recipe integration • Store map • Budget tracker<br><strong>Enhanced with AI Shopping Assistant</strong></p>
 
         <div class="field-card">
             <div class="type-label">🛒 SHOPPING: Weekly Groceries</div>
@@ -541,6 +761,385 @@
                 </div>
             </div>
         </div>
+
+        <!-- Barcode Scanner -->
+        <div class="field-card">
+            <div class="type-label">📷 BARCODE SCANNER: Quick Add</div>
+
+            <div class="barcode-scanner">
+                <div class="scanner-icon">
+                    <i class="fas fa-barcode"></i>
+                </div>
+                <div class="scanner-text">Відскануйте штрих-код продукту</div>
+                <div class="scanner-hint">Автоматично додасть товар у список з актуальною ціною</div>
+                <button class="scan-btn">
+                    <i class="fas fa-camera"></i>
+                    Відкрити сканер
+                </button>
+            </div>
+        </div>
+
+        <!-- Price History Chart -->
+        <div class="field-card">
+            <div class="type-label">📊 PRICE HISTORY: Молоко (1л)</div>
+
+            <div class="price-chart">
+                <div class="price-chart-title">📈 Історія цін за 6 місяців</div>
+                
+                <div class="chart-line">
+                    <div class="price-column">
+                        <div class="price-bar" style="height: 60%;"></div>
+                        <div class="price-label">Лип</div>
+                    </div>
+                    <div class="price-column">
+                        <div class="price-bar" style="height: 65%;"></div>
+                        <div class="price-label">Сер</div>
+                    </div>
+                    <div class="price-column">
+                        <div class="price-bar" style="height: 75%;"></div>
+                        <div class="price-label">Вер</div>
+                    </div>
+                    <div class="price-column">
+                        <div class="price-bar" style="height: 85%;"></div>
+                        <div class="price-label">Жов</div>
+                    </div>
+                    <div class="price-column">
+                        <div class="price-bar" style="height: 90%;"></div>
+                        <div class="price-label">Лис</div>
+                    </div>
+                    <div class="price-column">
+                        <div class="price-bar" style="height: 100%;"></div>
+                        <div class="price-label">Гру</div>
+                    </div>
+                </div>
+
+                <div class="price-trend up">
+                    <i class="fas fa-arrow-up"></i>
+                    Ціна зросла на 12% за останні 6 місяців
+                </div>
+            </div>
+        </div>
+
+        <!-- Recipe Integration -->
+        <div class="field-card">
+            <div class="type-label">🍝 RECIPE: Швидке додавання</div>
+
+            <div class="recipe-section">
+                <div class="recipe-header">
+                    <div class="recipe-title">🍝 Паста Карбонара (на 2 порції)</div>
+                    <button class="add-to-list-btn">
+                        <i class="fas fa-plus"></i>
+                        Додати все в список
+                    </button>
+                </div>
+
+                <div class="recipe-ingredients">
+                    <div class="ingredient-item">
+                        <div class="ingredient-checkbox"></div>
+                        <div class="ingredient-text">Спагеті - 200г</div>
+                    </div>
+                    <div class="ingredient-item">
+                        <div class="ingredient-checkbox"></div>
+                        <div class="ingredient-text">Бекон - 150г</div>
+                    </div>
+                    <div class="ingredient-item">
+                        <div class="ingredient-checkbox"></div>
+                        <div class="ingredient-text">Яйця - 3 шт</div>
+                    </div>
+                    <div class="ingredient-item">
+                        <div class="ingredient-checkbox"></div>
+                        <div class="ingredient-text">Пармезан - 80г</div>
+                    </div>
+                    <div class="ingredient-item">
+                        <div class="ingredient-checkbox"></div>
+                        <div class="ingredient-text">Чорний перець - за смаком</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Store Map/Sections -->
+        <div class="field-card">
+            <div class="type-label">🏪 STORE MAP: Сільпо - вул. Хрещатик</div>
+
+            <div class="store-map">
+                <div class="store-section active">
+                    <div class="section-icon">🥬</div>
+                    <div class="section-name">Овочі</div>
+                    <div class="section-count">5 товарів</div>
+                </div>
+
+                <div class="store-section active">
+                    <div class="section-icon">🥖</div>
+                    <div class="section-name">Хлібобулочні</div>
+                    <div class="section-count">3 товари</div>
+                </div>
+
+                <div class="store-section active">
+                    <div class="section-icon">🥛</div>
+                    <div class="section-name">Молочка</div>
+                    <div class="section-count">6 товарів</div>
+                </div>
+
+                <div class="store-section active">
+                    <div class="section-icon">🍖</div>
+                    <div class="section-name">М'ясо</div>
+                    <div class="section-count">4 товари</div>
+                </div>
+
+                <div class="store-section">
+                    <div class="section-icon">🐟</div>
+                    <div class="section-name">Риба</div>
+                    <div class="section-count">0 товарів</div>
+                </div>
+
+                <div class="store-section active">
+                    <div class="section-icon">🧹</div>
+                    <div class="section-name">Побутове</div>
+                    <div class="section-count">4 товари</div>
+                </div>
+
+                <div class="store-section active">
+                    <div class="section-icon">💄</div>
+                    <div class="section-name">Особисте</div>
+                    <div class="section-count">4 товари</div>
+                </div>
+
+                <div class="store-section">
+                    <div class="section-icon">🍫</div>
+                    <div class="section-name">Солодощі</div>
+                    <div class="section-count">0 товарів</div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <script>
+        // ============================================
+        // SHOPPING LIST PRO - JavaScript
+        // ============================================
+
+        // 1. CONFIGURATION
+        const CONFIG = {
+            storageKey: 'loveDossier_shopping',
+            categories: ['🥗 Продукти харчування', '🏠 Для дому', '💄 Особисте']
+        };
+
+        // 2. STATE MANAGEMENT
+        let state = {
+            items: [],
+            budget: { total: 200, spent: 0 }
+        };
+
+        // 3. LOCALSTORAGE FUNCTIONS
+        function saveToStorage() {
+            localStorage.setItem(CONFIG.storageKey, JSON.stringify(state));
+        }
+
+        function loadFromStorage() {
+            const saved = localStorage.getItem(CONFIG.storageKey);
+            if (saved) {
+                state = JSON.parse(saved);
+            }
+        }
+
+        // 4. UTILITY FUNCTIONS
+        function calculateTotals() {
+            const total = state.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const checked = state.items.filter(i => i.checked).length;
+            const unchecked = state.items.length - checked;
+            
+            return { total, checked, unchecked, remaining: state.budget.total - total };
+        }
+
+        // 5. UI RENDERING FUNCTIONS
+        function updateStats() {
+            const totals = calculateTotals();
+            const statValues = document.querySelectorAll('.stat-value');
+            
+            if (statValues.length >= 4) {
+                statValues[0].textContent = state.items.length;
+                statValues[1].textContent = totals.checked;
+                statValues[2].textContent = '$' + totals.total.toFixed(0);
+                statValues[3].textContent = '$' + Math.max(totals.remaining, 0).toFixed(0);
+            }
+
+            // Update budget bar
+            const budgetFill = document.querySelector('.budget-fill');
+            const budgetAmount = document.querySelector('.budget-amount');
+            if (budgetFill && budgetAmount) {
+                const percentage = (totals.total / state.budget.total) * 100;
+                budgetFill.style.width = Math.min(percentage, 100) + '%';
+                budgetAmount.textContent = `$${totals.total.toFixed(0)} / $${state.budget.total}`;
+            }
+        }
+
+        function renderItems() {
+            CONFIG.categories.forEach(category => {
+                const categoryItems = state.items.filter(item => item.category === category);
+                const categorySection = Array.from(document.querySelectorAll('.category-title'))
+                    .find(el => el.textContent.includes(category.split(' ')[1]))?.closest('.category-section');
+                
+                if (!categorySection) return;
+
+                const itemsList = categorySection.querySelector('.items-list');
+                const categoryCount = categorySection.querySelector('.category-count');
+                
+                if (categoryCount) {
+                    categoryCount.textContent = `${categoryItems.length} товарів`;
+                }
+
+                if (itemsList) {
+                    itemsList.innerHTML = categoryItems.map(item => `
+                        <div class="shopping-item ${item.checked ? 'checked' : ''}">
+                            <div class="item-checkbox" onclick="toggleItem(${item.id})">
+                                ${item.checked ? '<i class="fas fa-check"></i>' : ''}
+                            </div>
+                            <div class="item-content">
+                                <div class="item-name">${item.name}</div>
+                                <div class="item-quantity">${item.quantity} ${item.unit}</div>
+                                <div class="item-price">$${item.price.toFixed(2)}</div>
+                            </div>
+                            <div class="item-actions">
+                                <div class="action-icon" onclick="deleteItem(${item.id})">
+                                    <i class="fas fa-trash"></i>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            });
+        }
+
+        // 6. CRUD OPERATIONS
+        function addItem(name, quantity, unit, price, category) {
+            if (!name.trim()) return;
+
+            const item = {
+                id: Date.now(),
+                name: name,
+                quantity: quantity || 1,
+                unit: unit || 'шт',
+                price: parseFloat(price) || 0,
+                category: category || CONFIG.categories[0],
+                checked: false,
+                addedAt: new Date().toISOString()
+            };
+
+            state.items.push(item);
+            saveToStorage();
+            updateUI();
+        }
+
+        window.toggleItem = function(id) {
+            const item = state.items.find(i => i.id === id);
+            if (item) {
+                item.checked = !item.checked;
+                saveToStorage();
+                updateUI();
+            }
+        };
+
+        window.deleteItem = function(id) {
+            state.items = state.items.filter(i => i.id !== id);
+            saveToStorage();
+            updateUI();
+        };
+
+        // 7. BARCODE SCANNER SIMULATION
+        function openBarcodeScanner() {
+            alert('📷 Барcode Scanner\n\nСимуляція сканування штрих-коду...\n\n✅ Продукт розпізнано!\n🥛 Молоко 3.2% - $2.50');
+            
+            // Simulate adding scanned item
+            addItem('Молоко 3.2% (Scanned)', 1, 'л', 2.50, '🥗 Продукти харчування');
+        }
+
+        // 8. RECIPE INTEGRATION
+        function addRecipeIngredients() {
+            const ingredients = [
+                { name: 'Спагеті', quantity: 200, unit: 'г', price: 1.50 },
+                { name: 'Бекон', quantity: 150, unit: 'г', price: 3.80 },
+                { name: 'Яйця', quantity: 3, unit: 'шт', price: 1.20 },
+                { name: 'Пармезан', quantity: 80, unit: 'г', price: 4.50 }
+            ];
+
+            ingredients.forEach(ing => {
+                addItem(ing.name, ing.quantity, ing.unit, ing.price, '🥗 Продукти харчування');
+            });
+
+            alert('✅ Інгредієнти рецепту додано до списку!');
+        }
+
+        // 9. EVENT HANDLERS
+        function attachEventListeners() {
+            // Add item button
+            const addBtn = document.querySelector('.add-btn');
+            const addInput = document.querySelector('.add-input');
+            
+            if (addBtn && addInput) {
+                addBtn.addEventListener('click', () => {
+                    const name = addInput.value.trim();
+                    if (name) {
+                        addItem(name, 1, 'шт', 0, CONFIG.categories[0]);
+                        addInput.value = '';
+                    }
+                });
+
+                addInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        const name = addInput.value.trim();
+                        if (name) {
+                            addItem(name, 1, 'шт', 0, CONFIG.categories[0]);
+                            addInput.value = '';
+                        }
+                    }
+                });
+            }
+
+            // Barcode scanner button
+            const scanBtn = document.querySelector('.scan-btn');
+            if (scanBtn) {
+                scanBtn.addEventListener('click', openBarcodeScanner);
+            }
+
+            // Recipe add button
+            const recipeBtn = document.querySelector('.add-to-list-btn');
+            if (recipeBtn) {
+                recipeBtn.addEventListener('click', addRecipeIngredients);
+            }
+
+            // Store sections
+            document.querySelectorAll('.store-section').forEach(section => {
+                section.addEventListener('click', function() {
+                    const sectionName = this.querySelector('.section-name').textContent;
+                    console.log('Navigate to section:', sectionName);
+                });
+            });
+        }
+
+        // 10. UPDATE UI
+        function updateUI() {
+            updateStats();
+            renderItems();
+        }
+
+        // 11. INITIALIZATION
+        function init() {
+            loadFromStorage();
+            updateUI();
+            attachEventListeners();
+            
+            console.log('✅ Shopping List PRO initialized');
+            console.log('🛒 Items:', state.items.length);
+            console.log('💰 Budget:', '$' + state.budget.total);
+        }
+
+        // Start the app when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    </script>
 </body>
 </html>

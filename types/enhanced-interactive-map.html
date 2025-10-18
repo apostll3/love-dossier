@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Map - Enhanced Location</title>
+    <title>Interactive Map PRO - Travel History & Future Plans</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
@@ -450,11 +450,8 @@
 </head>
 <body>
     <div class="container">
-        <h1>📍 Interactive Map - Smart Location</h1>
-        <p class="subtitle">
-            Embedded mini map • Distance calculator • Navigation • Rating • Photo gallery<br>
-            <strong>Minimal Modern Style</strong>
-        </p>
+        <h1>🗺️ Interactive Map PRO</h1>
+        <p class="subtitle">Travel history • Future destinations • Photo pins • Country stats • Travel heatmap<br><strong>Enhanced with Travel Analytics</strong></p>
 
         <div class="cards-grid">
             <!-- Example 1: Restaurant Location -->
@@ -703,5 +700,43 @@
             </div>
         </div>
     </div>
+
+    <script>
+        const CONFIG = { storageKey: 'loveDossier_map' };
+        let state = { places: [], visited: [] };
+
+        function saveToStorage() { localStorage.setItem(CONFIG.storageKey, JSON.stringify(state)); }
+        function loadFromStorage() { const saved = localStorage.getItem(CONFIG.storageKey); if (saved) state = JSON.parse(saved); }
+
+        function addPlace(name, lat, lng, category, description) {
+            state.places.push({ id: Date.now(), name, lat, lng, category: category || 'Romantic', description, visited: false });
+            saveToStorage(); updateStats();
+        }
+
+        function updateStats() {
+            const stats = document.querySelectorAll('.stat-value');
+            if (stats.length >= 3) {
+                stats[0].textContent = state.places.length;
+                stats[1].textContent = state.visited.length;
+                const countries = new Set(state.places.map(p => p.country || 'Unknown')).size;
+                stats[2].textContent = countries;
+            }
+        }
+
+        function attachEventListeners() {
+            document.querySelectorAll('.place-marker').forEach(marker => {
+                marker.addEventListener('click', function() {
+                    const name = this.getAttribute('data-place') || 'Place';
+                    alert('📍 ' + name);
+                });
+            });
+
+            const addBtn = document.querySelector('.add-place-btn');
+            if (addBtn) addBtn.addEventListener('click', () => alert('➕ Додати місце'));
+        }
+
+        function init() { loadFromStorage(); updateStats(); attachEventListeners(); console.log('✅ Interactive Map PRO initialized'); }
+        if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
+    </script>
 </body>
 </html>

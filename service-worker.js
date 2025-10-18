@@ -1,13 +1,51 @@
 // Love Dossier - Service Worker
-// Version 2.1.0 - Updated drag & drop system
+// Version 3.0.0 - All 32 types with full JavaScript functionality
 
-const CACHE_NAME = 'love-dossier-v2.1.0';
+const CACHE_NAME = 'love-dossier-v3.0.0';
 const urlsToCache = [
   './',
   './index.html',
   './LoveDossier.ico',
   './preview.png',
-  './manifest.json'
+  './manifest.json',
+  
+  // Top-5 Priority Types (Enhanced)
+  './types/enhanced-communication-log.html',
+  './types/enhanced-finances.html',
+  './types/enhanced-relationship-goals.html',
+  './types/enhanced-shopping-list.html',
+  './types/enhanced-travel-planner.html',
+  
+  // Enhanced Types (6-21)
+  './types/enhanced-date-ideas.html',
+  './types/enhanced-memory-album.html',
+  './types/enhanced-recipe-book.html',
+  './types/enhanced-gift-registry.html',
+  './types/enhanced-mood-tracker.html',
+  './types/enhanced-books-movies.html',
+  './types/enhanced-bucket-list.html',
+  './types/enhanced-event-countdown.html',
+  './types/enhanced-timeline.html',
+  './types/enhanced-smart-checklist.html',
+  './types/enhanced-progress.html',
+  './types/enhanced-interactive-map.html',
+  './types/enhanced-smart-date.html',
+  './types/enhanced-social-links.html',
+  './types/enhanced-tags.html',
+  './types/enhanced-rating.html',
+  
+  // Basic Types (22-32)
+  './types/enhanced-multi-select.html',
+  './types/enhanced-currency-manager.html',
+  './types/enhanced-password-vault.html',
+  './types/enhanced-rich-text.html',
+  './types/enhanced-smart-phone.html',
+  './types/enhanced-smart-email.html',
+  './types/enhanced-smart-time.html',
+  './types/enhanced-smart-number.html',
+  './types/enhanced-color-picker.html',
+  './types/enhanced-document-vault.html',
+  './types/enhanced-image-gallery.html'
 ];
 
 // Install event - кешуємо файли

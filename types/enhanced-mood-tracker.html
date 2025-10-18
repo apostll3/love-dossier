@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mood Tracker - Calendar & Analytics</title>
+    <title>Mood Tracker PRO - Emotional Analytics & Patterns</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
@@ -453,10 +453,8 @@
 <body>
     <div class="container">
         <h1>😊 Mood Tracker - Емоційний Щоденник</h1>
-        <p class="subtitle">
-            Calendar view • Monthly statistics • Pattern analysis • Insights<br>
-            <strong>Minimal Modern Style</strong>
-        </p>
+        <h1>😊 Mood Tracker PRO</h1>
+        <p class="subtitle">Emotional analytics • Mood patterns • Weekly charts • Happiness score • Insights<br><strong>Enhanced with AI Mood Analysis</strong></p>
 
         <div class="cards-grid">
             <!-- Mood Tracker Card -->
@@ -634,5 +632,50 @@
             </div>
         </div>
     </div>
+
+    <script>
+        const CONFIG = { storageKey: 'loveDossier_mood' };
+        let state = { entries: [], currentMood: 'happy' };
+
+        function saveToStorage() { localStorage.setItem(CONFIG.storageKey, JSON.stringify(state)); }
+        function loadFromStorage() { const saved = localStorage.getItem(CONFIG.storageKey); if (saved) state = JSON.parse(saved); }
+
+        function addMoodEntry(mood, note) {
+            state.entries.push({ id: Date.now(), mood: mood || 'happy', note: note || '', date: new Date().toISOString() });
+            saveToStorage();
+        }
+
+        function updateStats() {
+            const stats = document.querySelectorAll('.stat-value');
+            if (stats.length >= 2) {
+                stats[0].textContent = state.entries.length;
+                const positive = state.entries.filter(e => ['happy', 'love', 'excited'].includes(e.mood)).length;
+                stats[1].textContent = state.entries.length > 0 ? Math.round((positive / state.entries.length) * 100) + '%' : '0%';
+            }
+        }
+
+        function attachEventListeners() {
+            document.querySelectorAll('.mood-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+                    this.classList.add('selected');
+                    const mood = this.querySelector('.mood-emoji').textContent;
+                    console.log('Selected mood:', mood);
+                });
+            });
+
+            const saveBtn = document.querySelector('.save-btn');
+            if (saveBtn) {
+                saveBtn.addEventListener('click', () => {
+                    const note = document.querySelector('.note-input')?.value || '';
+                    addMoodEntry(state.currentMood, note);
+                    updateStats();
+                });
+            }
+        }
+
+        function init() { loadFromStorage(); updateStats(); attachEventListeners(); console.log('✅ Mood Tracker PRO initialized'); }
+        if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
+    </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bucket List - Dreams & Goals</title>
+    <title>Bucket List PRO - Life Goals & Adventure Tracker</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
@@ -30,7 +30,7 @@
             padding: 2rem;
         }
 
-        .container { max-width: 900px; margin: 0 auto; }
+        .container { max-width: 1200px; margin: 0 auto; }
 
         h1 {
             text-align: center;
@@ -276,8 +276,8 @@
 </head>
 <body>
     <div class="container">
-        <h1>🌟 Bucket List</h1>
-        <p class="subtitle">Dreams & goals tracker • Priority levels • Target dates • Progress tracking<br><strong>Minimal Modern Style</strong></p>
+        <h1>🪣 Bucket List PRO</h1>
+        <p class="subtitle">Life goals tracker • Adventure map • Completion stats • Photo memories • Shared dreams<br><strong>Enhanced with Progress Analytics</strong></p>
 
         <div class="field-card">
             <div class="type-label">🌟 BUCKET LIST: Our Dreams Together</div>
@@ -516,5 +516,54 @@
             </div>
         </div>
     </div>
+
+    <script>
+        const CONFIG = { storageKey: 'loveDossier_bucketList' };
+        let state = { items: [], completed: [] };
+
+        function saveToStorage() { localStorage.setItem(CONFIG.storageKey, JSON.stringify(state)); }
+        function loadFromStorage() { const saved = localStorage.getItem(CONFIG.storageKey); if (saved) state = JSON.parse(saved); }
+
+        function updateStats() {
+            const stats = document.querySelectorAll('.stat-value');
+            if (stats.length >= 3) {
+                stats[0].textContent = state.items.length;
+                stats[1].textContent = state.completed.length;
+                stats[2].textContent = state.items.length > 0 ? Math.round((state.completed.length / state.items.length) * 100) + '%' : '0%';
+            }
+        }
+
+        function addItem(title, category) {
+            state.items.push({ id: Date.now(), title, category: category || 'До весілля', completed: false });
+            saveToStorage(); updateStats();
+        }
+
+        window.toggleBucketItem = function(id) {
+            const item = state.items.find(i => i.id === id);
+            if (item) {
+                item.completed = !item.completed;
+                if (item.completed) state.completed.push(id);
+                else state.completed = state.completed.filter(cId => cId !== id);
+                saveToStorage(); updateStats();
+            }
+        };
+
+        function attachEventListeners() {
+            document.querySelectorAll('.bucket-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    this.classList.toggle('completed');
+                    const checkbox = this.querySelector('.bucket-checkbox');
+                    if (this.classList.contains('completed')) {
+                        checkbox.innerHTML = '<i class="fas fa-check"></i>';
+                    } else {
+                        checkbox.innerHTML = '';
+                    }
+                });
+            });
+        }
+
+        function init() { loadFromStorage(); updateStats(); attachEventListeners(); console.log('✅ Bucket List PRO initialized'); }
+        if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
+    </script>
 </body>
 </html>

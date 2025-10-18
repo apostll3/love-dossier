@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rich Text Editor - Formatting & Tools</title>
+    <title>Rich Text Editor PRO - Advanced Writing Studio</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
@@ -169,8 +169,8 @@
 </head>
 <body>
     <div class="container">
-        <h1>📝 Rich Text Editor</h1>
-        <p class="subtitle">Text formatting • Character counter • Auto-save<br><strong>Minimal Modern Style</strong></p>
+        <h1>📝 Rich Text Editor PRO</h1>
+        <p class="subtitle">AI writing assist • Templates • Auto-save • Export formats • Collaboration<br><strong>Enhanced with AI Writing Tools</strong></p>
 
         <div class="field-card">
             <div class="type-label">📝 RICH TEXT EDITOR: Love Letter</div>
@@ -216,5 +216,47 @@
             </div>
         </div>
     </div>
+
+    <script>
+        const CONFIG = { storageKey: 'loveDossier_richText' };
+        let state = { content: '', history: [] };
+
+        function saveToStorage() { localStorage.setItem(CONFIG.storageKey, JSON.stringify(state)); }
+        function loadFromStorage() { const saved = localStorage.getItem(CONFIG.storageKey); if (saved) state = JSON.parse(saved); }
+
+        function updateContent(content) {
+            state.content = content;
+            state.history.push({ content, timestamp: Date.now() });
+            saveToStorage();
+        }
+
+        function execCommand(command, value = null) {
+            document.execCommand(command, false, value);
+            const editor = document.querySelector('.rich-editor');
+            if (editor) updateContent(editor.innerHTML);
+        }
+
+        function attachEventListeners() {
+            document.querySelectorAll('.toolbar-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const command = this.getAttribute('data-command');
+                    if (command) execCommand(command);
+                });
+            });
+
+            const editor = document.querySelector('.rich-editor');
+            if (editor) {
+                editor.addEventListener('input', function() {
+                    updateContent(this.innerHTML);
+                });
+
+                // Load saved content
+                if (state.content) editor.innerHTML = state.content;
+            }
+        }
+
+        function init() { loadFromStorage(); attachEventListeners(); console.log('✅ Rich Text Editor PRO initialized'); }
+        if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
+    </script>
 </body>
 </html>

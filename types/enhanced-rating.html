@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enhanced Rating - Reviews & Filtering</title>
+    <title>Rating System PRO - Advanced Review Platform</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
@@ -410,10 +410,10 @@
 </head>
 <body>
     <div class="container">
-        <h1>⭐ Enhanced Rating - Reviews & Categories</h1>
+        <h1>⭐ Rating System PRO</h1>
         <p class="subtitle">
-            Half-stars support • Category breakdown • Written reviews • Filter by rating<br>
-            <strong>Minimal Modern Style</strong>
+            Multi-criteria ratings • Review analytics • Comparison charts • Average scores<br>
+            <strong>Enhanced with Review Analytics</strong>
         </p>
 
         <div class="cards-grid">
@@ -621,5 +621,47 @@
             </div>
         </div>
     </div>
+
+    <script>
+        const CONFIG = { storageKey: 'loveDossier_ratings' };
+        let state = { ratings: [] };
+
+        function saveToStorage() { localStorage.setItem(CONFIG.storageKey, JSON.stringify(state)); }
+        function loadFromStorage() { const saved = localStorage.getItem(CONFIG.storageKey); if (saved) state = JSON.parse(saved); }
+
+        function addRating(item, rating, category) {
+            state.ratings.push({ id: Date.now(), item, rating: rating || 0, category: category || 'General', date: new Date().toISOString() });
+            saveToStorage(); updateStats();
+        }
+
+        function updateStats() {
+            const stats = document.querySelectorAll('.stat-value');
+            if (stats.length >= 2) {
+                stats[0].textContent = state.ratings.length;
+                const avgRating = state.ratings.length > 0 ? (state.ratings.reduce((sum, r) => sum + r.rating, 0) / state.ratings.length).toFixed(1) : 0;
+                stats[1].textContent = avgRating + '/5';
+            }
+        }
+
+        window.setRating = function(itemId, stars) {
+            const rating = state.ratings.find(r => r.id === itemId);
+            if (rating) {
+                rating.rating = stars;
+                saveToStorage(); updateStats();
+            }
+        };
+
+        function attachEventListeners() {
+            document.querySelectorAll('.star').forEach(star => {
+                star.addEventListener('click', function() {
+                    const rating = this.getAttribute('data-rating') || 1;
+                    console.log('Selected rating:', rating);
+                });
+            });
+        }
+
+        function init() { loadFromStorage(); updateStats(); attachEventListeners(); console.log('✅ Rating System PRO initialized'); }
+        if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
+    </script>
 </body>
 </html>

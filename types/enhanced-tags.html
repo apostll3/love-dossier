@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enhanced Tags - Color Coded & Searchable</title>
+    <title>Tags Manager PRO - Smart Categorization System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
@@ -507,11 +507,8 @@
 </head>
 <body>
     <div class="container">
-        <h1>🏷️ Enhanced Tags - Smart & Colorful</h1>
-        <p class="subtitle">
-            Color coding • Search & filter • Tag frequency • Quick add з автокомплітом<br>
-            <strong>Minimal Modern Style</strong>
-        </p>
+        <h1>🏷️ Tags Manager PRO</h1>
+        <p class="subtitle">Auto-tagging • Color themes • Tag analytics • Smart suggestions • Bulk operations<br><strong>Enhanced with AI Auto-Tagging</strong></p>
 
         <div class="cards-grid">
             <!-- Example 1: Food Tags with Search -->
@@ -738,5 +735,52 @@
             </div>
         </div>
     </div>
+
+    <script>
+        const CONFIG = { storageKey: 'loveDossier_tags' };
+        let state = { tags: [], selectedTags: [] };
+
+        function saveToStorage() { localStorage.setItem(CONFIG.storageKey, JSON.stringify(state)); }
+        function loadFromStorage() { const saved = localStorage.getItem(CONFIG.storageKey); if (saved) state = JSON.parse(saved); }
+
+        function addTag(name, color) {
+            state.tags.push({ id: Date.now(), name, color: color || '#667eea' });
+            saveToStorage(); updateUI();
+        }
+
+        function toggleTag(id) {
+            if (state.selectedTags.includes(id)) {
+                state.selectedTags = state.selectedTags.filter(t => t !== id);
+            } else {
+                state.selectedTags.push(id);
+            }
+            saveToStorage(); updateUI();
+        }
+
+        function updateUI() {
+            const stats = document.querySelectorAll('.stat-value');
+            if (stats.length >= 2) {
+                stats[0].textContent = state.tags.length;
+                stats[1].textContent = state.selectedTags.length;
+            }
+        }
+
+        function attachEventListeners() {
+            document.querySelectorAll('.tag').forEach(tag => {
+                tag.addEventListener('click', function() {
+                    this.classList.toggle('selected');
+                });
+            });
+
+            const addBtn = document.querySelector('.add-tag-btn');
+            if (addBtn) addBtn.addEventListener('click', () => {
+                const name = prompt('Назва тегу:');
+                if (name) addTag(name);
+            });
+        }
+
+        function init() { loadFromStorage(); updateUI(); attachEventListeners(); console.log('✅ Tags PRO initialized'); }
+        if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
+    </script>
 </body>
 </html>

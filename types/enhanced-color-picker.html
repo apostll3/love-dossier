@@ -476,5 +476,42 @@
             </div>
         </div>
     </div>
+
+    <script>
+        const CONFIG = { storageKey: 'loveDossier_colorPicker' };
+        let state = { selectedColor: '#667eea', recentColors: [] };
+
+        function saveToStorage() { localStorage.setItem(CONFIG.storageKey, JSON.stringify(state)); }
+        function loadFromStorage() { const saved = localStorage.getItem(CONFIG.storageKey); if (saved) state = JSON.parse(saved); }
+
+        function selectColor(color) {
+            state.selectedColor = color;
+            if (!state.recentColors.includes(color)) {
+                state.recentColors.unshift(color);
+                if (state.recentColors.length > 10) state.recentColors.pop();
+            }
+            saveToStorage(); updateUI();
+        }
+
+        function updateUI() {
+            const preview = document.querySelector('.color-preview');
+            if (preview) preview.style.background = state.selectedColor;
+
+            const colorCode = document.querySelector('.color-code');
+            if (colorCode) colorCode.textContent = state.selectedColor;
+        }
+
+        function attachEventListeners() {
+            document.querySelectorAll('.color-swatch').forEach(swatch => {
+                swatch.addEventListener('click', function() {
+                    const color = this.style.background;
+                    selectColor(color);
+                });
+            });
+        }
+
+        function init() { loadFromStorage(); updateUI(); attachEventListeners(); console.log('✅ Color Picker PRO initialized'); }
+        if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
+    </script>
 </body>
 </html>

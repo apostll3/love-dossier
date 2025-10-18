@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Progress - Charts & History</title>
+    <title>Progress Tracker PRO - Visual Goals & Milestones</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
@@ -492,11 +492,8 @@
 </head>
 <body>
     <div class="container">
-        <h1>📊 Smart Progress - Visual Analytics</h1>
-        <p class="subtitle">
-            Interactive charts • History tracking • Trend analysis • Visual insights<br>
-            <strong>Minimal Modern Style</strong>
-        </p>
+        <h1>📊 Progress Tracker PRO</h1>
+        <p class="subtitle">Visual progress • Milestone celebrations • Charts & insights • Achievement badges<br><strong>Enhanced with Gamification</strong></p>
 
         <div class="cards-grid">
             <!-- Example 1: Fitness Progress -->
@@ -722,5 +719,47 @@
             </div>
         </div>
     </div>
+
+    <script>
+        const CONFIG = { storageKey: 'loveDossier_progress' };
+        let state = { trackers: [] };
+
+        function saveToStorage() { localStorage.setItem(CONFIG.storageKey, JSON.stringify(state)); }
+        function loadFromStorage() { const saved = localStorage.getItem(CONFIG.storageKey); if (saved) state = JSON.parse(saved); }
+
+        function addTracker(name, current, target, unit) {
+            state.trackers.push({ id: Date.now(), name, current: current || 0, target: target || 100, unit: unit || '%' });
+            saveToStorage(); updateUI();
+        }
+
+        function updateProgress(id, value) {
+            const tracker = state.trackers.find(t => t.id === id);
+            if (tracker) {
+                tracker.current = value;
+                saveToStorage(); updateUI();
+            }
+        }
+
+        function updateUI() {
+            const stats = document.querySelectorAll('.stat-value');
+            if (stats.length >= 2) {
+                stats[0].textContent = state.trackers.length;
+                const completed = state.trackers.filter(t => t.current >= t.target).length;
+                stats[1].textContent = completed;
+            }
+        }
+
+        function attachEventListeners() {
+            document.querySelectorAll('.progress-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const name = this.querySelector('.progress-name')?.textContent || 'Progress';
+                    alert('📊 ' + name);
+                });
+            });
+        }
+
+        function init() { loadFromStorage(); updateUI(); attachEventListeners(); console.log('✅ Progress Tracker PRO initialized'); }
+        if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
+    </script>
 </body>
 </html>

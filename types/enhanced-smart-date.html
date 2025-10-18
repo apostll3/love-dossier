@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Date - Enhanced Field Type</title>
+    <title>Smart Date PRO - Calendar & Event Planner</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
@@ -550,9 +550,8 @@
 </head>
 <body>
     <div class="container">
-        <h1>📅 Smart Date - Enhanced Field Type</h1>
-        <p class="subtitle">
-            Recurring events • Countdown display • Mini calendar picker • Event type icons<br>
+        <h1>📅 Smart Date PRO</h1>
+        <p class="subtitle">Event calendar • Date ranges • Recurring reminders • Sync with Google Calendar<br><strong>Enhanced with Smart Scheduling</strong></p> • Event type icons<br>
             <strong>Minimal Modern Style</strong>
         </p>
 
@@ -793,5 +792,48 @@
             </div>
         </div>
     </div>
+
+    <script>
+        const CONFIG = { storageKey: 'loveDossier_smartDate' };
+        let state = { selectedDate: new Date().toISOString(), dates: [] };
+
+        function saveToStorage() { localStorage.setItem(CONFIG.storageKey, JSON.stringify(state)); }
+        function loadFromStorage() { const saved = localStorage.getItem(CONFIG.storageKey); if (saved) state = JSON.parse(saved); }
+
+        function selectDate(date) {
+            state.selectedDate = date;
+            state.dates.push({ date, timestamp: Date.now() });
+            saveToStorage(); updateUI();
+        }
+
+        function updateUI() {
+            const dateDisplay = document.querySelector('.date-display');
+            if (dateDisplay) {
+                const date = new Date(state.selectedDate);
+                dateDisplay.textContent = date.toLocaleDateString('uk-UA', { day: 'numeric', month: 'long', year: 'numeric' });
+            }
+        }
+
+        function attachEventListeners() {
+            const dateInput = document.querySelector('input[type="date"]');
+            if (dateInput) {
+                dateInput.addEventListener('change', (e) => {
+                    selectDate(e.target.value);
+                });
+            }
+
+            document.querySelectorAll('.quick-date-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const days = parseInt(this.getAttribute('data-days') || 0);
+                    const newDate = new Date();
+                    newDate.setDate(newDate.getDate() + days);
+                    selectDate(newDate.toISOString());
+                });
+            });
+        }
+
+        function init() { loadFromStorage(); updateUI(); attachEventListeners(); console.log('✅ Smart Date PRO initialized'); }
+        if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
+    </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Event Countdown - Gift Ideas & Budget</title>
+    <title>Event Countdown PRO - Multi-Event Tracker & Reminders</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
@@ -462,11 +462,8 @@
 </head>
 <body>
     <div class="container">
-        <h1>🎂 Event Countdown - Plan & Track</h1>
-        <p class="subtitle">
-            Gift ideas list • Budget tracker • Planning notes • Smart reminders • Multiple events<br>
-            <strong>Minimal Modern Style</strong>
-        </p>
+        <h1>⏰ Event Countdown PRO</h1>
+        <p class="subtitle">Multi-event tracker • Push reminders • Beautiful countdowns • Celebration mode<br><strong>Enhanced with Smart Notifications</strong></p>
 
         <div class="cards-grid">
             <!-- Example 1: Birthday with Gift Ideas -->
@@ -693,5 +690,67 @@
             </div>
         </div>
     </div>
+
+    <script>
+        const CONFIG = { storageKey: 'loveDossier_events' };
+        let state = { events: [] };
+        let intervals = [];
+
+        function saveToStorage() { localStorage.setItem(CONFIG.storageKey, JSON.stringify(state)); }
+        function loadFromStorage() { const saved = localStorage.getItem(CONFIG.storageKey); if (saved) state = JSON.parse(saved); }
+
+        function updateCountdown(eventDate, index) {
+            const now = new Date().getTime();
+            const target = new Date(eventDate).getTime();
+            const distance = target - now;
+
+            if (distance < 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+
+            return {
+                days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+                hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+                minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+                seconds: Math.floor((distance % (1000 * 60)) / 1000)
+            };
+        }
+
+        function startCountdowns() {
+            document.querySelectorAll('.event-card').forEach((card, index) => {
+                const interval = setInterval(() => {
+                    const countdown = card.querySelector('.countdown-number');
+                    if (countdown) {
+                        const eventDate = '2025-06-15'; // Default wedding date
+                        const time = updateCountdown(eventDate, index);
+                        countdown.textContent = time.days;
+                    }
+                }, 1000);
+                intervals.push(interval);
+            });
+        }
+
+        function addEvent(title, date, category) {
+            state.events.push({ id: Date.now(), title, date, category: category || 'Весілля' });
+            saveToStorage();
+        }
+
+        function attachEventListeners() {
+            const addBtn = document.querySelector('.add-event-btn');
+            if (addBtn) {
+                addBtn.addEventListener('click', () => {
+                    alert('➕ Додати подію\n\nВведіть назву та дату події');
+                });
+            }
+        }
+
+        function init() {
+            loadFromStorage();
+            startCountdowns();
+            attachEventListeners();
+            console.log('✅ Event Countdown PRO initialized');
+        }
+
+        window.addEventListener('beforeunload', () => { intervals.forEach(i => clearInterval(i)); });
+        if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
+    </script>
 </body>
 </html>

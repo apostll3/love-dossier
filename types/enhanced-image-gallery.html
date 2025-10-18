@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Gallery Pro - Photo Manager</title>
+    <title>Image Gallery PRO - Advanced Photo Manager</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
@@ -467,5 +467,46 @@
             </div>
         </div>
     </div>
+
+    <script>
+        const CONFIG = { storageKey: 'loveDossier_gallery' };
+        let state = { images: [], albums: [] };
+
+        function saveToStorage() { localStorage.setItem(CONFIG.storageKey, JSON.stringify(state)); }
+        function loadFromStorage() { const saved = localStorage.getItem(CONFIG.storageKey); if (saved) state = JSON.parse(saved); }
+
+        function addImage(url, title, album) {
+            state.images.push({ id: Date.now(), url, title, album: album || 'Default', uploadDate: new Date().toISOString() });
+            saveToStorage(); updateStats();
+        }
+
+        function updateStats() {
+            const stats = document.querySelectorAll('.stat-value');
+            if (stats.length >= 3) {
+                stats[0].textContent = state.images.length;
+                stats[1].textContent = state.albums.length;
+                const thisMonth = state.images.filter(i => new Date(i.uploadDate).getMonth() === new Date().getMonth()).length;
+                stats[2].textContent = thisMonth;
+            }
+        }
+
+        function attachEventListeners() {
+            const uploadBtn = document.querySelector('.upload-image-btn');
+            if (uploadBtn) uploadBtn.addEventListener('click', () => {
+                alert('📸 Upload Image\n\nСимуляція завантаження...\n✅ Фото додано!');
+                addImage('https://via.placeholder.com/300', 'Нове фото', 'Загальні');
+            });
+
+            document.querySelectorAll('.gallery-image').forEach(img => {
+                img.addEventListener('click', function() {
+                    const title = this.getAttribute('data-title') || 'Image';
+                    alert('🖼️ ' + title);
+                });
+            });
+        }
+
+        function init() { loadFromStorage(); updateStats(); attachEventListeners(); console.log('✅ Image Gallery PRO initialized'); }
+        if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
+    </script>
 </body>
 </html>
