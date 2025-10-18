@@ -1347,6 +1347,25 @@
             opacity: 1;
         }
         
+        /* Accessibility: Reduce motion for users who prefer it */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+            
+            /* Keep essential transitions very short */
+            .type-card,
+            .btn,
+            .modal {
+                transition-duration: 0.05s !important;
+            }
+        }
+        
         /* Responsive */
         @media (max-width: 768px) {
             .header {
@@ -1636,14 +1655,14 @@
             </div>
         </div>
         <div class="toolbar-actions">
-            <button class="btn-icon" id="editModeBtn" title="Edit Layout">
-                <svg width="20" height="20"><use href="#icon-edit"/></svg>
+            <button class="btn-icon" id="editModeBtn" title="Edit Layout" aria-label="Edit card layout">
+                <svg width="20" height="20" aria-hidden="true"><use href="#icon-edit"/></svg>
             </button>
-            <button class="btn-icon" id="themeToggle" title="Toggle Dark Mode">
-                <svg width="20" height="20"><use href="#icon-moon"/></svg>
+            <button class="btn-icon" id="themeToggle" title="Toggle Dark Mode" aria-label="Toggle dark mode">
+                <svg width="20" height="20" aria-hidden="true"><use href="#icon-moon"/></svg>
             </button>
-            <button class="btn-icon" id="settingsBtn" title="Settings">
-                <svg width="20" height="20"><use href="#icon-settings"/></svg>
+            <button class="btn-icon" id="settingsBtn" title="Settings" aria-label="Open settings">
+                <svg width="20" height="20" aria-hidden="true"><use href="#icon-settings"/></svg>
             </button>
         </div>
     </header>
@@ -1653,8 +1672,8 @@
         <div class="search-box">
             <svg width="16" height="16" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--text-secondary);"><use href="#icon-search"/></svg>
             <input type="text" id="searchInput" placeholder="Search types..." data-i18n-placeholder="search">
-            <button class="search-clear" id="searchClear" style="display: none;">
-                <svg width="16" height="16"><use href="#icon-close"/></svg>
+            <button class="search-clear" id="searchClear" style="display: none;" aria-label="Clear search">
+                <svg width="16" height="16" aria-hidden="true"><use href="#icon-close"/></svg>
             </button>
         </div>
         
@@ -1701,8 +1720,8 @@
             </div>
         </div>
         
-        <button class="btn btn-primary" id="installBtn" style="display: none; padding: 0.5rem 1rem; font-size: 0.875rem;">
-            <svg width="16" height="16" style="margin-right: 6px;"><use href="#icon-download"/></svg>
+        <button class="btn btn-primary" id="installBtn" style="display: none; padding: 0.5rem 1rem; font-size: 0.875rem;" aria-label="Install app">
+            <svg width="16" height="16" style="margin-right: 6px;" aria-hidden="true"><use href="#icon-download"/></svg>
             Install
         </button>
     </div>
@@ -1729,18 +1748,18 @@
     </div><!-- End Main App -->
     
     <!-- Confirmation Modal -->
-    <div class="confirm-modal" id="confirmModal">
+    <div class="confirm-modal" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
         <div class="confirm-modal-content">
-            <div class="confirm-modal-icon" id="confirmIcon">
+            <div class="confirm-modal-icon" id="confirmIcon" aria-hidden="true">
                 <svg width="48" height="48"><use href="#icon-warning"/></svg>
             </div>
             <h3 class="confirm-modal-title" id="confirmTitle" data-i18n="confirmAction">Confirm Action</h3>
             <p class="confirm-modal-message" id="confirmMessage" data-i18n="areYouSure">Are you sure?</p>
             <div class="confirm-modal-buttons">
-                <button class="btn" id="confirmCancelBtn" style="background: var(--border); color: var(--text);" data-i18n="cancel">
+                <button class="btn" id="confirmCancelBtn" style="background: var(--border); color: var(--text);" data-i18n="cancel" aria-label="Cancel">
                     Cancel
                 </button>
-                <button class="btn btn-primary" id="confirmOkBtn" data-i18n="confirm">
+                <button class="btn btn-primary" id="confirmOkBtn" data-i18n="confirm" aria-label="Confirm">
                     Confirm
                 </button>
             </div>
@@ -1748,15 +1767,15 @@
     </div>
     
     <!-- Input Modal -->
-    <div class="input-modal" id="inputModal">
+    <div class="input-modal" id="inputModal" role="dialog" aria-modal="true" aria-labelledby="inputModalTitle">
         <div class="input-modal-content">
             <h3 class="input-modal-title" id="inputModalTitle" data-i18n="enterValue">Enter value</h3>
-            <input type="text" class="input-modal-input" id="inputModalInput" placeholder="Type here..." data-i18n-placeholder="typeHere">
+            <input type="text" class="input-modal-input" id="inputModalInput" placeholder="Type here..." data-i18n-placeholder="typeHere" aria-label="Input value">
             <div class="input-modal-buttons">
-                <button class="btn" id="inputModalCancelBtn" style="background: var(--border); color: var(--text);" data-i18n="cancel">
+                <button class="btn" id="inputModalCancelBtn" style="background: var(--border); color: var(--text);" data-i18n="cancel" aria-label="Cancel">
                     Cancel
                 </button>
-                <button class="btn btn-primary" id="inputModalOkBtn" data-i18n="ok">
+                <button class="btn btn-primary" id="inputModalOkBtn" data-i18n="ok" aria-label="Confirm">
                     OK
                 </button>
             </div>
@@ -1777,12 +1796,12 @@
     </div>
 
     <!-- Settings Modal -->
-    <div class="modal-overlay" id="settingsModal">
+    <div class="modal-overlay" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
         <div class="modal">
             <div class="modal-header">
-                <h2><svg width="20" height="20" style="margin-right: 8px; vertical-align: text-bottom;"><use href="#icon-settings"/></svg> Settings</h2>
+                <h2 id="settingsTitle"><svg width="20" height="20" style="margin-right: 8px; vertical-align: text-bottom;" aria-hidden="true"><use href="#icon-settings"/></svg> Settings</h2>
                 <button class="modal-close" id="closeSettingsBtn" aria-label="Close settings">
-                    <svg width="20" height="20"><use href="#icon-close"/></svg>
+                    <svg width="20" height="20" aria-hidden="true"><use href="#icon-close"/></svg>
                 </button>
             </div>
             <div class="modal-body">
@@ -2546,21 +2565,38 @@
         ];
         
         // 2. РЕНДЕРИНГ ТИПІВ
-        let customOrder = JSON.parse(localStorage.getItem('typesOrder') || '[]');
+        let customOrder = [];
+        try {
+            customOrder = JSON.parse(localStorage.getItem('typesOrder') || '[]');
+            if (!Array.isArray(customOrder)) {
+                customOrder = [];
+            }
+        } catch {
+            customOrder = [];
+            localStorage.removeItem('typesOrder'); // Очищаємо пошкоджені дані
+        }
         let isEditMode = false;
         
         function getOrderedTypes() {
-            if (customOrder.length === 0) return TYPES_LIST;
+            if (!Array.isArray(customOrder) || customOrder.length === 0) {
+                return TYPES_LIST;
+            }
             
             const ordered = [];
+            const addedIds = new Set();
+            
+            // Додаємо типи в кастомному порядку
             customOrder.forEach(id => {
                 const type = TYPES_LIST.find(t => t.id === id);
-                if (type) ordered.push(type);
+                if (type) {
+                    ordered.push(type);
+                    addedIds.add(id);
+                }
             });
             
-            // Додати нові типи, яких немає в збереженому порядку
+            // Додаємо нові типи, яких немає в customOrder
             TYPES_LIST.forEach(type => {
-                if (!customOrder.includes(type.id)) {
+                if (!addedIds.has(type.id)) {
                     ordered.push(type);
                 }
             });
@@ -2726,7 +2762,14 @@
         function hasData(typeId) {
             const storageKey = `loveDossier_${typeId.replace(/-/g, '_')}`;
             const data = localStorage.getItem(storageKey);
-            return data && JSON.parse(data).length > 0;
+            if (!data) return false;
+            
+            try {
+                const parsed = JSON.parse(data);
+                return Array.isArray(parsed) && parsed.length > 0;
+            } catch {
+                return false;
+            }
         }
         
         function getRecordCount(typeId) {
@@ -2899,13 +2942,81 @@
             });
         }
         
-        // 8. SERVICE WORKER
+        // 8. SERVICE WORKER з UPDATE NOTIFICATION
         if ('serviceWorker' in navigator && window.location.protocol !== 'file:') {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./service-worker.js')
-                    .then(reg => log('✅ Service Worker registered'))
-                    .catch(err => error('❌ SW registration failed:', err));
+            window.addEventListener('load', async () => {
+                try {
+                    const reg = await navigator.serviceWorker.register('./service-worker.js');
+                    log('✅ Service Worker registered');
+                    
+                    // Check for updates
+                    reg.addEventListener('updatefound', () => {
+                        const newWorker = reg.installing;
+                        log('🔄 Service Worker update found');
+                        
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                // New version available
+                                log('✨ New version available');
+                                showUpdateNotification();
+                            }
+                        });
+                    });
+                    
+                    // Check for updates every hour
+                    setInterval(() => {
+                        reg.update();
+                        log('🔍 Checking for Service Worker updates...');
+                    }, 60 * 60 * 1000);
+                    
+                } catch (err) {
+                    error('❌ SW registration failed:', err);
+                }
             });
+        }
+        
+        function showUpdateNotification() {
+            const notification = document.createElement('div');
+            notification.className = 'notification-toast';
+            notification.style.cssText = 'position: fixed; bottom: 2rem; right: 2rem; background: var(--primary); color: white; padding: 1.5rem; border-radius: 12px; box-shadow: var(--shadow-lg); z-index: 10000; max-width: 400px;';
+            
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <svg width="32" height="32" aria-hidden="true">
+                        <use href="#icon-refresh"/>
+                    </svg>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 700; margin-bottom: 0.25rem;">New Version Available!</div>
+                        <div style="font-size: 0.875rem; opacity: 0.9;">Refresh to get the latest features</div>
+                    </div>
+                </div>
+                <div style="margin-top: 1rem; display: flex; gap: 0.75rem;">
+                    <button id="updateNowBtn" style="flex: 1; padding: 0.5rem 1rem; background: white; color: var(--primary); border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                        Refresh Now
+                    </button>
+                    <button id="updateLaterBtn" style="padding: 0.5rem 1rem; background: transparent; color: white; border: 1px solid rgba(255,255,255,0.3); border-radius: 8px; cursor: pointer;">
+                        Later
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Handlers
+            document.getElementById('updateNowBtn').addEventListener('click', () => {
+                window.location.reload();
+            });
+            
+            document.getElementById('updateLaterBtn').addEventListener('click', () => {
+                notification.remove();
+            });
+            
+            // Auto-hide after 30 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 30000);
         }
         
         // 9. COLOR THEMES
@@ -2996,8 +3107,8 @@
             }
         };
         
-        // 15. EXPORT/IMPORT DATA
-        window.exportAllData = function() {
+        // 15. EXPORT/IMPORT DATA з SIZE WARNING
+        window.exportAllData = async function() {
             const exportData = {
                 version: '3.0.0',
                 exportDate: new Date().toISOString(),
@@ -3011,12 +3122,27 @@
                 }
             }
             
-            // Create JSON file
+            // Create JSON string
             const dataStr = JSON.stringify(exportData, null, 2);
+            const sizeBytes = new Blob([dataStr]).size;
+            const sizeKB = (sizeBytes / 1024).toFixed(1);
+            const sizeMB = (sizeBytes / (1024 * 1024)).toFixed(2);
+            
+            // Warn if file is large
+            if (sizeBytes > 1024 * 1024) { // > 1MB
+                const confirmed = await showConfirm(
+                    'Large Export File',
+                    `Export file will be ${sizeMB} MB. This may take a moment. Continue?`,
+                    'warning'
+                );
+                
+                if (!confirmed) return;
+            }
+            
+            // Create and download file
             const blob = new Blob([dataStr], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             
-            // Download
             const a = document.createElement('a');
             a.href = url;
             a.download = `love-dossier-backup-${new Date().toISOString().split('T')[0]}.json`;
@@ -3026,7 +3152,7 @@
             // Update last backup timestamp
             localStorage.setItem('lastBackup', Date.now().toString());
             
-            showNotification(t('success'), t('dataExported'), 'success');
+            showNotification(t('success'), t('dataExported') + ` (${sizeKB} KB)`, 'success');
         };
         
         window.importDataPrompt = function() {
@@ -3036,6 +3162,21 @@
         window.importDataFile = async function(event) {
             const file = event.target.files[0];
             if (!file) return;
+            
+            // Validate file
+            const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+            
+            if (file.size > MAX_FILE_SIZE) {
+                showNotification(t('error'), 'File too large (max 10MB)', 'error');
+                event.target.value = ''; // Clear input
+                return;
+            }
+            
+            if (file.type !== 'application/json' && !file.name.endsWith('.json')) {
+                showNotification(t('error'), 'Invalid file type. Please select a JSON file', 'error');
+                event.target.value = ''; // Clear input
+                return;
+            }
             
             showNotification(t('info'), t('loadingFile'), 'info');
             
@@ -3073,7 +3214,66 @@
             reader.readAsText(file);
         };
         
-        // 16. MODAL HELPERS (замість alert/confirm/prompt)
+        // 16. FOCUS TRAP HELPER для модалок
+        function trapFocus(element) {
+            const focusableElements = element.querySelectorAll(
+                'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+            );
+            const firstFocusable = focusableElements[0];
+            const lastFocusable = focusableElements[focusableElements.length - 1];
+
+            function handleTab(e) {
+                if (e.key !== 'Tab') return;
+
+                if (e.shiftKey) {
+                    if (document.activeElement === firstFocusable) {
+                        lastFocusable.focus();
+                        e.preventDefault();
+                    }
+                } else {
+                    if (document.activeElement === lastFocusable) {
+                        firstFocusable.focus();
+                        e.preventDefault();
+                    }
+                }
+            }
+
+            element.addEventListener('keydown', handleTab);
+            
+            // Focus first element
+            if (firstFocusable) {
+                setTimeout(() => firstFocusable.focus(), 100);
+            }
+
+            return () => {
+                element.removeEventListener('keydown', handleTab);
+            };
+        }
+        
+        // 17. INPUT SANITIZATION
+        function sanitizeInput(input) {
+            if (typeof input !== 'string') return '';
+            
+            // Create temporary element
+            const div = document.createElement('div');
+            div.textContent = input;
+            
+            // Get sanitized text (escapes HTML)
+            return div.innerHTML;
+        }
+        
+        function sanitizeHTML(html) {
+            if (typeof html !== 'string') return '';
+            
+            // Remove script tags and event handlers
+            return html
+                .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+                .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '')
+                .replace(/on\w+\s*=\s*[^\s>]*/gi, '')
+                .replace(/javascript:/gi, '');
+        }
+        
+        // 18. MODAL HELPERS (замість alert/confirm/prompt)
         function showConfirm(title, message, icon = 'warning') {
             return new Promise((resolve) => {
                 const modal = document.getElementById('confirmModal');
@@ -3096,11 +3296,15 @@
                     'trash': 'icon-trash'
                 };
                 
-                titleEl.textContent = title;
-                messageEl.textContent = message;
+                // Sanitize inputs
+                titleEl.textContent = sanitizeInput(title);
+                messageEl.textContent = sanitizeInput(message);
                 iconEl.innerHTML = `<svg width="48" height="48"><use href="#${iconMap[icon] || 'icon-warning'}"/></svg>`;
                 
                 modal.classList.add('show');
+                
+                // Setup focus trap
+                const removeFocusTrap = trapFocus(modal);
                 
                 function handleEsc(e) {
                     if (e.key === 'Escape') {
@@ -3114,6 +3318,7 @@
                     okBtn.removeEventListener('click', handleOk);
                     cancelBtn.removeEventListener('click', handleCancel);
                     document.removeEventListener('keydown', handleEsc);
+                    removeFocusTrap(); // Видалити focus trap
                 }
                 
                 function handleOk() {
@@ -3140,13 +3345,16 @@
                 const okBtn = document.getElementById('inputModalOkBtn');
                 const cancelBtn = document.getElementById('inputModalCancelBtn');
                 
-                titleEl.textContent = title;
-                input.placeholder = placeholder;
-                input.value = defaultValue;
+                // Sanitize inputs
+                titleEl.textContent = sanitizeInput(title);
+                input.placeholder = sanitizeInput(placeholder);
+                input.value = sanitizeInput(defaultValue);
                 input.type = type;
                 
                 modal.classList.add('show');
-                setTimeout(() => input.focus(), 100);
+                
+                // Setup focus trap
+                const removeFocusTrap = trapFocus(modal);
                 
                 function handleEsc(e) {
                     if (e.key === 'Escape') {
@@ -3161,11 +3369,13 @@
                     cancelBtn.removeEventListener('click', handleCancel);
                     input.removeEventListener('keydown', handleEnter);
                     document.removeEventListener('keydown', handleEsc);
+                    removeFocusTrap(); // Видалити focus trap
                 }
                 
                 function handleOk() {
                     cleanup();
-                    resolve(input.value);
+                    // Sanitize user input before returning
+                    resolve(sanitizeInput(input.value));
                 }
                 
                 function handleCancel() {
@@ -3291,6 +3501,12 @@
             if (params.has('dark')) {
                 document.documentElement.setAttribute('data-theme', 'dark');
                 localStorage.setItem('theme', 'dark');
+                
+                // Update theme toggle button
+                const themeToggle = document.getElementById('themeToggle');
+                if (themeToggle) {
+                    themeToggle.innerHTML = '<svg width="20" height="20"><use href="#icon-sun"/></svg>';
+                }
             }
             
             // ?type=communication-log - scroll to specific type
@@ -3331,11 +3547,51 @@
                     log('Share cancelled');
                 }
             } else {
-                // Fallback: copy link
-                navigator.clipboard.writeText(window.location.href);
-                showNotification(t('success'), t('linkCopied'), 'success');
+                // Fallback: copy link with clipboard API fallback
+                copyToClipboard(window.location.href);
             }
         };
+        
+        // Helper: Copy to clipboard with fallback
+        function copyToClipboard(text) {
+            // Try modern clipboard API first
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text)
+                    .then(() => {
+                        showNotification(t('success'), t('linkCopied'), 'success');
+                    })
+                    .catch(() => {
+                        // Fallback to execCommand
+                        fallbackCopyToClipboard(text);
+                    });
+            } else {
+                // Old browsers fallback
+                fallbackCopyToClipboard(text);
+            }
+        }
+        
+        function fallbackCopyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            textarea.style.left = '-9999px';
+            document.body.appendChild(textarea);
+            textarea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showNotification(t('success'), t('linkCopied'), 'success');
+                } else {
+                    showNotification(t('error'), 'Failed to copy link', 'error');
+                }
+            } catch (err) {
+                showNotification(t('error'), 'Failed to copy link', 'error');
+            }
+            
+            document.body.removeChild(textarea);
+        }
         
         // 21. EXPORT TO PDF
         window.exportToPDF = function() {
@@ -3427,74 +3683,96 @@
             }
         }
         
-        // 23. DRAG & DROP
+        // 23. DRAG & DROP з EVENT DELEGATION
         let draggedElement = null;
+        let dragListenersAttached = false;
         
         function setupDragAndDrop() {
-            const cards = document.querySelectorAll('.type-card');
+            // Event delegation - один listener на grid замість багатьох на картках
+            if (dragListenersAttached) return; // Avoid duplicate listeners
             
-            cards.forEach(card => {
-                card.addEventListener('dragstart', handleDragStart);
-                card.addEventListener('dragover', handleDragOver);
-                card.addEventListener('drop', handleDrop);
-                card.addEventListener('dragend', handleDragEnd);
-                card.addEventListener('dragenter', handleDragEnter);
-                card.addEventListener('dragleave', handleDragLeave);
+            const grid = document.getElementById('typesGrid');
+            if (!grid) return;
+            
+            grid.addEventListener('dragstart', (e) => {
+                if (e.target.classList.contains('type-card')) {
+                    draggedElement = e.target;
+                    e.target.classList.add('dragging');
+                    e.dataTransfer.effectAllowed = 'move';
+                }
             });
-        }
-        
-        function handleDragStart(e) {
-            draggedElement = this;
-            this.classList.add('dragging');
-            e.dataTransfer.effectAllowed = 'move';
-        }
-        
-        function handleDragOver(e) {
-            if (e.preventDefault) e.preventDefault();
-            e.dataTransfer.dropEffect = 'move';
-            return false;
-        }
-        
-        function handleDragEnter(e) {
-            if (this !== draggedElement) {
-                this.classList.add('drag-over');
-            }
-        }
-        
-        function handleDragLeave(e) {
-            this.classList.remove('drag-over');
-        }
-        
-        function handleDrop(e) {
-            if (e.stopPropagation) e.stopPropagation();
             
-            if (draggedElement !== this) {
+            grid.addEventListener('dragover', (e) => {
+                if (e.preventDefault) e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                return false;
+            });
+            
+            grid.addEventListener('dragenter', (e) => {
+                const card = e.target.closest('.type-card');
+                if (card && card !== draggedElement) {
+                    card.classList.add('drag-over');
+                }
+            });
+            
+            grid.addEventListener('dragleave', (e) => {
+                const card = e.target.closest('.type-card');
+                if (card) {
+                    card.classList.remove('drag-over');
+                }
+            });
+            
+            grid.addEventListener('drop', (e) => {
+                if (e.stopPropagation) e.stopPropagation();
+                
+                const targetCard = e.target.closest('.type-card');
+                if (targetCard && draggedElement && draggedElement !== targetCard) {
+                    handleDrop(targetCard);
+                }
+                
+                if (targetCard) {
+                    targetCard.classList.remove('drag-over');
+                }
+                return false;
+            });
+            
+            grid.addEventListener('dragend', (e) => {
+                if (e.target.classList.contains('type-card')) {
+                    e.target.classList.remove('dragging');
+                    document.querySelectorAll('.type-card').forEach(card => {
+                        card.classList.remove('drag-over');
+                    });
+                }
+            });
+            
+            dragListenersAttached = true;
+            log('✅ Drag & drop event delegation setup complete');
+        }
+        
+        function handleDrop(targetCard) {
+            if (draggedElement !== targetCard) {
                 const draggedId = draggedElement.getAttribute('data-type-id');
-                const targetId = this.getAttribute('data-type-id');
+                const targetId = targetCard.getAttribute('data-type-id');
                 
-                // Swap positions
-                const types = getOrderedTypes();
-                const draggedIndex = types.findIndex(t => t.id === draggedId);
-                const targetIndex = types.findIndex(t => t.id === targetId);
+                // Ensure customOrder exists and contains all types
+                if (customOrder.length === 0) {
+                    customOrder = TYPES_LIST.map(t => t.id);
+                }
                 
-                [types[draggedIndex], types[targetIndex]] = [types[targetIndex], types[draggedIndex]];
+                // Find indices in customOrder
+                const draggedOrderIndex = customOrder.indexOf(draggedId);
+                const targetOrderIndex = customOrder.indexOf(targetId);
                 
-                // Save new order
-                customOrder = types.map(t => t.id);
-                localStorage.setItem('typesOrder', JSON.stringify(customOrder));
+                // Swap in customOrder
+                if (draggedOrderIndex !== -1 && targetOrderIndex !== -1) {
+                    [customOrder[draggedOrderIndex], customOrder[targetOrderIndex]] = 
+                    [customOrder[targetOrderIndex], customOrder[draggedOrderIndex]];
+                    
+                    localStorage.setItem('typesOrder', JSON.stringify(customOrder));
+                }
                 
                 renderTypesGrid();
             }
-            
-            this.classList.remove('drag-over');
-            return false;
-        }
-        
-        function handleDragEnd(e) {
-            this.classList.remove('dragging');
-            document.querySelectorAll('.type-card').forEach(card => {
-                card.classList.remove('drag-over');
-            });
         }
         
         // 24. EDIT MODE
@@ -3519,8 +3797,153 @@
             });
         }
         
-        // 26. ІНІЦІАЛІЗАЦІЯ
+        // 26. STATS INTERVAL з AUTO-PAUSE
+        let statsInterval = null;
+        
+        function setupStatsInterval() {
+            // Start interval
+            updateStats(); // Перше оновлення зараз
+            statsInterval = setInterval(updateStats, 5000);
+            
+            // Pause when tab is hidden (battery saving)
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    if (statsInterval) {
+                        clearInterval(statsInterval);
+                        statsInterval = null;
+                        log('⏸️ Stats updates paused (tab hidden)');
+                    }
+                } else {
+                    if (!statsInterval) {
+                        updateStats(); // Оновити зараз
+                        statsInterval = setInterval(updateStats, 5000);
+                        log('▶️ Stats updates resumed (tab visible)');
+                    }
+                }
+            });
+            
+            // Cleanup on page unload
+            window.addEventListener('beforeunload', () => {
+                if (statsInterval) {
+                    clearInterval(statsInterval);
+                }
+            });
+        }
+        
+        // 27. KEYBOARD SHORTCUTS
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                // Ignore if typing in input/textarea
+                const isInput = e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA';
+                
+                // Ctrl/Cmd + K - Focus search
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                    e.preventDefault();
+                    const searchInput = document.getElementById('searchInput');
+                    if (searchInput) {
+                        searchInput.focus();
+                        searchInput.select();
+                    }
+                }
+                
+                // Ctrl/Cmd + , - Open settings
+                if ((e.ctrlKey || e.metaKey) && e.key === ',') {
+                    e.preventDefault();
+                    const settingsBtn = document.getElementById('settingsBtn');
+                    if (settingsBtn) {
+                        settingsBtn.click();
+                    }
+                }
+                
+                // Ctrl/Cmd + E - Toggle edit mode
+                if ((e.ctrlKey || e.metaKey) && e.key === 'e' && !isInput) {
+                    e.preventDefault();
+                    const editBtn = document.getElementById('editModeBtn');
+                    if (editBtn) {
+                        editBtn.click();
+                    }
+                }
+                
+                // Ctrl/Cmd + D - Toggle dark mode
+                if ((e.ctrlKey || e.metaKey) && e.key === 'd' && !isInput) {
+                    e.preventDefault();
+                    const themeToggle = document.getElementById('themeToggle');
+                    if (themeToggle) {
+                        themeToggle.click();
+                    }
+                }
+                
+                // Escape - Close modals/settings
+                if (e.key === 'Escape') {
+                    const settingsModal = document.getElementById('settingsModal');
+                    if (settingsModal && settingsModal.classList.contains('show')) {
+                        settingsModal.classList.remove('show');
+                    }
+                }
+                
+                // ? - Show keyboard shortcuts help (without Ctrl)
+                if (e.key === '?' && !e.ctrlKey && !e.metaKey && !isInput) {
+                    e.preventDefault();
+                    showKeyboardShortcutsHelp();
+                }
+            });
+            
+            log('⌨️ Keyboard shortcuts enabled');
+        }
+        
+        function showKeyboardShortcutsHelp() {
+            showConfirm(
+                'Keyboard Shortcuts',
+                `
+Ctrl/Cmd + K - Focus Search
+Ctrl/Cmd + , - Open Settings  
+Ctrl/Cmd + E - Toggle Edit Mode
+Ctrl/Cmd + D - Toggle Dark Mode
+Escape - Close Modals
+? - Show this help
+                `.trim(),
+                'info'
+            );
+        }
+        
+        // 28. STORAGE VERSIONING
+        const STORAGE_VERSION = '3.0.0';
+        
+        function checkStorageVersion() {
+            const storedVersion = localStorage.getItem('appVersion');
+            
+            if (!storedVersion) {
+                // First time user or pre-versioning data
+                log('📦 First time or legacy storage detected');
+                localStorage.setItem('appVersion', STORAGE_VERSION);
+                return;
+            }
+            
+            if (storedVersion !== STORAGE_VERSION) {
+                log(`🔄 Storage migration: ${storedVersion} → ${STORAGE_VERSION}`);
+                
+                // Migration logic can be added here
+                // For example:
+                // if (storedVersion === '2.0.0') {
+                //     migrateFrom2to3();
+                // }
+                
+                // Update version
+                localStorage.setItem('appVersion', STORAGE_VERSION);
+                
+                showNotification(
+                    'App Updated',
+                    `Love Dossier updated to v${STORAGE_VERSION}`,
+                    'success'
+                );
+            }
+        }
+        
+        // 29. ІНІЦІАЛІЗАЦІЯ
         function init() {
+            // Check and migrate storage if needed
+            checkStorageVersion();
+            
             // Load saved language
             currentLang = localStorage.getItem('language') || 'en';
             
@@ -3530,6 +3953,7 @@
             setupPWAInstall();
             setupColorThemes();
             setupLanguageSelect();
+            setupKeyboardShortcuts();
             updateStats();
             updateUIText();
             checkReminders();
@@ -3568,8 +3992,8 @@
                 }
             });
             
-            // Оновлювати статистику кожні 5 секунд
-            setInterval(updateStats, 5000);
+            // Оновлювати статистику кожні 5 секунд з автоматичною паузою
+            setupStatsInterval();
             
             log('✅ Love Dossier Main App initialized');
             log('📊 Total types:', TYPES_LIST.length);
