@@ -858,12 +858,30 @@
             color: white;
             padding: 0.75rem;
             text-align: center;
-            font-weight: 600;
+            font-weight: 500;
             display: none;
+            margin: 1rem auto;
+            max-width: 1400px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
         .edit-mode-banner.show {
             display: block;
+        }
+        
+        .exit-edit-btn {
+            background: none;
+            border: none;
+            color: white;
+            text-decoration: underline;
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            transition: opacity 0.2s;
+        }
+        
+        .exit-edit-btn:hover {
+            opacity: 0.8;
         }
         
         /* ============================================
@@ -933,6 +951,127 @@
             margin-top: 1rem;
             color: rgba(255, 255, 255, 0.8);
             font-size: 0.875rem;
+        }
+        
+        /* Confirmation Modal */
+        .confirm-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            animation: fadeIn 0.2s ease;
+        }
+        
+        .confirm-modal.show {
+            display: flex;
+        }
+        
+        .confirm-modal-content {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 2rem;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: var(--shadow-lg);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .confirm-modal-icon {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        
+        .confirm-modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 0.75rem;
+            color: var(--text);
+        }
+        
+        .confirm-modal-message {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        
+        .confirm-modal-buttons {
+            display: flex;
+            gap: 0.75rem;
+        }
+        
+        .confirm-modal-buttons .btn {
+            flex: 1;
+        }
+        
+        /* Input Modal */
+        .input-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            animation: fadeIn 0.2s ease;
+        }
+        
+        .input-modal.show {
+            display: flex;
+        }
+        
+        .input-modal-content {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 2rem;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .input-modal-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+        
+        .input-modal-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            background: var(--bg);
+            color: var(--text);
+        }
+        
+        .input-modal-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .input-modal-buttons {
+            display: flex;
+            gap: 0.75rem;
+        }
+        
+        .input-modal-buttons .btn {
+            flex: 1;
         }
         
         /* Welcome Screen */
@@ -1407,11 +1546,6 @@
         </div>
     </header>
     
-    <!-- Edit Mode Banner -->
-    <div class="edit-mode-banner" id="editModeBanner">
-        <i class="fas fa-grip-vertical"></i> Edit Mode: Drag cards to reorder • <button onclick="exitEditMode()" style="background:none;border:none;color:white;text-decoration:underline;cursor:pointer;">Save & Exit</button>
-    </div>
-    
     <!-- Toolbar with inline stats -->
     <div class="toolbar">
         <div class="search-box">
@@ -1471,6 +1605,11 @@
         </button>
     </div>
     
+    <!-- Edit Mode Banner -->
+    <div class="edit-mode-banner" id="editModeBanner">
+        <i class="fas fa-grip-vertical"></i> Edit Mode: Drag cards to reorder • <button id="exitEditModeBtn" class="exit-edit-btn">Save & Exit</button>
+    </div>
+    
     <!-- Types Grid -->
     <div class="container">
         <div class="types-grid" id="typesGrid">
@@ -1486,6 +1625,39 @@
         </p>
     </footer>
     </div><!-- End Main App -->
+    
+    <!-- Confirmation Modal -->
+    <div class="confirm-modal" id="confirmModal">
+        <div class="confirm-modal-content">
+            <div class="confirm-modal-icon" id="confirmIcon">⚠️</div>
+            <h3 class="confirm-modal-title" id="confirmTitle">Confirm Action</h3>
+            <p class="confirm-modal-message" id="confirmMessage">Are you sure?</p>
+            <div class="confirm-modal-buttons">
+                <button class="btn" id="confirmCancelBtn" style="background: var(--border); color: var(--text);">
+                    Cancel
+                </button>
+                <button class="btn btn-primary" id="confirmOkBtn">
+                    Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Input Modal -->
+    <div class="input-modal" id="inputModal">
+        <div class="input-modal-content">
+            <h3 class="input-modal-title" id="inputModalTitle">Enter value</h3>
+            <input type="text" class="input-modal-input" id="inputModalInput" placeholder="Type here...">
+            <div class="input-modal-buttons">
+                <button class="btn" id="inputModalCancelBtn" style="background: var(--border); color: var(--text);">
+                    Cancel
+                </button>
+                <button class="btn btn-primary" id="inputModalOkBtn">
+                    OK
+                </button>
+            </div>
+        </div>
+    </div>
     
     <!-- PWA Install Banner -->
     <div class="install-banner" id="installBanner">
@@ -1505,7 +1677,7 @@
         <div class="modal">
             <div class="modal-header">
                 <h2><i class="fas fa-cog"></i> Settings</h2>
-                <button class="modal-close" onclick="closeSettings()">
+                <button class="modal-close" id="closeSettingsBtn" aria-label="Close settings">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -1573,7 +1745,7 @@
                 <div class="setting-group">
                     <label class="setting-label">Dark Mode</label>
                     <div class="setting-description">Toggle light/dark theme</div>
-                    <button class="btn btn-primary" onclick="toggleTheme()">
+                    <button class="btn btn-primary" id="toggleThemeBtn">
                         <i class="fas fa-adjust"></i> Toggle Dark Mode
                     </button>
                 </div>
@@ -1582,7 +1754,7 @@
                 <div class="setting-group">
                     <label class="setting-label">Reset Card Order</label>
                     <div class="setting-description">Restore default card layout</div>
-                    <button class="btn btn-primary" onclick="resetCardOrder()">
+                    <button class="btn btn-primary" id="resetCardOrderBtn">
                         <i class="fas fa-undo"></i> Reset to Default
                     </button>
                 </div>
@@ -1592,17 +1764,17 @@
                     <label class="setting-label">Backup & Restore</label>
                     <div class="setting-description">Export or import all your data</div>
                     <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-                        <button class="btn btn-primary" onclick="exportAllData()">
+                        <button class="btn btn-primary" id="exportJSONBtn">
                             <i class="fas fa-download"></i> Export JSON
                         </button>
-                        <button class="btn btn-primary" onclick="exportToPDF()">
+                        <button class="btn btn-primary" id="exportPDFBtn">
                             <i class="fas fa-file-pdf"></i> Export PDF
                         </button>
-                        <button class="btn btn-primary" onclick="importDataPrompt()">
+                        <button class="btn btn-primary" id="importDataBtn">
                             <i class="fas fa-upload"></i> Import Data
                         </button>
                     </div>
-                    <input type="file" id="importFileInput" accept=".json" style="display: none;" onchange="importDataFile(event)">
+                    <input type="file" id="importFileInput" accept=".json" style="display: none;">
                 </div>
                 
                 <!-- Share -->
@@ -1610,13 +1782,13 @@
                     <label class="setting-label">Share</label>
                     <div class="setting-description">Share Love Dossier with friends</div>
                     <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-                        <button class="btn btn-primary" onclick="shareToTwitter()">
+                        <button class="btn btn-primary" id="shareTwitterBtn">
                             <i class="fab fa-twitter"></i> Twitter
                         </button>
-                        <button class="btn btn-primary" onclick="shareToFacebook()">
+                        <button class="btn btn-primary" id="shareFacebookBtn">
                             <i class="fab fa-facebook"></i> Facebook
                         </button>
-                        <button class="btn btn-primary" onclick="shareViaWebShare()">
+                        <button class="btn btn-primary" id="shareWebShareBtn">
                             <i class="fas fa-share-alt"></i> More...
                         </button>
                     </div>
@@ -1630,10 +1802,10 @@
                         Status: <span id="passwordEnabled">Not Protected</span>
                     </div>
                     <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-                        <button class="btn btn-primary" onclick="setupPassword()">
+                        <button class="btn btn-primary" id="setupPasswordBtn">
                             <i class="fas fa-lock"></i> Set Password
                         </button>
-                        <button class="btn btn-primary" onclick="removePassword()" id="removePasswordBtn" style="display: none;">
+                        <button class="btn btn-primary" id="removePasswordBtn" style="display: none;">
                             <i class="fas fa-unlock"></i> Remove Password
                         </button>
                     </div>
@@ -1643,7 +1815,7 @@
                 <div class="setting-group">
                     <label class="setting-label" style="color: var(--danger);">Danger Zone</label>
                     <div class="setting-description">Clear all stored data (cannot be undone!)</div>
-                    <button class="btn" style="background: var(--danger); color: white;" onclick="clearAllData()">
+                    <button class="btn" style="background: var(--danger); color: white;" id="clearAllDataBtn">
                         <i class="fas fa-trash"></i> Clear All Data
                     </button>
                 </div>
@@ -1654,9 +1826,15 @@
     <script>
         // ============================================
         // LOVE DOSSIER - INDEX.HTML JavaScript
+        // Version: 3.0.0
         // ============================================
         
-        // 0. LOADER & WELCOME FLOW
+        // 0. CONFIG & DEBUG
+        const DEBUG = false; // Set to false in production
+        const log = (...args) => DEBUG && console.log(...args);
+        const error = (...args) => console.error(...args);
+        
+        // 1. LOADER & WELCOME FLOW
         const AppFlow = {
             isFirstVisit: !localStorage.getItem('lovedossier_initialized'),
             selectedLang: 'en',
@@ -1799,9 +1977,10 @@
         };
         
         // Start app flow on page load
-        window.addEventListener('load', () => {
+        window.addEventListener('load', async () => {
             // Check password first
-            if (!checkPassword()) {
+            const passedAuth = await checkPassword();
+            if (!passedAuth) {
                 return;
             }
             AppFlow.showLoader();
@@ -1810,6 +1989,7 @@
         // 1. INTERNATIONALIZATION (i18n)
         const i18n = {
             en: {
+                // General
                 title: '💕 Love Dossier',
                 subtitle: '32 types for organizing information about your loved one',
                 search: 'Search types...',
@@ -1825,9 +2005,80 @@
                 darkMode: 'Dark Mode',
                 resetOrder: 'Reset Card Order',
                 clearData: 'Clear All Data',
-                install: 'Install PWA'
+                install: 'Install PWA',
+                
+                // Buttons
+                cancel: 'Cancel',
+                confirm: 'Confirm',
+                ok: 'OK',
+                save: 'Save',
+                delete: 'Delete',
+                edit: 'Edit',
+                close: 'Close',
+                back: 'Back',
+                
+                // Modals
+                resetOrderTitle: 'Reset Card Order',
+                resetOrderMessage: 'Are you sure you want to reset card order to default?',
+                clearDataTitle: 'Clear All Data',
+                clearDataMessage: '⚠️ This will delete ALL your data! Are you sure?',
+                finalConfirmTitle: 'Final Confirmation',
+                finalConfirmMessage: 'Really sure? This cannot be undone!',
+                importDataTitle: 'Import Data',
+                importDataMessage: '⚠️ This will replace ALL current data! Continue?',
+                passwordRequiredTitle: '🔒 Password Required',
+                passwordRequiredPlaceholder: 'Enter password to access Love Dossier',
+                setPasswordTitle: '🔒 Set Password',
+                setPasswordPlaceholder: 'Enter new password (min 4 characters)',
+                confirmPasswordTitle: '🔒 Confirm Password',
+                confirmPasswordPlaceholder: 'Enter password again',
+                removePasswordTitle: '🔒 Remove Password',
+                removePasswordPlaceholder: 'Enter current password',
+                
+                // Notifications
+                success: 'Success',
+                error: 'Error',
+                warning: 'Warning',
+                info: 'Info',
+                cardOrderReset: 'Card order reset to default!',
+                dataCleared: 'All data has been deleted',
+                dataExported: 'Data exported successfully!',
+                dataImported: 'Data imported successfully!',
+                invalidBackup: 'Invalid backup file',
+                passwordTooShort: 'Password too short! Min 4 characters.',
+                passwordsDontMatch: 'Passwords don\'t match!',
+                incorrectPassword: 'Incorrect password!',
+                passwordEnabled: 'Password protection enabled!',
+                passwordRemoved: 'Password protection removed!',
+                summaryExported: 'Summary exported!',
+                sharedSuccess: 'Shared successfully!',
+                linkCopied: 'Link copied to clipboard!',
+                shareCancelled: 'Share cancelled',
+                comingSoon: 'Coming Soon',
+                willBeIntegrated: 'will be integrated soon!',
+                
+                // Empty States
+                noResults: 'No results found for',
+                noMatches: 'No types match your filters',
+                tryAdjusting: 'Try adjusting your search or filters',
+                resetFilters: 'Reset Filters',
+                
+                // Reminders
+                backupReminder: 'Backup Reminder',
+                backupReminderMessage: 'It\'s been a while! Consider backing up your data.',
+                welcomeBack: 'Welcome back!',
+                welcomeBackMessage: 'It\'s been a while. Check what\'s new!',
+                
+                // PDF Export
+                generatingPDF: 'Generating PDF...',
+                pdfWait: 'This may take a moment',
+                
+                // Password Status
+                protected: 'Protected',
+                notProtected: 'Not Protected'
             },
             uk: {
+                // Загальне
                 title: '💕 Досьє коханої',
                 subtitle: '32 типи для організації інформації про вашу кохану людину',
                 search: 'Пошук типів...',
@@ -1843,9 +2094,80 @@
                 darkMode: 'Темна тема',
                 resetOrder: 'Скинути порядок',
                 clearData: 'Очистити дані',
-                install: 'Встановити PWA'
+                install: 'Встановити PWA',
+                
+                // Кнопки
+                cancel: 'Скасувати',
+                confirm: 'Підтвердити',
+                ok: 'OK',
+                save: 'Зберегти',
+                delete: 'Видалити',
+                edit: 'Редагувати',
+                close: 'Закрити',
+                back: 'Назад',
+                
+                // Модальні вікна
+                resetOrderTitle: 'Скинути порядок карток',
+                resetOrderMessage: 'Ви впевнені, що хочете скинути порядок карток до стандартного?',
+                clearDataTitle: 'Очистити всі дані',
+                clearDataMessage: '⚠️ Це видалить ВСІ ваші дані! Ви впевнені?',
+                finalConfirmTitle: 'Остаточне підтвердження',
+                finalConfirmMessage: 'Точно впевнені? Це неможливо скасувати!',
+                importDataTitle: 'Імпорт даних',
+                importDataMessage: '⚠️ Це замінить ВСІ поточні дані! Продовжити?',
+                passwordRequiredTitle: '🔒 Потрібен пароль',
+                passwordRequiredPlaceholder: 'Введіть пароль для доступу до Love Dossier',
+                setPasswordTitle: '🔒 Встановити пароль',
+                setPasswordPlaceholder: 'Введіть новий пароль (мін. 4 символи)',
+                confirmPasswordTitle: '🔒 Підтвердження паролю',
+                confirmPasswordPlaceholder: 'Введіть пароль ще раз',
+                removePasswordTitle: '🔒 Видалити пароль',
+                removePasswordPlaceholder: 'Введіть поточний пароль',
+                
+                // Сповіщення
+                success: 'Успіх',
+                error: 'Помилка',
+                warning: 'Попередження',
+                info: 'Інформація',
+                cardOrderReset: 'Порядок карток скинуто до стандартного!',
+                dataCleared: 'Всі дані видалено',
+                dataExported: 'Дані успішно експортовано!',
+                dataImported: 'Дані успішно імпортовано!',
+                invalidBackup: 'Невірний файл резервної копії',
+                passwordTooShort: 'Пароль занадто короткий! Мін. 4 символи.',
+                passwordsDontMatch: 'Паролі не співпадають!',
+                incorrectPassword: 'Невірний пароль!',
+                passwordEnabled: 'Захист паролем увімкнено!',
+                passwordRemoved: 'Захист паролем вимкнено!',
+                summaryExported: 'Звіт експортовано!',
+                sharedSuccess: 'Успішно поділилися!',
+                linkCopied: 'Посилання скопійовано в буфер!',
+                shareCancelled: 'Поширення скасовано',
+                comingSoon: 'Скоро буде',
+                willBeIntegrated: 'буде інтегровано найближчим часом!',
+                
+                // Порожні стани
+                noResults: 'Нічого не знайдено для',
+                noMatches: 'Жодні типи не відповідають вашим фільтрам',
+                tryAdjusting: 'Спробуйте змінити пошук або фільтри',
+                resetFilters: 'Скинути фільтри',
+                
+                // Нагадування
+                backupReminder: 'Нагадування про резервну копію',
+                backupReminderMessage: 'Пройшов час! Розгляньте можливість створення резервної копії даних.',
+                welcomeBack: 'З поверненням!',
+                welcomeBackMessage: 'Пройшов час. Подивіться, що нового!',
+                
+                // PDF Експорт
+                generatingPDF: 'Генерація PDF...',
+                pdfWait: 'Це може зайняти деякий час',
+                
+                // Статус паролю
+                protected: 'Захищено',
+                notProtected: 'Не захищено'
             },
             ru: {
+                // Общее
                 title: '💕 Досье любимого',
                 subtitle: '32 типа для организации информации о вашем любимом человеке',
                 search: 'Поиск типов...',
@@ -1861,7 +2183,77 @@
                 darkMode: 'Темная тема',
                 resetOrder: 'Сбросить порядок',
                 clearData: 'Очистить данные',
-                install: 'Установить PWA'
+                install: 'Установить PWA',
+                
+                // Кнопки
+                cancel: 'Отмена',
+                confirm: 'Подтвердить',
+                ok: 'OK',
+                save: 'Сохранить',
+                delete: 'Удалить',
+                edit: 'Редактировать',
+                close: 'Закрыть',
+                back: 'Назад',
+                
+                // Модальные окна
+                resetOrderTitle: 'Сбросить порядок карточек',
+                resetOrderMessage: 'Вы уверены, что хотите сбросить порядок карточек к стандартному?',
+                clearDataTitle: 'Очистить все данные',
+                clearDataMessage: '⚠️ Это удалит ВСЕ ваши данные! Вы уверены?',
+                finalConfirmTitle: 'Финальное подтверждение',
+                finalConfirmMessage: 'Точно уверены? Это невозможно отменить!',
+                importDataTitle: 'Импорт данных',
+                importDataMessage: '⚠️ Это заменит ВСЕ текущие данные! Продолжить?',
+                passwordRequiredTitle: '🔒 Требуется пароль',
+                passwordRequiredPlaceholder: 'Введите пароль для доступа к Love Dossier',
+                setPasswordTitle: '🔒 Установить пароль',
+                setPasswordPlaceholder: 'Введите новый пароль (мин. 4 символа)',
+                confirmPasswordTitle: '🔒 Подтверждение пароля',
+                confirmPasswordPlaceholder: 'Введите пароль еще раз',
+                removePasswordTitle: '🔒 Удалить пароль',
+                removePasswordPlaceholder: 'Введите текущий пароль',
+                
+                // Уведомления
+                success: 'Успех',
+                error: 'Ошибка',
+                warning: 'Предупреждение',
+                info: 'Информация',
+                cardOrderReset: 'Порядок карточек сброшен к стандартному!',
+                dataCleared: 'Все данные удалены',
+                dataExported: 'Данные успешно экспортированы!',
+                dataImported: 'Данные успешно импортированы!',
+                invalidBackup: 'Неверный файл резервной копии',
+                passwordTooShort: 'Пароль слишком короткий! Мин. 4 символа.',
+                passwordsDontMatch: 'Пароли не совпадают!',
+                incorrectPassword: 'Неверный пароль!',
+                passwordEnabled: 'Защита паролем включена!',
+                passwordRemoved: 'Защита паролем отключена!',
+                summaryExported: 'Отчет экспортирован!',
+                sharedSuccess: 'Успешно поделились!',
+                linkCopied: 'Ссылка скопирована в буфер!',
+                shareCancelled: 'Распространение отменено',
+                comingSoon: 'Скоро будет',
+                willBeIntegrated: 'будет интегрировано в ближайшее время!',
+                
+                // Пустые состояния
+                noResults: 'Ничего не найдено для',
+                noMatches: 'Никакие типы не соответствуют вашим фильтрам',
+                tryAdjusting: 'Попробуйте изменить поиск или фильтры',
+                resetFilters: 'Сбросить фильтры',
+                
+                // Напоминания
+                backupReminder: 'Напоминание о резервной копии',
+                backupReminderMessage: 'Прошло время! Рассмотрите возможность создания резервной копии данных.',
+                welcomeBack: 'С возвращением!',
+                welcomeBackMessage: 'Прошло время. Посмотрите, что нового!',
+                
+                // PDF Экспорт
+                generatingPDF: 'Генерация PDF...',
+                pdfWait: 'Это может занять некоторое время',
+                
+                // Статус пароля
+                protected: 'Защищено',
+                notProtected: 'Не защищено'
             },
             pl: {
                 title: '💕 Dossier ukochanej',
@@ -2048,7 +2440,7 @@
             grid.innerHTML = typesToRender.map((type, index) => `
                 <div class="type-card" data-type-id="${type.id}" data-index="${index}" 
                      draggable="${isEditMode}" 
-                     onclick="${isEditMode ? '' : `openType('${type.path}')`}">
+                     data-path="${type.path || ''}">
                     ${isEditMode ? '<div class="drag-handle"><i class="fas fa-grip-vertical"></i></div>' : ''}
                     ${type.priority ? '<span class="type-badge priority">⚡ Priority</span>' : '<span class="type-badge">Enhanced</span>'}
                     <div class="type-icon">${type.icon}</div>
@@ -2061,14 +2453,31 @@
                 </div>
             `).join('');
             
+            // Add click listeners to cards
+            if (!isEditMode) {
+                document.querySelectorAll('.type-card').forEach(card => {
+                    card.addEventListener('click', () => {
+                        const typeId = card.getAttribute('data-type-id');
+                        openType(typeId);
+                    });
+                });
+            }
+            
             if (isEditMode) {
                 setupDragAndDrop();
             }
         }
         
-        // 3. ВІДКРИТТЯ ТИПУ
-        function openType(path) {
-            window.open(path, '_blank');
+        // 3. ВІДКРИТТЯ ТИПУ (буде замінено на single-page view після інтеграції)
+        function openType(typeId) {
+            // TODO: Replace with single-page view system
+            // For now, open external HTML files
+            const type = TYPES_LIST.find(t => t.id === typeId);
+            if (type && type.path) {
+                window.open(type.path, '_blank');
+            } else {
+                showNotification('⚠️ ' + t('comingSoon'), `${typeId} ${t('willBeIntegrated')}`, 'info');
+            }
         }
         
         // 4. ПОШУК з debounce + фільтрами
@@ -2183,19 +2592,19 @@
         function showEmptyState(query) {
             const grid = document.getElementById('typesGrid');
             const message = query 
-                ? `No results found for "${query}"`
-                : 'No types match your filters';
+                ? `${t('noResults')} "${query}"`
+                : t('noMatches');
             
             grid.innerHTML = `
                 <div class="empty-state" style="grid-column: 1/-1;">
                     <div class="empty-state-icon">🔍</div>
                     <h3 class="empty-state-title">${message}</h3>
                     <p class="empty-state-description">
-                        Try adjusting your search or filters
+                        ${t('tryAdjusting')}
                     </p>
-                    <button class="empty-state-action" onclick="resetFilters()">
+                    <button class="empty-state-action" id="resetFiltersBtn">
                         <i class="fas fa-undo"></i>
-                        Reset Filters
+                        ${t('resetFilters')}
                     </button>
                 </div>
             `;
@@ -2241,7 +2650,7 @@
                             }
                         }
                     } catch (e) {
-                        console.log('Parse error for', storageKey);
+                        log('Parse error for', storageKey);
                     }
                 }
             });
@@ -2317,7 +2726,7 @@
                     deferredPrompt.prompt();
                     const { outcome } = await deferredPrompt.userChoice;
                     
-                    console.log(`PWA install: ${outcome}`);
+                    log(`PWA install: ${outcome}`);
                     
                     deferredPrompt = null;
                     installBtn.style.display = 'none';
@@ -2327,11 +2736,11 @@
         }
         
         // 8. SERVICE WORKER
-        if ('serviceWorker' in navigator) {
+        if ('serviceWorker' in navigator && window.location.protocol !== 'file:') {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./service-worker.js')
-                    .then(reg => console.log('✅ Service Worker registered'))
-                    .catch(err => console.error('❌ SW registration failed:', err));
+                    .then(reg => log('✅ Service Worker registered'))
+                    .catch(err => error('❌ SW registration failed:', err));
             });
         }
         
@@ -2382,20 +2791,39 @@
                 : '<i class="fas fa-moon"></i>';
         };
         
-        window.resetCardOrder = function() {
-            if (confirm('Reset card order to default?')) {
+        window.resetCardOrder = async function() {
+            const confirmed = await showConfirm(
+                t('resetOrderTitle'),
+                t('resetOrderMessage'),
+                '🔄'
+            );
+            
+            if (confirmed) {
                 localStorage.removeItem('typesOrder');
                 customOrder = [];
                 renderTypesGrid();
-                alert('✅ Card order reset!');
+                showNotification('✅ ' + t('success'), t('cardOrderReset'), 'success');
             }
         };
         
-        window.clearAllData = function() {
-            if (confirm('⚠️ This will delete ALL your data! Are you sure?')) {
-                if (confirm('Really sure? This cannot be undone!')) {
+        window.clearAllData = async function() {
+            const confirmed1 = await showConfirm(
+                t('clearDataTitle'),
+                t('clearDataMessage'),
+                '🗑️'
+            );
+            
+            if (confirmed1) {
+                const confirmed2 = await showConfirm(
+                    t('finalConfirmTitle'),
+                    t('finalConfirmMessage'),
+                    '⚠️'
+                );
+                
+                if (confirmed2) {
                     localStorage.clear();
-                    location.reload();
+                    showNotification('🗑️ ' + t('clearDataTitle'), t('dataCleared'), 'success');
+                    setTimeout(() => location.reload(), 1500);
                 }
             }
         };
@@ -2430,19 +2858,19 @@
             // Update last backup timestamp
             localStorage.setItem('lastBackup', Date.now().toString());
             
-            showNotification('✅ Success', 'Data exported successfully!', 'success');
+            showNotification('✅ ' + t('success'), t('dataExported'), 'success');
         };
         
         window.importDataPrompt = function() {
             document.getElementById('importFileInput').click();
         };
         
-        window.importDataFile = function(event) {
+        window.importDataFile = async function(event) {
             const file = event.target.files[0];
             if (!file) return;
             
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = async function(e) {
                 try {
                     const importData = JSON.parse(e.target.result);
                     
@@ -2450,7 +2878,13 @@
                         throw new Error('Invalid file format');
                     }
                     
-                    if (confirm('⚠️ This will replace ALL current data! Continue?')) {
+                    const confirmed = await showConfirm(
+                        t('importDataTitle'),
+                        t('importDataMessage'),
+                        '📥'
+                    );
+                    
+                    if (confirmed) {
                         // Clear current data
                         localStorage.clear();
                         
@@ -2459,17 +2893,118 @@
                             localStorage.setItem(key, importData.data[key]);
                         }
                         
-                        showNotification('✅ Success', 'Data imported successfully!', 'success');
+                        showNotification('✅ ' + t('success'), t('dataImported'), 'success');
                         setTimeout(() => location.reload(), 1500);
                     }
                 } catch (error) {
-                    showNotification('❌ Error', 'Invalid backup file', 'error');
+                    showNotification('❌ ' + t('error'), t('invalidBackup'), 'error');
                 }
             };
             reader.readAsText(file);
         };
         
-        // 16. NOTIFICATIONS
+        // 16. MODAL HELPERS (замість alert/confirm/prompt)
+        function showConfirm(title, message, icon = '⚠️') {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('confirmModal');
+                const titleEl = document.getElementById('confirmTitle');
+                const messageEl = document.getElementById('confirmMessage');
+                const iconEl = document.getElementById('confirmIcon');
+                const okBtn = document.getElementById('confirmOkBtn');
+                const cancelBtn = document.getElementById('confirmCancelBtn');
+                
+                titleEl.textContent = title;
+                messageEl.textContent = message;
+                iconEl.textContent = icon;
+                
+                modal.classList.add('show');
+                
+                function cleanup() {
+                    modal.classList.remove('show');
+                    okBtn.removeEventListener('click', handleOk);
+                    cancelBtn.removeEventListener('click', handleCancel);
+                }
+                
+                function handleOk() {
+                    cleanup();
+                    resolve(true);
+                }
+                
+                function handleCancel() {
+                    cleanup();
+                    resolve(false);
+                }
+                
+                okBtn.addEventListener('click', handleOk);
+                cancelBtn.addEventListener('click', handleCancel);
+                
+                // ESC to cancel
+                function handleEsc(e) {
+                    if (e.key === 'Escape') {
+                        cleanup();
+                        resolve(false);
+                        document.removeEventListener('keydown', handleEsc);
+                    }
+                }
+                document.addEventListener('keydown', handleEsc);
+            });
+        }
+        
+        function showInput(title, placeholder = '', defaultValue = '') {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('inputModal');
+                const titleEl = document.getElementById('inputModalTitle');
+                const input = document.getElementById('inputModalInput');
+                const okBtn = document.getElementById('inputModalOkBtn');
+                const cancelBtn = document.getElementById('inputModalCancelBtn');
+                
+                titleEl.textContent = title;
+                input.placeholder = placeholder;
+                input.value = defaultValue;
+                
+                modal.classList.add('show');
+                setTimeout(() => input.focus(), 100);
+                
+                function cleanup() {
+                    modal.classList.remove('show');
+                    okBtn.removeEventListener('click', handleOk);
+                    cancelBtn.removeEventListener('click', handleCancel);
+                    input.removeEventListener('keydown', handleEnter);
+                }
+                
+                function handleOk() {
+                    cleanup();
+                    resolve(input.value);
+                }
+                
+                function handleCancel() {
+                    cleanup();
+                    resolve(null);
+                }
+                
+                function handleEnter(e) {
+                    if (e.key === 'Enter') {
+                        handleOk();
+                    }
+                }
+                
+                okBtn.addEventListener('click', handleOk);
+                cancelBtn.addEventListener('click', handleCancel);
+                input.addEventListener('keydown', handleEnter);
+                
+                // ESC to cancel
+                function handleEsc(e) {
+                    if (e.key === 'Escape') {
+                        cleanup();
+                        resolve(null);
+                        document.removeEventListener('keydown', handleEsc);
+                    }
+                }
+                document.addEventListener('keydown', handleEsc);
+            });
+        }
+        
+        // 17. NOTIFICATIONS
         function showNotification(title, message, type = 'info') {
             const notification = document.createElement('div');
             notification.className = 'notification-toast';
@@ -2479,12 +3014,21 @@
                     <div class="notification-title">${title}</div>
                     <div class="notification-message">${message}</div>
                 </div>
-                <button class="notification-close" onclick="this.parentElement.remove()">
+                <button class="notification-close" data-close-notification>
                     <i class="fas fa-times"></i>
                 </button>
             `;
             
             document.body.appendChild(notification);
+            
+            // Close button listener
+            const closeBtn = notification.querySelector('[data-close-notification]');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => {
+                    notification.style.opacity = '0';
+                    setTimeout(() => notification.remove(), 300);
+                });
+            }
             
             // Auto remove after 5 seconds
             setTimeout(() => {
@@ -2506,8 +3050,8 @@
             if (daysSinceBackup > 30) {
                 setTimeout(() => {
                     showNotification(
-                        '💾 Backup Reminder',
-                        'It\'s been a while! Consider backing up your data.',
+                        '💾 ' + t('backupReminder'),
+                        t('backupReminderMessage'),
                         'info'
                     );
                 }, 3000);
@@ -2517,8 +3061,8 @@
             if (daysSinceVisit > 7) {
                 setTimeout(() => {
                     showNotification(
-                        '👋 Welcome back!',
-                        'It\'s been a while. Check what\'s new!',
+                        '👋 ' + t('welcomeBack'),
+                        t('welcomeBackMessage'),
                         'info'
                     );
                 }, 2000);
@@ -2586,20 +3130,20 @@
                         text: '32 types to organize everything about your loved one! 💕',
                         url: window.location.href
                     });
-                    showNotification('✅ Success', 'Shared successfully!', 'success');
+                    showNotification('✅ ' + t('success'), t('sharedSuccess'), 'success');
                 } catch (err) {
-                    console.log('Share cancelled');
+                    log('Share cancelled');
                 }
             } else {
                 // Fallback: copy link
                 navigator.clipboard.writeText(window.location.href);
-                showNotification('📋 Copied', 'Link copied to clipboard!', 'success');
+                showNotification('📋 Copied', t('linkCopied'), 'success');
             }
         };
         
         // 20. EXPORT TO PDF
         window.exportToPDF = function() {
-            showNotification('📄 Generating PDF...', 'This may take a moment', 'info');
+            showNotification('📄 ' + t('generatingPDF'), t('pdfWait'), 'info');
             
             // Simple PDF export (text-based)
             setTimeout(() => {
@@ -2621,52 +3165,54 @@
                 a.click();
                 URL.revokeObjectURL(url);
                 
-                showNotification('✅ Success', 'Summary exported!', 'success');
+                showNotification('✅ ' + t('success'), t('summaryExported'), 'success');
             }, 500);
         };
         
         // 21. PASSWORD PROTECTION
-        function checkPassword() {
+        async function checkPassword() {
             const savedPassword = localStorage.getItem('appPassword');
             if (savedPassword) {
-                const entered = prompt('🔒 Enter password to access Love Dossier:');
+                const entered = await showInput(t('passwordRequiredTitle'), t('passwordRequiredPlaceholder'), '');
                 if (entered !== savedPassword) {
-                    alert('❌ Incorrect password!');
-                    window.location.href = 'about:blank';
+                    showNotification('❌ ' + t('error'), t('incorrectPassword'), 'error');
+                    setTimeout(() => {
+                        window.location.href = 'about:blank';
+                    }, 1000);
                     return false;
                 }
             }
             return true;
         }
         
-        window.setupPassword = function() {
-            const password = prompt('🔒 Set a new password (min 4 characters):');
+        window.setupPassword = async function() {
+            const password = await showInput(t('setPasswordTitle'), t('setPasswordPlaceholder'), '');
             if (!password || password.length < 4) {
-                showNotification('❌ Error', 'Password too short!', 'error');
+                showNotification('❌ ' + t('error'), t('passwordTooShort'), 'error');
                 return;
             }
             
-            const confirm = prompt('🔒 Confirm password:');
-            if (password !== confirm) {
-                showNotification('❌ Error', 'Passwords don\'t match!', 'error');
+            const confirmPass = await showInput(t('confirmPasswordTitle'), t('confirmPasswordPlaceholder'), '');
+            if (password !== confirmPass) {
+                showNotification('❌ ' + t('error'), t('passwordsDontMatch'), 'error');
                 return;
             }
             
             localStorage.setItem('appPassword', password);
             updatePasswordStatus();
-            showNotification('✅ Success', 'Password protection enabled!', 'success');
+            showNotification('✅ ' + t('success'), t('passwordEnabled'), 'success');
         };
         
-        window.removePassword = function() {
-            const current = prompt('🔒 Enter current password:');
+        window.removePassword = async function() {
+            const current = await showInput(t('removePasswordTitle'), t('removePasswordPlaceholder'), '');
             const saved = localStorage.getItem('appPassword');
             
             if (current === saved) {
                 localStorage.removeItem('appPassword');
                 updatePasswordStatus();
-                showNotification('✅ Success', 'Password protection removed!', 'success');
+                showNotification('✅ ' + t('success'), t('passwordRemoved'), 'success');
             } else {
-                showNotification('❌ Error', 'Incorrect password!', 'error');
+                showNotification('❌ ' + t('error'), t('incorrectPassword'), 'error');
             }
         };
         
@@ -2676,7 +3222,7 @@
             const removeBtn = document.getElementById('removePasswordBtn');
             
             if (statusEl) {
-                statusEl.textContent = hasPassword ? '🔒 Protected' : 'Not Protected';
+                statusEl.textContent = hasPassword ? '🔒 ' + t('protected') : t('notProtected');
                 statusEl.style.color = hasPassword ? 'var(--success)' : 'var(--text-secondary)';
             }
             
@@ -2797,6 +3343,20 @@
             // Event listeners
             document.getElementById('settingsBtn').addEventListener('click', openSettings);
             document.getElementById('editModeBtn').addEventListener('click', enterEditMode);
+            document.getElementById('exitEditModeBtn').addEventListener('click', exitEditMode);
+            document.getElementById('closeSettingsBtn').addEventListener('click', closeSettings);
+            document.getElementById('toggleThemeBtn').addEventListener('click', toggleTheme);
+            document.getElementById('resetCardOrderBtn').addEventListener('click', resetCardOrder);
+            document.getElementById('exportJSONBtn').addEventListener('click', exportAllData);
+            document.getElementById('exportPDFBtn').addEventListener('click', exportToPDF);
+            document.getElementById('importDataBtn').addEventListener('click', importDataPrompt);
+            document.getElementById('shareTwitterBtn').addEventListener('click', shareToTwitter);
+            document.getElementById('shareFacebookBtn').addEventListener('click', shareToFacebook);
+            document.getElementById('shareWebShareBtn').addEventListener('click', shareViaWebShare);
+            document.getElementById('setupPasswordBtn').addEventListener('click', setupPassword);
+            document.getElementById('removePasswordBtn').addEventListener('click', removePassword);
+            document.getElementById('clearAllDataBtn').addEventListener('click', clearAllData);
+            document.getElementById('importFileInput').addEventListener('change', importDataFile);
             
             // Close modal on overlay click
             document.getElementById('settingsModal').addEventListener('click', (e) => {
@@ -2805,12 +3365,19 @@
                 }
             });
             
+            // Reset filters button (dynamically created)
+            document.addEventListener('click', (e) => {
+                if (e.target.id === 'resetFiltersBtn' || e.target.closest('#resetFiltersBtn')) {
+                    resetFilters();
+                }
+            });
+            
             // Оновлювати статистику кожні 5 секунд
             setInterval(updateStats, 5000);
             
-            console.log('✅ Love Dossier Main App initialized');
-            console.log('📊 Total types:', TYPES_LIST.length);
-            console.log('🌐 Language:', currentLang);
+            log('✅ Love Dossier Main App initialized');
+            log('📊 Total types:', TYPES_LIST.length);
+            log('🌐 Language:', currentLang);
         }
         
         // ❌ НЕ запускаємо init автоматично - тільки через AppFlow!
