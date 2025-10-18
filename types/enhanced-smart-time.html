@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Time Picker - Schedule Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --card-bg: #ffffff;
+            --card-border: rgba(99, 102, 241, 0.15);
+            --text-primary: #1a202c;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --primary: #667eea;
+            --primary-light: rgba(102, 126, 234, 0.1);
+            --accent: #764ba2;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --border-light: rgba(0,0,0,0.06);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container { max-width: 1000px; margin: 0 auto; }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 0.5rem;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .field-card {
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-left: 4px solid var(--primary);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .type-label {
+            display: inline-block;
+            background: rgba(102, 126, 234, 0.1);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Clock Picker */
+        .clock-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .analog-clock {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+            position: relative;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .clock-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 12px;
+            height: 12px;
+            background: var(--primary);
+            border-radius: 50%;
+            z-index: 3;
+        }
+
+        .clock-number {
+            position: absolute;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+        }
+
+        .hour-hand {
+            position: absolute;
+            bottom: 50%;
+            left: 50%;
+            width: 4px;
+            height: 60px;
+            background: var(--primary);
+            transform-origin: bottom center;
+            transform: translateX(-50%) rotate(60deg);
+            border-radius: 4px;
+        }
+
+        .minute-hand {
+            position: absolute;
+            bottom: 50%;
+            left: 50%;
+            width: 3px;
+            height: 85px;
+            background: var(--accent);
+            transform-origin: bottom center;
+            transform: translateX(-50%) rotate(180deg);
+            border-radius: 3px;
+        }
+
+        /* Digital Display */
+        .digital-display {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 16px;
+            text-align: center;
+            color: white;
+            margin-bottom: 2rem;
+        }
+
+        .time-display {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .time-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        /* Quick Presets */
+        .presets-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .preset-btn {
+            padding: 1rem;
+            background: white;
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .preset-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .preset-icon {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .preset-label {
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .preset-time {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* Timezone Converter */
+        .timezone-section {
+            padding: 1.5rem;
+            background: rgba(102, 126, 234, 0.02);
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+
+        .timezone-title {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .timezone-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .timezone-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: white;
+            border: 2px solid var(--border-light);
+            border-radius: 10px;
+        }
+
+        .timezone-location {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .timezone-flag {
+            font-size: 1.5rem;
+        }
+
+        .timezone-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .timezone-time {
+            font-size: 1.3rem;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+            color: var(--primary);
+        }
+
+        /* Recurring Schedule */
+        .schedule-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .schedule-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.25rem;
+            background: white;
+            border: 2px solid var(--border-light);
+            border-left: 4px solid var(--primary);
+            border-radius: 12px;
+        }
+
+        .schedule-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .schedule-content {
+            flex: 1;
+        }
+
+        .schedule-title {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .schedule-subtitle {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .schedule-time {
+            font-size: 1.3rem;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+            color: var(--primary);
+            min-width: 100px;
+            text-align: right;
+        }
+
+        @media (max-width: 768px) {
+            .presets-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⏰ Smart Time Picker</h1>
+        <p class="subtitle">Visual clock • Timezone converter • Quick presets • Recurring schedule<br><strong>Minimal Modern Style</strong></p>
+
+        <!-- Analog Clock -->
+        <div class="field-card">
+            <div class="type-label">⏰ TIME PICKER: Visual Selection</div>
+
+            <div class="clock-container">
+                <div class="analog-clock">
+                    <!-- Clock numbers -->
+                    <div class="clock-number" style="top: 10px; left: 50%; transform: translateX(-50%)">12</div>
+                    <div class="clock-number" style="top: 50%; right: 10px; transform: translateY(-50%)">3</div>
+                    <div class="clock-number" style="bottom: 10px; left: 50%; transform: translateX(-50%)">6</div>
+                    <div class="clock-number" style="top: 50%; left: 10px; transform: translateY(-50%)">9</div>
+                    
+                    <!-- Hands -->
+                    <div class="hour-hand"></div>
+                    <div class="minute-hand"></div>
+                    <div class="clock-center"></div>
+                </div>
+            </div>
+
+            <div class="digital-display">
+                <div class="time-display">14:30</div>
+                <div class="time-label">Обраний час</div>
+            </div>
+
+            <!-- Quick Presets -->
+            <div class="presets-grid">
+                <div class="preset-btn">
+                    <div class="preset-icon">☀️</div>
+                    <div class="preset-label">Ранок</div>
+                    <div class="preset-time">08:00</div>
+                </div>
+                <div class="preset-btn">
+                    <div class="preset-icon">🌅</div>
+                    <div class="preset-label">Обід</div>
+                    <div class="preset-time">12:00</div>
+                </div>
+                <div class="preset-btn">
+                    <div class="preset-icon">🌆</div>
+                    <div class="preset-label">Вечір</div>
+                    <div class="preset-time">18:00</div>
+                </div>
+                <div class="preset-btn">
+                    <div class="preset-icon">🌙</div>
+                    <div class="preset-label">Ніч</div>
+                    <div class="preset-time">22:00</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timezone Converter -->
+        <div class="field-card">
+            <div class="type-label">🌍 TIMEZONE: Converter</div>
+
+            <div class="timezone-section">
+                <div class="timezone-title">🌍 Часові пояси (коли дзвонити?)</div>
+                <div class="timezone-list">
+                    <div class="timezone-item">
+                        <div class="timezone-location">
+                            <span class="timezone-flag">🇺🇦</span>
+                            <span class="timezone-name">Київ (EET)</span>
+                        </div>
+                        <div class="timezone-time">14:30</div>
+                    </div>
+
+                    <div class="timezone-item">
+                        <div class="timezone-location">
+                            <span class="timezone-flag">🇬🇧</span>
+                            <span class="timezone-name">Лондон (GMT)</span>
+                        </div>
+                        <div class="timezone-time">12:30</div>
+                    </div>
+
+                    <div class="timezone-item">
+                        <div class="timezone-location">
+                            <span class="timezone-flag">🇺🇸</span>
+                            <span class="timezone-name">Нью-Йорк (EST)</span>
+                        </div>
+                        <div class="timezone-time">07:30</div>
+                    </div>
+
+                    <div class="timezone-item">
+                        <div class="timezone-location">
+                            <span class="timezone-flag">🇯🇵</span>
+                            <span class="timezone-name">Токіо (JST)</span>
+                        </div>
+                        <div class="timezone-time">21:30</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recurring Schedule -->
+        <div class="field-card">
+            <div class="type-label">🔁 SCHEDULE: Recurring Times</div>
+
+            <div class="schedule-list">
+                <div class="schedule-item">
+                    <div class="schedule-icon">
+                        <i class="fas fa-mug-hot"></i>
+                    </div>
+                    <div class="schedule-content">
+                        <div class="schedule-title">Ранкова кава разом</div>
+                        <div class="schedule-subtitle">Щодня, понеділок-п'ятниця</div>
+                    </div>
+                    <div class="schedule-time">08:00</div>
+                </div>
+
+                <div class="schedule-item">
+                    <div class="schedule-icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <div class="schedule-content">
+                        <div class="schedule-title">Спільний обід</div>
+                        <div class="schedule-subtitle">Щодня</div>
+                    </div>
+                    <div class="schedule-time">13:00</div>
+                </div>
+
+                <div class="schedule-item">
+                    <div class="schedule-icon">
+                        <i class="fas fa-video"></i>
+                    </div>
+                    <div class="schedule-content">
+                        <div class="schedule-title">Відеодзвінок</div>
+                        <div class="schedule-subtitle">Якщо далеко один від одного</div>
+                    </div>
+                    <div class="schedule-time">20:00</div>
+                </div>
+
+                <div class="schedule-item">
+                    <div class="schedule-icon">
+                        <i class="fas fa-dumbbell"></i>
+                    </div>
+                    <div class="schedule-content">
+                        <div class="schedule-title">Спортзал разом</div>
+                        <div class="schedule-subtitle">Пн, Ср, Пт</div>
+                    </div>
+                    <div class="schedule-time">18:30</div>
+                </div>
+
+                <div class="schedule-item">
+                    <div class="schedule-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="schedule-content">
+                        <div class="schedule-title">Date Night</div>
+                        <div class="schedule-subtitle">Кожна субота</div>
+                    </div>
+                    <div class="schedule-time">19:00</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

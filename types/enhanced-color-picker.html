@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Mood Board - Palette Generator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --card-bg: #ffffff;
+            --card-border: rgba(99, 102, 241, 0.15);
+            --text-primary: #1a202c;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --primary: #667eea;
+            --primary-light: rgba(102, 126, 234, 0.1);
+            --accent: #764ba2;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --border-light: rgba(0,0,0,0.06);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container { max-width: 1100px; margin: 0 auto; }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 0.5rem;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .field-card {
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-left: 4px solid var(--primary);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .type-label {
+            display: inline-block;
+            background: rgba(102, 126, 234, 0.1);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Color Picker */
+        .picker-container {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .color-wheel {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            background: conic-gradient(
+                red, yellow, lime, cyan, blue, magenta, red
+            );
+            position: relative;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .picker-cursor {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border: 3px solid white;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .color-details {
+            flex: 1;
+        }
+
+        .selected-color {
+            width: 100%;
+            height: 150px;
+            border-radius: 16px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .color-codes {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .code-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 10px;
+        }
+
+        .code-label {
+            font-weight: 700;
+            color: var(--text-primary);
+            min-width: 60px;
+        }
+
+        .code-value {
+            flex: 1;
+            font-family: 'Courier New', monospace;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .copy-btn {
+            padding: 0.4rem 0.8rem;
+            background: white;
+            border: 2px solid var(--border-light);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .copy-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Favorite Colors */
+        .favorites-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 1rem;
+        }
+
+        .favorite-color {
+            aspect-ratio: 1;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .favorite-color:hover {
+            transform: translateY(-6px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .color-name {
+            position: absolute;
+            bottom: -30px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* Palette Generator */
+        .palette-section {
+            padding: 1.5rem;
+            background: rgba(102, 126, 234, 0.02);
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+
+        .palette-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .palette-title {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .generate-btn {
+            padding: 0.6rem 1.2rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .palette-colors {
+            display: flex;
+            gap: 1rem;
+            height: 120px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .palette-color {
+            flex: 1;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .palette-color:hover {
+            flex: 1.5;
+        }
+
+        .palette-code {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: white;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .palette-color:hover .palette-code {
+            opacity: 1;
+        }
+
+        /* Color Schemes */
+        .schemes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .scheme-card {
+            padding: 1.25rem;
+            background: white;
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+        }
+
+        .scheme-title {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .scheme-colors {
+            display: flex;
+            gap: 0.5rem;
+            height: 80px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .scheme-color {
+            flex: 1;
+        }
+
+        @media (max-width: 768px) {
+            .picker-container { flex-direction: column; }
+            .favorites-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Color Mood Board</h1>
+        <p class="subtitle">Visual picker • Palette generator • Favorite colors • Color harmony<br><strong>Minimal Modern Style</strong></p>
+
+        <!-- Color Picker -->
+        <div class="field-card">
+            <div class="type-label">🎨 COLOR PICKER: Choose Your Color</div>
+
+            <div class="picker-container">
+                <div class="color-wheel">
+                    <div class="picker-cursor" style="background: #ff6b9d;"></div>
+                </div>
+
+                <div class="color-details">
+                    <div class="selected-color" style="background: linear-gradient(135deg, #ff6b9d, #c44569);"></div>
+                    <div class="color-codes">
+                        <div class="code-item">
+                            <div class="code-label">HEX:</div>
+                            <div class="code-value">#ff6b9d</div>
+                            <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                        </div>
+                        <div class="code-item">
+                            <div class="code-label">RGB:</div>
+                            <div class="code-value">rgb(255, 107, 157)</div>
+                            <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                        </div>
+                        <div class="code-item">
+                            <div class="code-label">HSL:</div>
+                            <div class="code-value">hsl(340, 100%, 71%)</div>
+                            <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Favorite Colors -->
+        <div class="field-card">
+            <div class="type-label">❤️ FAVORITES: Our Colors</div>
+
+            <div class="favorites-grid">
+                <div class="favorite-color" style="background: #ff6b9d;">
+                    <div class="color-name">Pink Love</div>
+                </div>
+                <div class="favorite-color" style="background: #667eea;">
+                    <div class="color-name">Blue Sky</div>
+                </div>
+                <div class="favorite-color" style="background: #764ba2;">
+                    <div class="color-name">Purple</div>
+                </div>
+                <div class="favorite-color" style="background: #f093fb;">
+                    <div class="color-name">Lavender</div>
+                </div>
+                <div class="favorite-color" style="background: #4facfe;">
+                    <div class="color-name">Ocean</div>
+                </div>
+                <div class="favorite-color" style="background: #43e97b;">
+                    <div class="color-name">Mint</div>
+                </div>
+                <div class="favorite-color" style="background: #fa709a;">
+                    <div class="color-name">Rose</div>
+                </div>
+                <div class="favorite-color" style="background: #feca57;">
+                    <div class="color-name">Sunset</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Palette Generator -->
+        <div class="field-card">
+            <div class="type-label">🎨 PALETTE: Wedding Colors</div>
+
+            <div class="palette-section">
+                <div class="palette-header">
+                    <div class="palette-title">Romantic Blush Palette</div>
+                    <button class="generate-btn">
+                        <i class="fas fa-random"></i>
+                        Згенерувати нову
+                    </button>
+                </div>
+                <div class="palette-colors">
+                    <div class="palette-color" style="background: #fff5f7;">
+                        <div class="palette-code">#fff5f7</div>
+                    </div>
+                    <div class="palette-color" style="background: #ffb3c1;">
+                        <div class="palette-code">#ffb3c1</div>
+                    </div>
+                    <div class="palette-color" style="background: #ff8fa3;">
+                        <div class="palette-code">#ff8fa3</div>
+                    </div>
+                    <div class="palette-color" style="background: #ff6b9d;">
+                        <div class="palette-code">#ff6b9d</div>
+                    </div>
+                    <div class="palette-color" style="background: #c44569;">
+                        <div class="palette-code">#c44569</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="palette-section">
+                <div class="palette-header">
+                    <div class="palette-title">Ocean Breeze Palette</div>
+                    <button class="generate-btn">
+                        <i class="fas fa-random"></i>
+                        Згенерувати нову
+                    </button>
+                </div>
+                <div class="palette-colors">
+                    <div class="palette-color" style="background: #e0f7fa;">
+                        <div class="palette-code">#e0f7fa</div>
+                    </div>
+                    <div class="palette-color" style="background: #80deea;">
+                        <div class="palette-code">#80deea</div>
+                    </div>
+                    <div class="palette-color" style="background: #4facfe;">
+                        <div class="palette-code">#4facfe</div>
+                    </div>
+                    <div class="palette-color" style="background: #00bcd4;">
+                        <div class="palette-code">#00bcd4</div>
+                    </div>
+                    <div class="palette-color" style="background: #006064;">
+                        <div class="palette-code">#006064</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Color Schemes -->
+        <div class="field-card">
+            <div class="type-label">🎨 SCHEMES: Design Ideas</div>
+
+            <div class="schemes-grid">
+                <div class="scheme-card">
+                    <div class="scheme-title">💒 Wedding Decor</div>
+                    <div class="scheme-colors">
+                        <div class="scheme-color" style="background: #fff5f7;"></div>
+                        <div class="scheme-color" style="background: #ffb3c1;"></div>
+                        <div class="scheme-color" style="background: #c44569;"></div>
+                        <div class="scheme-color" style="background: #8b4367;"></div>
+                    </div>
+                </div>
+
+                <div class="scheme-card">
+                    <div class="scheme-title">🏠 Apartment Interior</div>
+                    <div class="scheme-colors">
+                        <div class="scheme-color" style="background: #f5f5f5;"></div>
+                        <div class="scheme-color" style="background: #e0e7ff;"></div>
+                        <div class="scheme-color" style="background: #667eea;"></div>
+                        <div class="scheme-color" style="background: #1a202c;"></div>
+                    </div>
+                </div>
+
+                <div class="scheme-card">
+                    <div class="scheme-title">🌸 Spring Garden</div>
+                    <div class="scheme-colors">
+                        <div class="scheme-color" style="background: #fef3c7;"></div>
+                        <div class="scheme-color" style="background: #fbcfe8;"></div>
+                        <div class="scheme-color" style="background: #bbf7d0;"></div>
+                        <div class="scheme-color" style="background: #bfdbfe;"></div>
+                    </div>
+                </div>
+
+                <div class="scheme-card">
+                    <div class="scheme-title">🌅 Sunset Romance</div>
+                    <div class="scheme-colors">
+                        <div class="scheme-color" style="background: #fef5e7;"></div>
+                        <div class="scheme-color" style="background: #feca57;"></div>
+                        <div class="scheme-color" style="background: #ff6348;"></div>
+                        <div class="scheme-color" style="background: #c23616;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

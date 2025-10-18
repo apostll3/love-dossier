@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finances Together PRO - Budget & Expenses & Analytics</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --card-bg: #ffffff;
+            --card-border: rgba(99, 102, 241, 0.15);
+            --text-primary: #1a202c;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --primary: #667eea;
+            --primary-light: rgba(102, 126, 234, 0.1);
+            --accent: #764ba2;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --border-light: rgba(0,0,0,0.06);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 0.5rem;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
+        }
+
+        .field-card {
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-left: 4px solid var(--primary);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 1.5rem;
+        }
+
+        .type-label {
+            display: inline-block;
+            background: rgba(102, 126, 234, 0.1);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Total Balance */
+        .balance-card {
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--success), #34d399);
+            border-radius: 16px;
+            color: white;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .balance-label {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+        }
+
+        .balance-amount {
+            font-size: 3rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .balance-change {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 0.5rem;
+        }
+
+        /* Income/Expense Cards */
+        .finance-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .finance-box {
+            padding: 1.25rem;
+            background: white;
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .finance-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+        }
+
+        .finance-icon.income {
+            background: linear-gradient(135deg, var(--success), #34d399);
+        }
+
+        .finance-icon.expense {
+            background: linear-gradient(135deg, var(--danger), #f87171);
+        }
+
+        .finance-content {
+            flex: 1;
+        }
+
+        .finance-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+        }
+
+        .finance-amount {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        /* Category Budgets */
+        .budget-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .budget-item {
+            padding: 1.25rem;
+            background: white;
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+        }
+
+        .budget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .budget-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .budget-icon {
+            font-size: 1.5rem;
+        }
+
+        .budget-amount {
+            font-weight: 700;
+            color: var(--text-secondary);
+        }
+
+        .budget-progress {
+            margin-top: 0.75rem;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), #34d399);
+            border-radius: 10px;
+        }
+
+        .progress-fill.warning {
+            background: linear-gradient(90deg, var(--warning), #fbbf24);
+        }
+
+        .progress-fill.danger {
+            background: linear-gradient(90deg, var(--danger), #f87171);
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Recent Transactions */
+        .transactions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .transaction-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: white;
+            border: 2px solid var(--border-light);
+            border-radius: 10px;
+        }
+
+        .transaction-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+
+        .transaction-icon.expense {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        .transaction-icon.income {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .transaction-content {
+            flex: 1;
+        }
+
+        .transaction-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .transaction-date {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .transaction-amount {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .transaction-amount.expense {
+            color: var(--danger);
+        }
+
+        .transaction-amount.income {
+            color: var(--success);
+        }
+
+        /* Pie Chart */
+        .pie-chart-container {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .pie-chart {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: conic-gradient(
+                #10b981 0deg 86.4deg,
+                #667eea 86.4deg 165.6deg,
+                #f59e0b 165.6deg 223.2deg,
+                #ef4444 223.2deg 270deg,
+                #8b5cf6 270deg 360deg
+            );
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            position: relative;
+        }
+
+        .pie-legend {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+
+        .legend-label {
+            flex: 1;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .legend-amount {
+            font-weight: 700;
+            color: var(--text-secondary);
+        }
+
+        /* Bill Reminders */
+        .bill-reminders {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        .bill-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: white;
+            border: 2px solid var(--border-light);
+            border-left: 4px solid var(--warning);
+            border-radius: 10px;
+        }
+
+        .bill-item.upcoming {
+            border-left-color: var(--danger);
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.02), rgba(220, 38, 38, 0.01));
+        }
+
+        .bill-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--warning), #fbbf24);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .bill-content {
+            flex: 1;
+        }
+
+        .bill-title {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .bill-date {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .bill-amount {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--danger);
+        }
+
+        /* Quick Add Expense */
+        .quick-add-expense {
+            padding: 1.5rem;
+            background: rgba(102, 126, 234, 0.02);
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .expense-form {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            gap: 0.75rem;
+            align-items: end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .form-input, .form-select {
+            padding: 0.75rem;
+            border: 2px solid var(--border-light);
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+
+        .form-input:focus, .form-select:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        .add-expense-btn {
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-expense-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Savings Goals */
+        .savings-goals {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .savings-goal {
+            padding: 1.25rem;
+            background: white;
+            border: 2px solid var(--border-light);
+            border-left: 4px solid var(--success);
+            border-radius: 12px;
+        }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .goal-title {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .goal-target {
+            font-weight: 700;
+            color: var(--success);
+        }
+
+        .goal-progress-bar {
+            height: 12px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .goal-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), #34d399);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .goal-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Export Buttons */
+        .export-bar {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .export-btn {
+            flex: 1;
+            padding: 0.75rem;
+            background: white;
+            border: 2px solid var(--border-light);
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .export-btn:hover {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border-color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .cards-grid { grid-template-columns: 1fr; }
+            .finance-grid { grid-template-columns: 1fr; }
+            .expense-form { grid-template-columns: 1fr; }
+            .pie-chart-container { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Finances Together PRO</h1>
+        <p class="subtitle">Shared budget • Expense tracking • Bill reminders • Pie charts • Export to Excel<br><strong>Enhanced with Smart Analytics</strong></p>
+
+        <div class="cards-grid">
+            <!-- Overview -->
+            <div>
+                <div class="type-label">📊 FINANCES: January 2025</div>
+                <div class="field-card">
+                    <!-- Export Buttons -->
+                    <div class="export-bar">
+                        <button class="export-btn">
+                            <i class="fas fa-file-excel"></i>
+                            Експорт в Excel
+                        </button>
+                        <button class="export-btn">
+                            <i class="fas fa-file-pdf"></i>
+                            Експорт в PDF
+                        </button>
+                        <button class="export-btn">
+                            <i class="fas fa-chart-line"></i>
+                            Звіт за місяць
+                        </button>
+                    </div>
+
+                    <!-- Quick Add Expense -->
+                    <div class="quick-add-expense">
+                        <div class="expense-form">
+                            <div class="form-group">
+                                <label class="form-label">Опис витрати</label>
+                                <input type="text" class="form-input" placeholder="Наприклад: Продукти в Сільпо">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Сума</label>
+                                <input type="number" class="form-input" placeholder="$100">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Категорія</label>
+                                <select class="form-select">
+                                    <option>Продукти</option>
+                                    <option>Житло</option>
+                                    <option>Транспорт</option>
+                                    <option>Розваги</option>
+                                    <option>Інше</option>
+                                </select>
+                            </div>
+                            <button class="add-expense-btn">
+                                <i class="fas fa-plus"></i>
+                                Додати
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Total Balance -->
+                    <div class="balance-card">
+                        <div class="balance-label">Спільний баланс</div>
+                        <div class="balance-amount">$12,450</div>
+                        <div class="balance-change">+$1,200 цього місяця (+10.7%)</div>
+                    </div>
+
+                    <!-- Income/Expense -->
+                    <div class="finance-grid">
+                        <div class="finance-box">
+                            <div class="finance-icon income">
+                                <i class="fas fa-arrow-up"></i>
+                            </div>
+                            <div class="finance-content">
+                                <div class="finance-label">Дохід</div>
+                                <div class="finance-amount">$8,500</div>
+                            </div>
+                        </div>
+
+                        <div class="finance-box">
+                            <div class="finance-icon expense">
+                                <i class="fas fa-arrow-down"></i>
+                            </div>
+                            <div class="finance-content">
+                                <div class="finance-label">Витрати</div>
+                                <div class="finance-amount">$4,250</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Category Budgets -->
+                    <div class="budget-list">
+                        <div class="budget-item">
+                            <div class="budget-header">
+                                <div class="budget-title">
+                                    <span class="budget-icon">🏠</span>
+                                    <span>Житло</span>
+                                </div>
+                                <div class="budget-amount">$1,200 / $1,500</div>
+                            </div>
+                            <div class="budget-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 80%"></div>
+                                </div>
+                                <div class="progress-text">
+                                    <span>80% використано</span>
+                                    <span>$300 залишилось</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="budget-item">
+                            <div class="budget-header">
+                                <div class="budget-title">
+                                    <span class="budget-icon">🛒</span>
+                                    <span>Продукти</span>
+                                </div>
+                                <div class="budget-amount">$680 / $800</div>
+                            </div>
+                            <div class="budget-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill warning" style="width: 85%"></div>
+                                </div>
+                                <div class="progress-text">
+                                    <span>85% використано</span>
+                                    <span>$120 залишилось</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="budget-item">
+                            <div class="budget-header">
+                                <div class="budget-title">
+                                    <span class="budget-icon">🚗</span>
+                                    <span>Транспорт</span>
+                                </div>
+                                <div class="budget-amount">$320 / $400</div>
+                            </div>
+                            <div class="budget-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 80%"></div>
+                                </div>
+                                <div class="progress-text">
+                                    <span>80% використано</span>
+                                    <span>$80 залишилось</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="budget-item">
+                            <div class="budget-header">
+                                <div class="budget-title">
+                                    <span class="budget-icon">🎉</span>
+                                    <span>Розваги</span>
+                                </div>
+                                <div class="budget-amount">$450 / $500</div>
+                            </div>
+                            <div class="budget-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill warning" style="width: 90%"></div>
+                                </div>
+                                <div class="progress-text">
+                                    <span>90% використано</span>
+                                    <span>$50 залишилось</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="budget-item">
+                            <div class="budget-header">
+                                <div class="budget-title">
+                                    <span class="budget-icon">💰</span>
+                                    <span>Накопичення</span>
+                                </div>
+                                <div class="budget-amount">$1,500 / $2,000</div>
+                            </div>
+                            <div class="budget-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 75%"></div>
+                                </div>
+                                <div class="progress-text">
+                                    <span>75% досягнуто</span>
+                                    <span>$500 до цілі</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pie Chart -->
+                    <div class="pie-chart-container">
+                        <div class="pie-chart"></div>
+                        <div class="pie-legend">
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #10b981;"></div>
+                                <div class="legend-label">🏠 Житло</div>
+                                <div class="legend-amount">$1,200 (24%)</div>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #667eea;"></div>
+                                <div class="legend-label">🛒 Продукти</div>
+                                <div class="legend-amount">$680 (22%)</div>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #f59e0b;"></div>
+                                <div class="legend-label">🚗 Транспорт</div>
+                                <div class="legend-amount">$320 (16%)</div>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #ef4444;"></div>
+                                <div class="legend-label">🎉 Розваги</div>
+                                <div class="legend-amount">$450 (13%)</div>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #8b5cf6;"></div>
+                                <div class="legend-label">💰 Накопичення</div>
+                                <div class="legend-amount">$1,500 (25%)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bill Reminders -->
+                    <h3 style="margin: 2rem 0 1rem; font-size: 1.2rem; color: var(--text-primary);">
+                        ⏰ Нагадування про рахунки
+                    </h3>
+                    <div class="bill-reminders">
+                        <div class="bill-item upcoming">
+                            <div class="bill-icon" style="background: linear-gradient(135deg, var(--danger), #f87171);">
+                                <i class="fas fa-exclamation"></i>
+                            </div>
+                            <div class="bill-content">
+                                <div class="bill-title">Оренда квартири</div>
+                                <div class="bill-date">Сплатити до: 1 Лютого • Через 2 дні</div>
+                            </div>
+                            <div class="bill-amount">$1,200</div>
+                        </div>
+
+                        <div class="bill-item">
+                            <div class="bill-icon">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <div class="bill-content">
+                                <div class="bill-title">Комунальні платежі</div>
+                                <div class="bill-date">Сплатити до: 5 Лютого • Через 6 днів</div>
+                            </div>
+                            <div class="bill-amount">$180</div>
+                        </div>
+
+                        <div class="bill-item">
+                            <div class="bill-icon">
+                                <i class="fas fa-wifi"></i>
+                            </div>
+                            <div class="bill-content">
+                                <div class="bill-title">Інтернет + ТБ</div>
+                                <div class="bill-date">Сплатити до: 10 Лютого • Через 11 днів</div>
+                            </div>
+                            <div class="bill-amount">$35</div>
+                        </div>
+                    </div>
+
+                    <!-- Savings Goals -->
+                    <h3 style="margin: 2rem 0 1rem; font-size: 1.2rem; color: var(--text-primary);">
+                        💰 Цілі накопичень
+                    </h3>
+                    <div class="savings-goals">
+                        <div class="savings-goal">
+                            <div class="goal-header">
+                                <div class="goal-title">💍 Весілля</div>
+                                <div class="goal-target">$7,200 / $15,000</div>
+                            </div>
+                            <div class="goal-progress-bar">
+                                <div class="goal-progress-fill" style="width: 48%;"></div>
+                            </div>
+                            <div class="goal-info">
+                                <span>48% досягнуто</span>
+                                <span>Залишилось: $7,800</span>
+                            </div>
+                        </div>
+
+                        <div class="savings-goal">
+                            <div class="goal-header">
+                                <div class="goal-title">🏡 Перший внесок на квартиру</div>
+                                <div class="goal-target">$9,600 / $20,000</div>
+                            </div>
+                            <div class="goal-progress-bar">
+                                <div class="goal-progress-fill" style="width: 48%;"></div>
+                            </div>
+                            <div class="goal-info">
+                                <span>48% досягнуто</span>
+                                <span>Залишилось: $10,400</span>
+                            </div>
+                        </div>
+
+                        <div class="savings-goal">
+                            <div class="goal-header">
+                                <div class="goal-title">✈️ Медовий місяць (Мальдіви)</div>
+                                <div class="goal-target">$3,200 / $5,000</div>
+                            </div>
+                            <div class="goal-progress-bar">
+                                <div class="goal-progress-fill" style="width: 64%;"></div>
+                            </div>
+                            <div class="goal-info">
+                                <span>64% досягнуто</span>
+                                <span>Залишилось: $1,800</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div>
+                <div class="type-label">💳 TRANSACTIONS: Recent</div>
+                <div class="field-card">
+                    <div class="transactions-list">
+                        <div class="transaction-item">
+                            <div class="transaction-icon income">
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <div class="transaction-content">
+                                <div class="transaction-title">Зарплата - Максим</div>
+                                <div class="transaction-date">15 Січня 2025</div>
+                            </div>
+                            <div class="transaction-amount income">+$4,500</div>
+                        </div>
+
+                        <div class="transaction-item">
+                            <div class="transaction-icon income">
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <div class="transaction-content">
+                                <div class="transaction-title">Зарплата - Оля</div>
+                                <div class="transaction-date">15 Січня 2025</div>
+                            </div>
+                            <div class="transaction-amount income">+$4,000</div>
+                        </div>
+
+                        <div class="transaction-item">
+                            <div class="transaction-icon expense">
+                                <i class="fas fa-minus"></i>
+                            </div>
+                            <div class="transaction-content">
+                                <div class="transaction-title">Оренда квартири</div>
+                                <div class="transaction-date">1 Січня 2025</div>
+                            </div>
+                            <div class="transaction-amount expense">-$1,200</div>
+                        </div>
+
+                        <div class="transaction-item">
+                            <div class="transaction-icon expense">
+                                <i class="fas fa-minus"></i>
+                            </div>
+                            <div class="transaction-content">
+                                <div class="transaction-title">Продукти - Сільпо</div>
+                                <div class="transaction-date">14 Січня 2025</div>
+                            </div>
+                            <div class="transaction-amount expense">-$142</div>
+                        </div>
+
+                        <div class="transaction-item">
+                            <div class="transaction-icon expense">
+                                <i class="fas fa-minus"></i>
+                            </div>
+                            <div class="transaction-content">
+                                <div class="transaction-title">Бензин</div>
+                                <div class="transaction-date">12 Січня 2025</div>
+                            </div>
+                            <div class="transaction-amount expense">-$85</div>
+                        </div>
+
+                        <div class="transaction-item">
+                            <div class="transaction-icon expense">
+                                <i class="fas fa-minus"></i>
+                            </div>
+                            <div class="transaction-content">
+                                <div class="transaction-title">Ресторан - Італійський</div>
+                                <div class="transaction-date">10 Січня 2025</div>
+                            </div>
+                            <div class="transaction-amount expense">-$120</div>
+                        </div>
+
+                        <div class="transaction-item">
+                            <div class="transaction-icon expense">
+                                <i class="fas fa-minus"></i>
+                            </div>
+                            <div class="transaction-content">
+                                <div class="transaction-title">Комунальні платежі</div>
+                                <div class="transaction-date">5 Січня 2025</div>
+                            </div>
+                            <div class="transaction-amount expense">-$180</div>
+                        </div>
+
+                        <div class="transaction-item">
+                            <div class="transaction-icon expense">
+                                <i class="fas fa-minus"></i>
+                            </div>
+                            <div class="transaction-content">
+                                <div class="transaction-title">Абонемент у спортзал</div>
+                                <div class="transaction-date">3 Січня 2025</div>
+                            </div>
+                            <div class="transaction-amount expense">-$90</div>
+                        </div>
+
+                        <div class="transaction-item">
+                            <div class="transaction-icon">
+                                <i class="fas fa-piggy-bank"></i>
+                            </div>
+                            <div class="transaction-content">
+                                <div class="transaction-title">Накопичення на весілля</div>
+                                <div class="transaction-date">2 Січня 2025</div>
+                            </div>
+                            <div class="transaction-amount income">+$1,500</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

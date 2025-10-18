@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Tags - Color Coded & Searchable</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --card-bg: #ffffff;
+            --card-border: rgba(99, 102, 241, 0.15);
+            --text-primary: #1a202c;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --primary: #667eea;
+            --primary-light: rgba(102, 126, 234, 0.1);
+            --accent: #764ba2;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --border-light: rgba(0,0,0,0.06);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 0.5rem;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
+        }
+
+        .field-card {
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-left: 4px solid var(--primary);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .field-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            border-color: var(--primary);
+        }
+
+        .floating-actions {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            z-index: 10;
+        }
+
+        .action-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            border: none;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            color: var(--primary);
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            opacity: 0;
+            transform: scale(0.3) rotate(180deg);
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        .field-card:hover .action-btn {
+            opacity: 1;
+            transform: scale(1) rotate(0deg);
+        }
+
+        .action-btn:nth-child(1) { transition-delay: 0.05s; }
+        .action-btn:nth-child(2) { transition-delay: 0.1s; }
+        .action-btn:nth-child(3) { transition-delay: 0.15s; }
+
+        .action-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.15) rotate(-5deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .action-btn.btn-danger:hover {
+            background: var(--danger);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .icon-wrapper {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            flex-shrink: 0;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .icon-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+
+        .field-card:hover .icon-wrapper::before {
+            transform: translateX(100%);
+        }
+
+        .field-card:hover .icon-wrapper {
+            transform: rotate(10deg) scale(1.1);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+        }
+
+        .title-section {
+            flex: 1;
+        }
+
+        .field-label {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.4rem;
+        }
+
+        .badges-inline {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .badge {
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-importance {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            color: white;
+        }
+
+        .badge-type {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        /* Enhanced Tags Styles */
+        .tags-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        /* Search Bar */
+        .tag-search-bar {
+            position: relative;
+        }
+
+        .tag-search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.75rem;
+            border: 2px solid var(--border-light);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .tag-search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .tag-search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .tag-search-input:focus ~ .tag-search-icon {
+            color: var(--primary);
+        }
+
+        /* Quick Add with Autocomplete */
+        .tag-quick-add {
+            position: relative;
+        }
+
+        .tag-input-wrapper {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .tag-input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border-light);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .tag-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .tag-add-btn {
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tag-add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Autocomplete Dropdown */
+        .autocomplete-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            margin-top: 0.5rem;
+            background: white;
+            border: 2px solid var(--primary);
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .autocomplete-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .autocomplete-item:hover {
+            background: var(--primary-light);
+        }
+
+        .autocomplete-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* Color-Coded Tags */
+        .tags-display {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .tag-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tag-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Tag Categories with Colors */
+        .tag-item.category-food {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+        }
+
+        .tag-item.category-hobby {
+            background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+            color: white;
+        }
+
+        .tag-item.category-music {
+            background: linear-gradient(135deg, #a8e6cf 0%, #56ab91 100%);
+            color: white;
+        }
+
+        .tag-item.category-movie {
+            background: linear-gradient(135deg, #ffd93d 0%, #f39c12 100%);
+            color: white;
+        }
+
+        .tag-item.category-travel {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .tag-item.category-other {
+            background: linear-gradient(135deg, #95e1d3 0%, #70a1ff 100%);
+            color: white;
+        }
+
+        .tag-remove {
+            width: 18px;
+            height: 18px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.7rem;
+        }
+
+        .tag-remove:hover {
+            background: rgba(255, 255, 255, 0.5);
+            transform: scale(1.1);
+        }
+
+        /* Tag Frequency (Word Cloud Style) */
+        .tag-item.freq-high {
+            font-size: 1.1rem;
+            padding: 0.6rem 1.2rem;
+        }
+
+        .tag-item.freq-medium {
+            font-size: 0.95rem;
+            padding: 0.5rem 1rem;
+        }
+
+        .tag-item.freq-low {
+            font-size: 0.85rem;
+            padding: 0.4rem 0.8rem;
+        }
+
+        /* Category Filter */
+        .category-filters {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            padding: 1rem;
+            background: rgba(102, 126, 234, 0.02);
+            border-radius: 10px;
+        }
+
+        .category-filter-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--border-light);
+            border-radius: 8px;
+            background: white;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .category-filter-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .category-filter-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .filter-count {
+            background: rgba(255, 255, 255, 0.3);
+            padding: 0.1rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.75rem;
+        }
+
+        .category-filter-btn.active .filter-count {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Stats Section */
+        .tags-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary-light), rgba(118, 75, 162, 0.05));
+            border-radius: 10px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+            font-weight: 600;
+        }
+
+        .type-label {
+            display: inline-block;
+            background: rgba(102, 126, 234, 0.1);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+            .tags-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏷️ Enhanced Tags - Smart & Colorful</h1>
+        <p class="subtitle">
+            Color coding • Search & filter • Tag frequency • Quick add з автокомплітом<br>
+            <strong>Minimal Modern Style</strong>
+        </p>
+
+        <div class="cards-grid">
+            <!-- Example 1: Food Tags with Search -->
+            <div>
+                <div class="type-label">🏷️ ENHANCED: Color-Coded Tags</div>
+                <div class="field-card">
+                    <div class="floating-actions">
+                        <button class="action-btn"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn"><i class="fas fa-cog"></i></button>
+                        <button class="action-btn btn-danger"><i class="fas fa-trash"></i></button>
+                    </div>
+
+                    <div class="card-header">
+                        <div class="icon-wrapper">
+                            <i class="fas fa-tags"></i>
+                        </div>
+                        <div class="title-section">
+                            <div class="field-label">Улюблена їжа</div>
+                            <div class="badges-inline">
+                                <span class="badge badge-importance">High</span>
+                                <span class="badge badge-type">Enhanced Tags</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tags-container">
+                        <!-- Search Bar -->
+                        <div class="tag-search-bar">
+                            <input type="text" class="tag-search-input" placeholder="Пошук по тегах...">
+                            <i class="fas fa-search tag-search-icon"></i>
+                        </div>
+
+                        <!-- Category Filters -->
+                        <div class="category-filters">
+                            <button class="category-filter-btn active">
+                                <span>Всі</span>
+                                <span class="filter-count">12</span>
+                            </button>
+                            <button class="category-filter-btn">
+                                <span>🍕 Їжа</span>
+                                <span class="filter-count">8</span>
+                            </button>
+                            <button class="category-filter-btn">
+                                <span>🎵 Музика</span>
+                                <span class="filter-count">2</span>
+                            </button>
+                            <button class="category-filter-btn">
+                                <span>🎬 Кіно</span>
+                                <span class="filter-count">2</span>
+                            </button>
+                        </div>
+
+                        <!-- Tags Display with Frequency -->
+                        <div class="tags-display">
+                            <div class="tag-item category-food freq-high">
+                                <span>Паста Карбонара</span>
+                                <span class="tag-remove">×</span>
+                            </div>
+                            <div class="tag-item category-food freq-high">
+                                <span>Суші</span>
+                                <span class="tag-remove">×</span>
+                            </div>
+                            <div class="tag-item category-food freq-medium">
+                                <span>Тірамісу</span>
+                                <span class="tag-remove">×</span>
+                            </div>
+                            <div class="tag-item category-food freq-medium">
+                                <span>Піца Маргарита</span>
+                                <span class="tag-remove">×</span>
+                            </div>
+                            <div class="tag-item category-food freq-low">
+                                <span>Том Ям</span>
+                                <span class="tag-remove">×</span>
+                            </div>
+                            <div class="tag-item category-food freq-low">
+                                <span>Стейк</span>
+                                <span class="tag-remove">×</span>
+                            </div>
+                            <div class="tag-item category-music freq-medium">
+                                <span>Indie Rock</span>
+                                <span class="tag-remove">×</span>
+                            </div>
+                            <div class="tag-item category-movie freq-low">
+                                <span>Sci-Fi</span>
+                                <span class="tag-remove">×</span>
+                            </div>
+                        </div>
+
+                        <!-- Stats -->
+                        <div class="tags-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">12</div>
+                                <div class="stat-label">Всього тегів</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">4</div>
+                                <div class="stat-label">Категорій</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">2</div>
+                                <div class="stat-label">Топ теги</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Example 2: Tags with Autocomplete -->
+            <div>
+                <div class="type-label">🏷️ ENHANCED: Quick Add з Автокомплітом</div>
+                <div class="field-card">
+                    <div class="floating-actions">
+                        <button class="action-btn"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn"><i class="fas fa-cog"></i></button>
+                        <button class="action-btn btn-danger"><i class="fas fa-trash"></i></button>
+                    </div>
+
+                    <div class="card-header">
+                        <div class="icon-wrapper">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="title-section">
+                            <div class="field-label">Інтереси та хобі</div>
+                            <div class="badges-inline">
+                                <span class="badge badge-importance">High</span>
+                                <span class="badge badge-type">Enhanced Tags</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tags-container">
+                        <!-- Quick Add with Autocomplete -->
+                        <div class="tag-quick-add">
+                            <div class="tag-input-wrapper">
+                                <input type="text" class="tag-input" placeholder="Додати новий тег...">
+                                <button class="tag-add-btn">
+                                    <i class="fas fa-plus"></i> Додати
+                                </button>
+                            </div>
+                            
+                            <!-- Autocomplete Dropdown (показується при вводі) -->
+                            <div class="autocomplete-dropdown" style="display: none;">
+                                <div class="autocomplete-item">
+                                    <div class="autocomplete-color" style="background: linear-gradient(135deg, #4ecdc4, #44a08d);"></div>
+                                    <span>Йога</span>
+                                </div>
+                                <div class="autocomplete-item">
+                                    <div class="autocomplete-color" style="background: linear-gradient(135deg, #4ecdc4, #44a08d);"></div>
+                                    <span>Фотографія</span>
+                                </div>
+                                <div class="autocomplete-item">
+                                    <div class="autocomplete-color" style="background: linear-gradient(135deg, #a8e6cf, #56ab91);"></div>
+                                    <span>Гітара</span>
+                                </div>
+                                <div class="autocomplete-item">
+                                    <div class="autocomplete-color" style="background: linear-gradient(135deg, #667eea, #764ba2);"></div>
+                                    <span>Подорожі</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tags by Category -->
+                        <div class="tags-display">
+                            <div class="tag-item category-hobby">
+                                <span>Малювання</span>
+                                <span class="tag-remove">×</span>
+                            </div>
+                            <div class="tag-item category-hobby">
+                                <span>Читання</span>
+                                <span class="tag-remove">×</span>
+                            </div>
+                            <div class="tag-item category-music">
+                                <span>Співати</span>
+                                <span class="tag-remove">×</span>
+                            </div>
+                            <div class="tag-item category-travel">
+                                <span>Гори</span>
+                                <span class="tag-remove">×</span>
+                            </div>
+                            <div class="tag-item category-travel">
+                                <span>Море</span>
+                                <span class="tag-remove">×</span>
+                            </div>
+                            <div class="tag-item category-hobby">
+                                <span>Танці</span>
+                                <span class="tag-remove">×</span>
+                            </div>
+                            <div class="tag-item category-other">
+                                <span>Медитація</span>
+                                <span class="tag-remove">×</span>
+                            </div>
+                            <div class="tag-item category-hobby">
+                                <span>Кулінарія</span>
+                                <span class="tag-remove">×</span>
+                            </div>
+                        </div>
+
+                        <!-- Color Legend -->
+                        <div style="padding: 1rem; background: rgba(102, 126, 234, 0.02); border-radius: 10px;">
+                            <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.75rem;">
+                                Кольорові категорії:
+                            </div>
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; font-size: 0.8rem;">
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <div style="width: 16px; height: 16px; background: linear-gradient(135deg, #ff6b6b, #ee5a6f); border-radius: 4px;"></div>
+                                    <span>Їжа</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <div style="width: 16px; height: 16px; background: linear-gradient(135deg, #4ecdc4, #44a08d); border-radius: 4px;"></div>
+                                    <span>Хобі</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <div style="width: 16px; height: 16px; background: linear-gradient(135deg, #a8e6cf, #56ab91); border-radius: 4px;"></div>
+                                    <span>Музика</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <div style="width: 16px; height: 16px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 4px;"></div>
+                                    <span>Подорожі</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

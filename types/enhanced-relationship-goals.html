@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relationship Goals - Shared Dreams</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --card-bg: #ffffff;
+            --card-border: rgba(99, 102, 241, 0.15);
+            --text-primary: #1a202c;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --primary: #667eea;
+            --primary-light: rgba(102, 126, 234, 0.1);
+            --accent: #764ba2;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --border-light: rgba(0,0,0,0.06);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 0.5rem;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .field-card {
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-left: 4px solid var(--primary);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .type-label {
+            display: inline-block;
+            background: rgba(102, 126, 234, 0.1);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--border-light);
+            border-radius: 10px;
+            background: white;
+            color: var(--text-secondary);
+            font-weight: 700;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab:hover, .tab.active {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Progress Overview */
+        .progress-overview {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .progress-card {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, var(--primary-light), rgba(118, 75, 162, 0.05));
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .progress-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .progress-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            font-weight: 600;
+        }
+
+        /* Goals List */
+        .goals-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .goal-item {
+            padding: 1.5rem;
+            background: white;
+            border: 2px solid var(--border-light);
+            border-left: 4px solid var(--primary);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .goal-item:hover {
+            transform: translateX(6px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .goal-item.completed {
+            border-left-color: var(--success);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.02), rgba(5, 150, 105, 0.01));
+        }
+
+        .goal-item.in-progress {
+            border-left-color: var(--warning);
+        }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .goal-left {
+            flex: 1;
+        }
+
+        .goal-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .goal-item.completed .goal-title {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        .goal-description {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+
+        .goal-meta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0.8rem;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .goal-progress {
+            margin-top: 1rem;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-label-text {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .progress-percentage {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .goal-item.completed .progress-fill {
+            background: linear-gradient(90deg, var(--success), #34d399);
+        }
+
+        .goal-milestones {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .milestone-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .milestone-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-light);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .milestone-item.completed .milestone-checkbox {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+
+        .milestone-text {
+            flex: 1;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .milestone-item.completed .milestone-text {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 768px) {
+            .progress-overview { grid-template-columns: 1fr; }
+            .tabs { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Relationship Goals</h1>
+        <p class="subtitle">Shared dreams • Short & long-term goals • Milestone tracking<br><strong>Minimal Modern Style</strong></p>
+
+        <div class="field-card">
+            <div class="type-label">🎯 GOALS: Our Shared Future</div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active">💫 Всі цілі</button>
+                <button class="tab">🔥 Short-term (1-3 міс)</button>
+                <button class="tab">🌟 Long-term (1-5 років)</button>
+            </div>
+
+            <!-- Progress Overview -->
+            <div class="progress-overview">
+                <div class="progress-card">
+                    <div class="progress-value">8</div>
+                    <div class="progress-label">Активних цілей</div>
+                </div>
+                <div class="progress-card">
+                    <div class="progress-value">5</div>
+                    <div class="progress-label">Досягнуто</div>
+                </div>
+                <div class="progress-card">
+                    <div class="progress-value">62%</div>
+                    <div class="progress-label">Загальний прогрес</div>
+                </div>
+            </div>
+
+            <!-- Goals List -->
+            <div class="goals-list">
+                <!-- Goal 1 - Completed -->
+                <div class="goal-item completed">
+                    <div class="goal-header">
+                        <div class="goal-left">
+                            <div class="goal-title">💍 Заручини</div>
+                            <div class="goal-description">
+                                Зробити пропозицію руки і серця на особливому місці. Підготувати сюрприз!
+                            </div>
+                        </div>
+                    </div>
+                    <div class="goal-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-check-circle"></i>
+                            Виконано 14.02.2024
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-star"></i>
+                            Long-term
+                        </div>
+                    </div>
+                    <div class="goal-progress">
+                        <div class="progress-header">
+                            <span class="progress-label-text">Прогрес</span>
+                            <span class="progress-percentage">100%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 100%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Goal 2 - In Progress -->
+                <div class="goal-item in-progress">
+                    <div class="goal-header">
+                        <div class="goal-left">
+                            <div class="goal-title">💒 Організувати весілля</div>
+                            <div class="goal-description">
+                                Весілля мрії на природі з близькими. Бюджет $15,000. Дата: Літо 2025
+                            </div>
+                        </div>
+                    </div>
+                    <div class="goal-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-calendar"></i>
+                            Літо 2025
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-fire"></i>
+                            Short-term
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-wallet"></i>
+                            Бюджет: $15,000
+                        </div>
+                    </div>
+                    <div class="goal-progress">
+                        <div class="progress-header">
+                            <span class="progress-label-text">Підготовка</span>
+                            <span class="progress-percentage">65%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 65%"></div>
+                        </div>
+                    </div>
+                    <div class="goal-milestones">
+                        <div class="milestone-item completed">
+                            <div class="milestone-checkbox">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="milestone-text">Обрати локацію</div>
+                        </div>
+                        <div class="milestone-item completed">
+                            <div class="milestone-checkbox">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="milestone-text">Забронювати ресторан</div>
+                        </div>
+                        <div class="milestone-item completed">
+                            <div class="milestone-checkbox">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="milestone-text">Обрати сукню та костюм</div>
+                        </div>
+                        <div class="milestone-item">
+                            <div class="milestone-checkbox"></div>
+                            <div class="milestone-text">Замовити фотографа</div>
+                        </div>
+                        <div class="milestone-item">
+                            <div class="milestone-checkbox"></div>
+                            <div class="milestone-text">Розіслати запрошення</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Goal 3 -->
+                <div class="goal-item in-progress">
+                    <div class="goal-header">
+                        <div class="goal-left">
+                            <div class="goal-title">🏡 Купити першу квартиру</div>
+                            <div class="goal-description">
+                                2-кімнатна квартира в хорошому районі. З великими вікнами та балконом. Накопичити на перший внесок.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="goal-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-calendar"></i>
+                            2026 рік
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-star"></i>
+                            Long-term
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-piggy-bank"></i>
+                            Накопичено: 48%
+                        </div>
+                    </div>
+                    <div class="goal-progress">
+                        <div class="progress-header">
+                            <span class="progress-label-text">Накопичення</span>
+                            <span class="progress-percentage">48%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 48%"></div>
+                        </div>
+                    </div>
+                    <div class="goal-milestones">
+                        <div class="milestone-item completed">
+                            <div class="milestone-checkbox">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="milestone-text">Відкрити спільний накопичувальний рахунок</div>
+                        </div>
+                        <div class="milestone-item completed">
+                            <div class="milestone-checkbox">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="milestone-text">Визначити район для пошуку</div>
+                        </div>
+                        <div class="milestone-item">
+                            <div class="milestone-checkbox"></div>
+                            <div class="milestone-text">Накопичити 50% від потрібної суми</div>
+                        </div>
+                        <div class="milestone-item">
+                            <div class="milestone-checkbox"></div>
+                            <div class="milestone-text">Почати переглядати варіанти</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Goal 4 -->
+                <div class="goal-item">
+                    <div class="goal-header">
+                        <div class="goal-left">
+                            <div class="goal-title">✈️ Подорож на Мальдіви</div>
+                            <div class="goal-description">
+                                Медовий місяць мрії! 10 днів в бунгало на воді. Дайвінг, романтичні вечері, релакс.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="goal-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-calendar"></i>
+                            Вересень 2025
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-fire"></i>
+                            Short-term
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-wallet"></i>
+                            Бюджет: $5,000
+                        </div>
+                    </div>
+                    <div class="goal-progress">
+                        <div class="progress-header">
+                            <span class="progress-label-text">Планування</span>
+                            <span class="progress-percentage">20%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 20%"></div>
+                        </div>
+                    </div>
+                    <div class="goal-milestones">
+                        <div class="milestone-item completed">
+                            <div class="milestone-checkbox">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="milestone-text">Обрати готель</div>
+                        </div>
+                        <div class="milestone-item">
+                            <div class="milestone-checkbox"></div>
+                            <div class="milestone-text">Забронювати квитки</div>
+                        </div>
+                        <div class="milestone-item">
+                            <div class="milestone-checkbox"></div>
+                            <div class="milestone-text">Накопичити бюджет на поїздку</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Goal 5 -->
+                <div class="goal-item">
+                    <div class="goal-header">
+                        <div class="goal-left">
+                            <div class="goal-title">👶 Планування сім'ї</div>
+                            <div class="goal-description">
+                                Почати планувати дітей після весілля. Підготуватись фізично та емоційно.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="goal-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-calendar"></i>
+                            2026-2027
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-star"></i>
+                            Long-term
+                        </div>
+                    </div>
+                    <div class="goal-progress">
+                        <div class="progress-header">
+                            <span class="progress-label-text">Підготовка</span>
+                            <span class="progress-percentage">15%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 15%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

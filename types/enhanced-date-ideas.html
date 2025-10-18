@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Date Ideas Generator - Romantic Inspiration</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --card-bg: #ffffff;
+            --card-border: rgba(99, 102, 241, 0.15);
+            --text-primary: #1a202c;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --primary: #667eea;
+            --primary-light: rgba(102, 126, 234, 0.1);
+            --accent: #764ba2;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --border-light: rgba(0,0,0,0.06);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container { max-width: 1100px; margin: 0 auto; }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 0.5rem;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .field-card {
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-left: 4px solid var(--primary);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .type-label {
+            display: inline-block;
+            background: rgba(102, 126, 234, 0.1);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Generator Card */
+        .generator-card {
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--primary-light), rgba(118, 75, 162, 0.05));
+            border-radius: 16px;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .generator-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: white;
+        }
+
+        .current-idea {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .idea-description {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .generate-btn {
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Filters */
+        .filters-section {
+            padding: 1.5rem;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+
+        .filter-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .filter-label {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .filter-options {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-option {
+            padding: 0.6rem 1.2rem;
+            border: 2px solid var(--border-light);
+            border-radius: 8px;
+            background: white;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-option:hover, .filter-option.active {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Ideas List */
+        .ideas-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .idea-card {
+            padding: 1.5rem;
+            background: white;
+            border: 2px solid var(--border-light);
+            border-left: 4px solid var(--primary);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .idea-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            border-color: var(--primary);
+        }
+
+        .idea-card.completed {
+            border-left-color: var(--success);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.02), rgba(5, 150, 105, 0.01));
+        }
+
+        .idea-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+        }
+
+        .idea-emoji {
+            font-size: 2rem;
+        }
+
+        .idea-rating {
+            display: flex;
+            gap: 0.25rem;
+            color: #fbbf24;
+        }
+
+        .idea-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .idea-text {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .idea-meta {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .meta-tag {
+            padding: 0.25rem 0.6rem;
+            background: var(--primary-light);
+            color: var(--primary);
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .meta-tag.budget-low {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .meta-tag.budget-medium {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .meta-tag.budget-high {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        .idea-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .idea-btn {
+            flex: 1;
+            padding: 0.5rem;
+            border: 2px solid var(--border-light);
+            border-radius: 8px;
+            background: white;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .idea-btn:hover {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .ideas-list { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💡 Date Ideas Generator</h1>
+        <p class="subtitle">Random inspiration • Filter by mood & budget • Save favorites<br><strong>Minimal Modern Style</strong></p>
+
+        <!-- Generator -->
+        <div class="field-card">
+            <div class="type-label">💡 DATE IDEAS: Random Generator</div>
+
+            <div class="generator-card">
+                <div class="generator-icon">💑</div>
+                <div class="current-idea">Романтична вечеря при свічках вдома</div>
+                <div class="idea-description">
+                    Приготуйте разом улюблену страву, поставте свічки, увімкніть тиху музику. 
+                    Вечір тільки для вас двох, без телефонів! 🕯️
+                </div>
+                <button class="generate-btn">
+                    <i class="fas fa-random"></i>
+                    Згенерувати нову ідею
+                </button>
+            </div>
+
+            <!-- Filters -->
+            <div class="filters-section">
+                <div class="filter-group">
+                    <span class="filter-label">💰 Бюджет:</span>
+                    <div class="filter-options">
+                        <button class="filter-option active">Всі</button>
+                        <button class="filter-option">$ Безкоштовно</button>
+                        <button class="filter-option">$$ Недорого</button>
+                        <button class="filter-option">$$$ Середньо</button>
+                        <button class="filter-option">$$$$ Дорого</button>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <span class="filter-label">🌈 Настрій:</span>
+                    <div class="filter-options">
+                        <button class="filter-option active">Всі</button>
+                        <button class="filter-option">❤️ Романтика</button>
+                        <button class="filter-option">🎉 Веселощі</button>
+                        <button class="filter-option">🧘 Спокій</button>
+                        <button class="filter-option">🔥 Адреналін</button>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <span class="filter-label">⏱️ Час:</span>
+                    <div class="filter-options">
+                        <button class="filter-option active">Всі</button>
+                        <button class="filter-option">1-2 години</button>
+                        <button class="filter-option">3-4 години</button>
+                        <button class="filter-option">Весь день</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ideas List -->
+        <div class="field-card">
+            <div class="type-label">💡 SAVED IDEAS: Wishlist</div>
+
+            <div class="ideas-list">
+                <!-- Idea 1 - Completed -->
+                <div class="idea-card completed">
+                    <div class="idea-header">
+                        <div class="idea-emoji">🌅</div>
+                        <div class="idea-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <div class="idea-title">Зустріч світанку</div>
+                    <div class="idea-text">
+                        Прокиньтесь рано, візьміть термос з кавою і поїдьте на гарну локацію зустріти світанок разом
+                    </div>
+                    <div class="idea-meta">
+                        <span class="meta-tag budget-low">$ Безкоштовно</span>
+                        <span class="meta-tag">❤️ Романтика</span>
+                        <span class="meta-tag">2-3 години</span>
+                    </div>
+                </div>
+
+                <!-- Idea 2 -->
+                <div class="idea-card">
+                    <div class="idea-header">
+                        <div class="idea-emoji">🍕</div>
+                        <div class="idea-rating">
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </div>
+                    </div>
+                    <div class="idea-title">Кулінарний майстер-клас</div>
+                    <div class="idea-text">
+                        Запишіться на майстер-клас з приготування піци або суші. Вчіться разом і потім з'їжте результат!
+                    </div>
+                    <div class="idea-meta">
+                        <span class="meta-tag budget-medium">$$ Недорого</span>
+                        <span class="meta-tag">🎉 Веселощі</span>
+                        <span class="meta-tag">3-4 години</span>
+                    </div>
+                    <div class="idea-actions">
+                        <button class="idea-btn">✓ Зробили</button>
+                        <button class="idea-btn">⭐ Оцінити</button>
+                    </div>
+                </div>
+
+                <!-- Idea 3 -->
+                <div class="idea-card">
+                    <div class="idea-header">
+                        <div class="idea-emoji">🎨</div>
+                        <div class="idea-rating">
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </div>
+                    </div>
+                    <div class="idea-title">Малювання за вином</div>
+                    <div class="idea-text">
+                        Вечір живопису в студії з бокалом вина. Створіть свої шедеври і заберіть їх додому
+                    </div>
+                    <div class="idea-meta">
+                        <span class="meta-tag budget-medium">$$$ Середньо</span>
+                        <span class="meta-tag">❤️ Романтика</span>
+                        <span class="meta-tag">2-3 години</span>
+                    </div>
+                    <div class="idea-actions">
+                        <button class="idea-btn">✓ Зробили</button>
+                        <button class="idea-btn">⭐ Оцінити</button>
+                    </div>
+                </div>
+
+                <!-- Idea 4 -->
+                <div class="idea-card">
+                    <div class="idea-header">
+                        <div class="idea-emoji">🚴</div>
+                        <div class="idea-rating">
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </div>
+                    </div>
+                    <div class="idea-title">Велопрогулянка на природі</div>
+                    <div class="idea-text">
+                        Орендуйте велосипеди і прокатіться маршрутом вздовж річки. Пікнік на пікнік-зоні
+                    </div>
+                    <div class="idea-meta">
+                        <span class="meta-tag budget-low">$$ Недорого</span>
+                        <span class="meta-tag">🔥 Активно</span>
+                        <span class="meta-tag">Весь день</span>
+                    </div>
+                    <div class="idea-actions">
+                        <button class="idea-btn">✓ Зробили</button>
+                        <button class="idea-btn">⭐ Оцінити</button>
+                    </div>
+                </div>
+
+                <!-- Idea 5 -->
+                <div class="idea-card">
+                    <div class="idea-header">
+                        <div class="idea-emoji">🎭</div>
+                        <div class="idea-rating">
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </div>
+                    </div>
+                    <div class="idea-title">Театр або концерт</div>
+                    <div class="idea-text">
+                        Подивіться афішу і оберіть вистав або концерт улюбленого виконавця. Одягніться красиво!
+                    </div>
+                    <div class="idea-meta">
+                        <span class="meta-tag budget-high">$$$ Середньо</span>
+                        <span class="meta-tag">❤️ Романтика</span>
+                        <span class="meta-tag">3-4 години</span>
+                    </div>
+                    <div class="idea-actions">
+                        <button class="idea-btn">✓ Зробили</button>
+                        <button class="idea-btn">⭐ Оцінити</button>
+                    </div>
+                </div>
+
+                <!-- Idea 6 -->
+                <div class="idea-card">
+                    <div class="idea-header">
+                        <div class="idea-emoji">🧘</div>
+                        <div class="idea-rating">
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </div>
+                    </div>
+                    <div class="idea-title">Йога для пар</div>
+                    <div class="idea-text">
+                        Спробуйте парну йогу або медитацію. Розслабтесь і синхронізуйтесь один з одним
+                    </div>
+                    <div class="idea-meta">
+                        <span class="meta-tag budget-medium">$$ Недорого</span>
+                        <span class="meta-tag">🧘 Спокій</span>
+                        <span class="meta-tag">1-2 години</span>
+                    </div>
+                    <div class="idea-actions">
+                        <button class="idea-btn">✓ Зробили</button>
+                        <button class="idea-btn">⭐ Оцінити</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

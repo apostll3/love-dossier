@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mood Tracker - Calendar & Analytics</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --card-bg: #ffffff;
+            --card-border: rgba(99, 102, 241, 0.15);
+            --text-primary: #1a202c;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --primary: #667eea;
+            --primary-light: rgba(102, 126, 234, 0.1);
+            --accent: #764ba2;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --border-light: rgba(0,0,0,0.06);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 0.5rem;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(650px, 1fr));
+            gap: 2rem;
+        }
+
+        .field-card {
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-left: 4px solid var(--primary);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .field-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            border-color: var(--primary);
+        }
+
+        .floating-actions {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            z-index: 10;
+        }
+
+        .action-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            border: none;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            color: var(--primary);
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            opacity: 0;
+            transform: scale(0.3) rotate(180deg);
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        .field-card:hover .action-btn {
+            opacity: 1;
+            transform: scale(1) rotate(0deg);
+        }
+
+        .action-btn:nth-child(1) { transition-delay: 0.05s; }
+        .action-btn:nth-child(2) { transition-delay: 0.1s; }
+        .action-btn:nth-child(3) { transition-delay: 0.15s; }
+
+        .action-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.15) rotate(-5deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .action-btn.btn-danger:hover {
+            background: var(--danger);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .icon-wrapper {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            flex-shrink: 0;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .icon-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+
+        .field-card:hover .icon-wrapper::before {
+            transform: translateX(100%);
+        }
+
+        .field-card:hover .icon-wrapper {
+            transform: rotate(10deg) scale(1.1);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+        }
+
+        .title-section { flex: 1; }
+
+        .field-label {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.4rem;
+        }
+
+        .badges-inline {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .badge {
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-importance {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            color: white;
+        }
+
+        .badge-type {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        /* Mood Tracker Container */
+        .mood-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* Current Mood */
+        .current-mood {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, var(--primary-light), rgba(118, 75, 162, 0.05));
+            border-radius: 12px;
+        }
+
+        .mood-emoji {
+            font-size: 5rem;
+            line-height: 1;
+        }
+
+        .mood-info {
+            flex: 1;
+        }
+
+        .mood-name {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .mood-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Mood Selector */
+        .mood-selector {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1rem;
+        }
+
+        .mood-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: white;
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mood-option:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .mood-option.active {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .mood-emoji-btn {
+            font-size: 2.5rem;
+        }
+
+        .mood-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        /* Mood Calendar */
+        .mood-calendar {
+            padding: 1.5rem;
+            background: white;
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .calendar-month {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .nav-btn {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            background: white;
+            color: var(--primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            padding: 0.5rem 0;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .calendar-day:hover {
+            background: var(--primary-light);
+        }
+
+        .calendar-day.today {
+            border: 2px solid var(--primary);
+            font-weight: 700;
+        }
+
+        .calendar-day.other-month {
+            color: var(--text-muted);
+            opacity: 0.3;
+        }
+
+        .day-mood {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            font-size: 1rem;
+        }
+
+        /* Statistics */
+        .mood-stats {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1rem;
+        }
+
+        .stat-card {
+            padding: 1rem;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.02));
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-emoji {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-count {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .stat-percent {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        /* Insights */
+        .insights-section {
+            padding: 1.25rem;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.05));
+            border-radius: 12px;
+            border-left: 4px solid var(--success);
+        }
+
+        .insights-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .insights-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .insight-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .type-label {
+            display: inline-block;
+            background: rgba(102, 126, 234, 0.1);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .cards-grid { grid-template-columns: 1fr; }
+            .mood-selector { grid-template-columns: repeat(3, 1fr); }
+            .mood-stats { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>😊 Mood Tracker - Емоційний Щоденник</h1>
+        <p class="subtitle">
+            Calendar view • Monthly statistics • Pattern analysis • Insights<br>
+            <strong>Minimal Modern Style</strong>
+        </p>
+
+        <div class="cards-grid">
+            <!-- Mood Tracker Card -->
+            <div>
+                <div class="type-label">😊 MOOD TRACKER: Щоденний настрій</div>
+                <div class="field-card">
+                    <div class="floating-actions">
+                        <button class="action-btn"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn"><i class="fas fa-cog"></i></button>
+                        <button class="action-btn btn-danger"><i class="fas fa-trash"></i></button>
+                    </div>
+
+                    <div class="card-header">
+                        <div class="icon-wrapper">
+                            <i class="fas fa-smile"></i>
+                        </div>
+                        <div class="title-section">
+                            <div class="field-label">Емоційний стан</div>
+                            <div class="badges-inline">
+                                <span class="badge badge-importance">High</span>
+                                <span class="badge badge-type">Mood</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mood-container">
+                        <!-- Current Mood -->
+                        <div class="current-mood">
+                            <div class="mood-emoji">😊</div>
+                            <div class="mood-info">
+                                <div class="mood-name">Щасливий</div>
+                                <div class="mood-description">
+                                    Чудовий день! Провели час разом у парку, багато сміялись. 
+                                    Відчуваю себе щасливим та закоханим ❤️
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mood Selector -->
+                        <div class="mood-selector">
+                            <div class="mood-option">
+                                <div class="mood-emoji-btn">😄</div>
+                                <div class="mood-label">Радісний</div>
+                            </div>
+                            <div class="mood-option active">
+                                <div class="mood-emoji-btn">😊</div>
+                                <div class="mood-label">Щасливий</div>
+                            </div>
+                            <div class="mood-option">
+                                <div class="mood-emoji-btn">😐</div>
+                                <div class="mood-label">Нейтральний</div>
+                            </div>
+                            <div class="mood-option">
+                                <div class="mood-emoji-btn">😔</div>
+                                <div class="mood-label">Сумний</div>
+                            </div>
+                            <div class="mood-option">
+                                <div class="mood-emoji-btn">😢</div>
+                                <div class="mood-label">Засмучений</div>
+                            </div>
+                        </div>
+
+                        <!-- Mood Calendar -->
+                        <div class="mood-calendar">
+                            <div class="calendar-header">
+                                <span class="calendar-month">Січень 2025</span>
+                                <div class="calendar-nav">
+                                    <button class="nav-btn"><i class="fas fa-chevron-left"></i></button>
+                                    <button class="nav-btn"><i class="fas fa-chevron-right"></i></button>
+                                </div>
+                            </div>
+                            <div class="calendar-grid">
+                                <div class="calendar-day-header">Пн</div>
+                                <div class="calendar-day-header">Вт</div>
+                                <div class="calendar-day-header">Ср</div>
+                                <div class="calendar-day-header">Чт</div>
+                                <div class="calendar-day-header">Пт</div>
+                                <div class="calendar-day-header">Сб</div>
+                                <div class="calendar-day-header">Нд</div>
+                                
+                                <div class="calendar-day other-month">30</div>
+                                <div class="calendar-day other-month">31</div>
+                                <div class="calendar-day">1<span class="day-mood">😊</span></div>
+                                <div class="calendar-day">2<span class="day-mood">😄</span></div>
+                                <div class="calendar-day">3<span class="day-mood">😊</span></div>
+                                <div class="calendar-day">4<span class="day-mood">😊</span></div>
+                                <div class="calendar-day">5<span class="day-mood">😄</span></div>
+                                
+                                <div class="calendar-day">6<span class="day-mood">😊</span></div>
+                                <div class="calendar-day">7<span class="day-mood">😐</span></div>
+                                <div class="calendar-day">8<span class="day-mood">😊</span></div>
+                                <div class="calendar-day">9<span class="day-mood">😄</span></div>
+                                <div class="calendar-day">10<span class="day-mood">😊</span></div>
+                                <div class="calendar-day">11<span class="day-mood">😊</span></div>
+                                <div class="calendar-day">12<span class="day-mood">😄</span></div>
+                                
+                                <div class="calendar-day">13<span class="day-mood">😊</span></div>
+                                <div class="calendar-day">14<span class="day-mood">😄</span></div>
+                                <div class="calendar-day">15<span class="day-mood">😐</span></div>
+                                <div class="calendar-day">16<span class="day-mood">😊</span></div>
+                                <div class="calendar-day">17<span class="day-mood">😔</span></div>
+                                <div class="calendar-day today">18<span class="day-mood">😊</span></div>
+                                <div class="calendar-day">19</div>
+                                
+                                <div class="calendar-day">20</div>
+                                <div class="calendar-day">21</div>
+                                <div class="calendar-day">22</div>
+                                <div class="calendar-day">23</div>
+                                <div class="calendar-day">24</div>
+                                <div class="calendar-day">25</div>
+                                <div class="calendar-day">26</div>
+                                
+                                <div class="calendar-day">27</div>
+                                <div class="calendar-day">28</div>
+                                <div class="calendar-day">29</div>
+                                <div class="calendar-day">30</div>
+                                <div class="calendar-day">31</div>
+                                <div class="calendar-day other-month">1</div>
+                                <div class="calendar-day other-month">2</div>
+                            </div>
+                        </div>
+
+                        <!-- Statistics -->
+                        <div class="mood-stats">
+                            <div class="stat-card">
+                                <div class="stat-emoji">😄</div>
+                                <div class="stat-count">5</div>
+                                <div class="stat-percent">28%</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-emoji">😊</div>
+                                <div class="stat-count">10</div>
+                                <div class="stat-percent">56%</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-emoji">😐</div>
+                                <div class="stat-count">2</div>
+                                <div class="stat-percent">11%</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-emoji">😔</div>
+                                <div class="stat-count">1</div>
+                                <div class="stat-percent">5%</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-emoji">😢</div>
+                                <div class="stat-count">0</div>
+                                <div class="stat-percent">0%</div>
+                            </div>
+                        </div>
+
+                        <!-- Insights -->
+                        <div class="insights-section">
+                            <div class="insights-title">
+                                <i class="fas fa-lightbulb"></i>
+                                Insights цього місяця
+                            </div>
+                            <div class="insights-list">
+                                <div class="insight-item">
+                                    <span>✨</span>
+                                    <span>84% днів з позитивним настроєм - чудовий результат!</span>
+                                </div>
+                                <div class="insight-item">
+                                    <span>📈</span>
+                                    <span>Найкращі дні: вихідні (субота та неділя)</span>
+                                </div>
+                                <div class="insight-item">
+                                    <span>💡</span>
+                                    <span>Середа - найменш емоційно стабільний день</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

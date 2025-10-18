@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Communication Log PRO - Daily Messages & Analytics</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --card-bg: #ffffff;
+            --card-border: rgba(99, 102, 241, 0.15);
+            --text-primary: #1a202c;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --primary: #667eea;
+            --primary-light: rgba(102, 126, 234, 0.1);
+            --accent: #764ba2;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --border-light: rgba(0,0,0,0.06);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 0.5rem;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        /* Tabs Navigation */
+        .tabs-nav {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+            background: rgba(255,255,255,0.1);
+            padding: 0.5rem;
+            border-radius: 12px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            color: rgba(255,255,255,0.8);
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .tab-btn:hover:not(.active) {
+            background: rgba(255,255,255,0.15);
+            color: white;
+        }
+
+        .field-card {
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-left: 4px solid var(--primary);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .type-label {
+            display: inline-block;
+            background: rgba(102, 126, 234, 0.1);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Stats Overview */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-box {
+            padding: 1.25rem;
+            background: linear-gradient(135deg, var(--primary-light), rgba(118, 75, 162, 0.05));
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            font-weight: 600;
+        }
+
+        /* Quick Add */
+        .quick-add {
+            padding: 1.5rem;
+            background: rgba(102, 126, 234, 0.02);
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+
+        .quick-add-title {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .add-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border-light);
+            border-radius: 10px;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .add-input:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        .mood-selector {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .mood-btn {
+            padding: 0.6rem 1.2rem;
+            border: 2px solid var(--border-light);
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .mood-btn:hover, .mood-btn.active {
+            border-color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .add-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Messages Timeline */
+        .messages-timeline {
+            position: relative;
+            padding-left: 2.5rem;
+        }
+
+        .messages-timeline::before {
+            content: '';
+            position: absolute;
+            left: 1rem;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, var(--primary), var(--accent));
+            border-radius: 2px;
+        }
+
+        .message-group {
+            margin-bottom: 2rem;
+        }
+
+        .date-marker {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            padding-left: 0.5rem;
+        }
+
+        .message-item {
+            position: relative;
+            margin-bottom: 1.5rem;
+            padding-left: 2rem;
+        }
+
+        .message-item::before {
+            content: '';
+            position: absolute;
+            left: -1.5rem;
+            top: 0.5rem;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border: 3px solid var(--primary);
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .message-item.positive::before {
+            border-color: var(--success);
+        }
+
+        .message-item.conflict::before {
+            border-color: var(--danger);
+        }
+
+        .message-card {
+            padding: 1.25rem;
+            background: white;
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .message-card:hover {
+            border-color: var(--primary);
+            transform: translateX(6px);
+        }
+
+        .message-item.positive .message-card {
+            border-left: 4px solid var(--success);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.02), rgba(5, 150, 105, 0.01));
+        }
+
+        .message-item.conflict .message-card {
+            border-left: 4px solid var(--danger);
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.02), rgba(220, 38, 38, 0.01));
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .message-mood {
+            font-size: 1.5rem;
+        }
+
+        .message-time {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .message-text {
+            color: var(--text-primary);
+            line-height: 1.7;
+            margin-bottom: 0.75rem;
+        }
+
+        .message-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .message-tag {
+            padding: 0.25rem 0.6rem;
+            background: var(--primary-light);
+            color: var(--primary);
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .message-tag.appreciation {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .message-tag.conflict {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        /* Voice Notes */
+        .voice-note {
+            padding: 1rem;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(37, 99, 235, 0.02));
+            border-left: 4px solid var(--info);
+            border-radius: 10px;
+            margin-top: 0.75rem;
+        }
+
+        .voice-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .play-btn {
+            width: 40px;
+            height: 40px;
+            background: var(--info);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .play-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .waveform {
+            flex: 1;
+            height: 40px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .wave-bars {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            gap: 2px;
+            padding: 0 0.5rem;
+        }
+
+        .wave-bar {
+            flex: 1;
+            background: var(--info);
+            border-radius: 2px;
+            opacity: 0.6;
+            animation: wave 1s ease-in-out infinite;
+        }
+
+        .wave-bar:nth-child(1) { height: 40%; animation-delay: 0s; }
+        .wave-bar:nth-child(2) { height: 70%; animation-delay: 0.1s; }
+        .wave-bar:nth-child(3) { height: 50%; animation-delay: 0.2s; }
+        .wave-bar:nth-child(4) { height: 85%; animation-delay: 0.3s; }
+        .wave-bar:nth-child(5) { height: 60%; animation-delay: 0.4s; }
+        .wave-bar:nth-child(6) { height: 75%; animation-delay: 0.5s; }
+        .wave-bar:nth-child(7) { height: 45%; animation-delay: 0.6s; }
+        .wave-bar:nth-child(8) { height: 65%; animation-delay: 0.7s; }
+
+        @keyframes wave {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(0.5); }
+        }
+
+        .voice-duration {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Analytics Dashboard */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            padding: 1.5rem;
+            background: white;
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+        }
+
+        .chart-title {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 200px;
+        }
+
+        /* Weekly Mood Chart */
+        .mood-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 0.75rem;
+            height: 180px;
+        }
+
+        .mood-bar-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .mood-bar {
+            width: 100%;
+            background: linear-gradient(180deg, var(--success), #34d399);
+            border-radius: 8px 8px 0 0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .mood-bar:hover {
+            opacity: 0.8;
+            transform: translateY(-4px);
+        }
+
+        .mood-day-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* Conflict Resolution Stats */
+        .resolution-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .resolution-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .resolution-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--success), #34d399);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .resolution-content {
+            flex: 1;
+        }
+
+        .resolution-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .resolution-date {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Search & Filter */
+        .search-bar {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border-light);
+            border-radius: 10px;
+            font-size: 0.95rem;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        .filter-btn {
+            padding: 0.75rem 1.5rem;
+            background: white;
+            border: 2px solid var(--border-light);
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .export-btn {
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Streak Counter */
+        .streak-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(251, 191, 36, 0.05));
+            border: 2px solid var(--warning);
+            border-radius: 10px;
+            font-weight: 700;
+            color: var(--warning);
+            margin-bottom: 1rem;
+        }
+
+        .streak-number {
+            font-size: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .analytics-grid { grid-template-columns: 1fr; }
+            .tabs-nav { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💬 Communication Log PRO</h1>
+        <p class="subtitle">Daily appreciation • Conflict resolution • Voice notes • Analytics Dashboard<br><strong>Enhanced with AI-powered insights</strong></p>
+
+        <!-- Tabs Navigation -->
+        <div class="tabs-nav">
+            <button class="tab-btn active">📊 Dashboard</button>
+            <button class="tab-btn">💬 Messages</button>
+            <button class="tab-btn">📈 Analytics</button>
+            <button class="tab-btn">🎤 Voice Notes</button>
+        </div>
+
+        <div class="field-card">
+            <div class="type-label">💬 COMMUNICATION: Our Talks</div>
+
+            <!-- Streak Badge -->
+            <div class="streak-badge">
+                <i class="fas fa-fire"></i>
+                <span class="streak-number">15</span>
+                <span>днів поспіль спілкування!</span>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-value">142</div>
+                    <div class="stat-label">Повідомлень</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">18</div>
+                    <div class="stat-label">🎤 Voice notes</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">92%</div>
+                    <div class="stat-label">Позитивних</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">Конфліктів вирішено</div>
+                </div>
+            </div>
+
+            <!-- Search & Export -->
+            <div class="search-bar">
+                <input type="text" class="search-input" placeholder="🔍 Шукати повідомлення за датою, текстом або настроєм...">
+                <button class="filter-btn">
+                    <i class="fas fa-filter"></i>
+                    Фільтри
+                </button>
+                <button class="export-btn">
+                    <i class="fas fa-download"></i>
+                    Експорт PDF
+                </button>
+            </div>
+
+            <!-- Quick Add -->
+            <div class="quick-add">
+                <div class="quick-add-title">✍️ Додати повідомлення</div>
+                <textarea class="add-input" placeholder="Що сьогодні хочу сказати..."></textarea>
+                <div class="mood-selector">
+                    <button class="mood-btn">😊</button>
+                    <button class="mood-btn active">❤️</button>
+                    <button class="mood-btn">😔</button>
+                    <button class="mood-btn">😡</button>
+                    <button class="mood-btn">🤗</button>
+                </div>
+                <button class="add-btn">
+                    <i class="fas fa-plus"></i>
+                    Додати запис
+                </button>
+            </div>
+        </div>
+
+        <!-- Analytics Dashboard -->
+        <div class="field-card">
+            <div class="type-label">📈 ANALYTICS: Relationship Health Score</div>
+
+            <div class="analytics-grid">
+                <!-- Weekly Mood Chart -->
+                <div class="chart-card">
+                    <div class="chart-title">
+                        <i class="fas fa-chart-bar"></i>
+                        Настрій тижня
+                    </div>
+                    <div class="chart-container">
+                        <div class="mood-chart">
+                            <div class="mood-bar-group">
+                                <div class="mood-bar" style="height: 70%;"></div>
+                                <div class="mood-day-label">Пн</div>
+                            </div>
+                            <div class="mood-bar-group">
+                                <div class="mood-bar" style="height: 85%;"></div>
+                                <div class="mood-day-label">Вт</div>
+                            </div>
+                            <div class="mood-bar-group">
+                                <div class="mood-bar" style="height: 65%;"></div>
+                                <div class="mood-day-label">Ср</div>
+                            </div>
+                            <div class="mood-bar-group">
+                                <div class="mood-bar" style="height: 90%;"></div>
+                                <div class="mood-day-label">Чт</div>
+                            </div>
+                            <div class="mood-bar-group">
+                                <div class="mood-bar" style="height: 95%;"></div>
+                                <div class="mood-day-label">Пт</div>
+                            </div>
+                            <div class="mood-bar-group">
+                                <div class="mood-bar" style="height: 80%;"></div>
+                                <div class="mood-day-label">Сб</div>
+                            </div>
+                            <div class="mood-bar-group">
+                                <div class="mood-bar" style="height: 92%;"></div>
+                                <div class="mood-day-label">Нд</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conflict Resolution -->
+                <div class="chart-card">
+                    <div class="chart-title">
+                        <i class="fas fa-handshake"></i>
+                        Вирішені конфлікти
+                    </div>
+                    <div class="resolution-timeline">
+                        <div class="resolution-item">
+                            <div class="resolution-number">3</div>
+                            <div class="resolution-content">
+                                <div class="resolution-title">Плани на вихідні</div>
+                                <div class="resolution-date">17 Січня • Компроміс знайдено за 20 хв</div>
+                            </div>
+                        </div>
+                        <div class="resolution-item">
+                            <div class="resolution-number">2</div>
+                            <div class="resolution-content">
+                                <div class="resolution-title">Бюджет на весілля</div>
+                                <div class="resolution-date">10 Січня • Обговорено спокійно</div>
+                            </div>
+                        </div>
+                        <div class="resolution-item">
+                            <div class="resolution-number">1</div>
+                            <div class="resolution-content">
+                                <div class="resolution-title">Час для себе vs разом</div>
+                                <div class="resolution-date">5 Січня • Встановили баланс</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages with Voice Notes -->
+        <div class="field-card">
+            <div class="type-label">💬 MESSAGES: Recent Conversations</div>
+
+            <!-- Messages Timeline -->
+            <div class="messages-timeline">
+                <!-- Today -->
+                <div class="message-group">
+                    <div class="date-marker">Сьогодні • 18 Січня 2025</div>
+
+                    <div class="message-item positive">
+                        <div class="message-card">
+                            <div class="message-header">
+                                <div class="message-mood">❤️</div>
+                                <div class="message-time">10:30 ранку</div>
+                            </div>
+                            <div class="message-text">
+                                Дякую тобі за сніданок у ліжко! Ти найкращий! Такі маленькі речі роблять мій день особливим ❤️
+                            </div>
+                            
+                            <!-- Voice Note -->
+                            <div class="voice-note">
+                                <div class="voice-controls">
+                                    <button class="play-btn">
+                                        <i class="fas fa-play"></i>
+                                    </button>
+                                    <div class="waveform">
+                                        <div class="wave-bars">
+                                            <div class="wave-bar"></div>
+                                            <div class="wave-bar"></div>
+                                            <div class="wave-bar"></div>
+                                            <div class="wave-bar"></div>
+                                            <div class="wave-bar"></div>
+                                            <div class="wave-bar"></div>
+                                            <div class="wave-bar"></div>
+                                            <div class="wave-bar"></div>
+                                        </div>
+                                    </div>
+                                    <div class="voice-duration">0:42</div>
+                                </div>
+                            </div>
+
+                            <div class="message-tags">
+                                <span class="message-tag appreciation">Подяка</span>
+                                <span class="message-tag">Турбота</span>
+                                <span class="message-tag">🎤 Voice</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Yesterday -->
+                <div class="message-group">
+                    <div class="date-marker">Вчора • 17 Січня 2025</div>
+
+                    <div class="message-item positive">
+                        <div class="message-card">
+                            <div class="message-header">
+                                <div class="message-mood">🤗</div>
+                                <div class="message-time">20:15 вечора</div>
+                            </div>
+                            <div class="message-text">
+                                Поговорили про наші плани на весілля. Дуже важлива розмова - ми на одній хвилі! 
+                                Домовились про бюджет і дату.
+                            </div>
+
+                            <!-- Voice Note -->
+                            <div class="voice-note">
+                                <div class="voice-controls">
+                                    <button class="play-btn">
+                                        <i class="fas fa-play"></i>
+                                    </button>
+                                    <div class="waveform">
+                                        <div class="wave-bars">
+                                            <div class="wave-bar"></div>
+                                            <div class="wave-bar"></div>
+                                            <div class="wave-bar"></div>
+                                            <div class="wave-bar"></div>
+                                            <div class="wave-bar"></div>
+                                            <div class="wave-bar"></div>
+                                            <div class="wave-bar"></div>
+                                            <div class="wave-bar"></div>
+                                        </div>
+                                    </div>
+                                    <div class="voice-duration">2:15</div>
+                                </div>
+                            </div>
+
+                            <div class="message-tags">
+                                <span class="message-tag">Важлива розмова</span>
+                                <span class="message-tag">Весілля</span>
+                                <span class="message-tag">🎤 Voice</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="message-item conflict">
+                        <div class="message-card">
+                            <div class="message-header">
+                                <div class="message-mood">😔</div>
+                                <div class="message-time">14:30 дня</div>
+                            </div>
+                            <div class="message-text">
+                                Сперечалися через плани на вихідні. Я хотіла залишитись вдома, він хотів в гості до друзів. 
+                                Вирішили: ця субота вдома, наступна - в гостях. Компроміс знайдено ✓
+                            </div>
+                            <div class="message-tags">
+                                <span class="message-tag conflict">Конфлікт вирішено</span>
+                                <span class="message-tag">Компроміс</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3 days ago -->
+                <div class="message-group">
+                    <div class="date-marker">15 Січня 2025</div>
+
+                    <div class="message-item positive">
+                        <div class="message-card">
+                            <div class="message-header">
+                                <div class="message-mood">😊</div>
+                                <div class="message-time">19:00 вечора</div>
+                            </div>
+                            <div class="message-text">
+                                Вечір-сюрприз! Він приготував мою улюблену пасту і поставив романтичний фільм. 
+                                Так приємно, що він пам'ятає дрібниці! 🍝
+                            </div>
+                            <div class="message-tags">
+                                <span class="message-tag appreciation">Подяка</span>
+                                <span class="message-tag">Романтика</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="message-item positive">
+                        <div class="message-card">
+                            <div class="message-header">
+                                <div class="message-mood">❤️</div>
+                                <div class="message-time">08:00 ранку</div>
+                            </div>
+                            <div class="message-text">
+                                Просто хочу сказати: я тебе люблю! Без причини, просто так ❤️
+                            </div>
+                            <div class="message-tags">
+                                <span class="message-tag appreciation">Любов</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Last week -->
+                <div class="message-group">
+                    <div class="date-marker">12 Січня 2025</div>
+
+                    <div class="message-item positive">
+                        <div class="message-card">
+                            <div class="message-header">
+                                <div class="message-mood">🤗</div>
+                                <div class="message-time">21:30 вечора</div>
+                            </div>
+                            <div class="message-text">
+                                Говорили про майбутнє - діти, будинок, мрії. Так приємно планувати життя разом! 
+                                Ми команда 💪
+                            </div>
+                            <div class="message-tags">
+                                <span class="message-tag">Важлива розмова</span>
+                                <span class="message-tag">Майбутнє</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

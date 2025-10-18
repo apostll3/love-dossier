@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Book - Step-by-Step Cooking</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --card-bg: #ffffff;
+            --card-border: rgba(99, 102, 241, 0.15);
+            --text-primary: #1a202c;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --primary: #667eea;
+            --primary-light: rgba(102, 126, 234, 0.1);
+            --accent: #764ba2;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --border-light: rgba(0,0,0,0.06);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 0.5rem;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .field-card {
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-left: 4px solid var(--primary);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 1.5rem;
+        }
+
+        .type-label {
+            display: inline-block;
+            background: rgba(102, 126, 234, 0.1);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Recipe Header */
+        .recipe-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .recipe-photo {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .recipe-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .recipe-description {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        /* Recipe Stats */
+        .recipe-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 1rem;
+            background: var(--primary-light);
+            border-radius: 10px;
+        }
+
+        .stat-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        /* Difficulty Badge */
+        .difficulty-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, var(--success), #34d399);
+            color: white;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .difficulty-badge.medium {
+            background: linear-gradient(135deg, var(--warning), #fbbf24);
+        }
+
+        /* Ingredients */
+        .ingredients-section {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: rgba(102, 126, 234, 0.02);
+            border-radius: 12px;
+            border: 2px solid var(--border-light);
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .ingredients-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .ingredient-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .ingredient-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-light);
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .ingredient-text {
+            flex: 1;
+            color: var(--text-secondary);
+        }
+
+        .ingredient-amount {
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* Steps */
+        .steps-section {
+            margin: 2rem 0;
+        }
+
+        .step-item {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding: 1.25rem;
+            background: white;
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .step-item:hover {
+            border-color: var(--primary);
+            transform: translateX(4px);
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-text {
+            color: var(--text-primary);
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+
+        .step-time {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        /* Tips */
+        .tips-section {
+            padding: 1.25rem;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.05));
+            border-radius: 12px;
+            border-left: 4px solid var(--success);
+            margin-top: 2rem;
+        }
+
+        .tips-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .tip-text {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .recipe-stats { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍳 Recipe Book</h1>
+        <p class="subtitle">Step-by-step instructions • Ingredients checklist • Cooking timer<br><strong>Minimal Modern Style</strong></p>
+
+        <div class="field-card">
+            <div class="type-label">🍳 RECIPE BOOK: Her Favorite Dish</div>
+
+            <!-- Recipe Header -->
+            <div class="recipe-header">
+                <div class="recipe-photo">🍝</div>
+                <div class="recipe-title">Італійська карбонара</div>
+                <div class="recipe-description">
+                    Улюблена страва Олі! Класична італійська паста з беконом, яйцями та пармезаном. 
+                    Готував на нашому першому побаченні вдома ❤️
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="recipe-stats">
+                <div class="stat-box">
+                    <div class="stat-icon">⏱️</div>
+                    <div class="stat-value">25</div>
+                    <div class="stat-label">хвилин</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">порції</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-icon">🔥</div>
+                    <div class="stat-value">450</div>
+                    <div class="stat-label">калорій</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-icon">📊</div>
+                    <div class="difficulty-badge">Easy</div>
+                </div>
+            </div>
+
+            <!-- Ingredients -->
+            <div class="ingredients-section">
+                <div class="section-title">
+                    <i class="fas fa-shopping-basket"></i>
+                    Інгредієнти
+                </div>
+                <div class="ingredients-list">
+                    <div class="ingredient-item">
+                        <div class="ingredient-checkbox"></div>
+                        <div class="ingredient-text">Спагеті</div>
+                        <div class="ingredient-amount">300г</div>
+                    </div>
+                    <div class="ingredient-item">
+                        <div class="ingredient-checkbox"></div>
+                        <div class="ingredient-text">Бекон (або гуанчале)</div>
+                        <div class="ingredient-amount">150г</div>
+                    </div>
+                    <div class="ingredient-item">
+                        <div class="ingredient-checkbox"></div>
+                        <div class="ingredient-text">Яйця (жовтки)</div>
+                        <div class="ingredient-amount">3 шт</div>
+                    </div>
+                    <div class="ingredient-item">
+                        <div class="ingredient-checkbox"></div>
+                        <div class="ingredient-text">Пармезан (тертий)</div>
+                        <div class="ingredient-amount">80г</div>
+                    </div>
+                    <div class="ingredient-item">
+                        <div class="ingredient-checkbox"></div>
+                        <div class="ingredient-text">Чорний перець</div>
+                        <div class="ingredient-amount">за смаком</div>
+                    </div>
+                    <div class="ingredient-item">
+                        <div class="ingredient-checkbox"></div>
+                        <div class="ingredient-text">Сіль</div>
+                        <div class="ingredient-amount">за смаком</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Steps -->
+            <div class="steps-section">
+                <div class="section-title">
+                    <i class="fas fa-list-ol"></i>
+                    Покрокова інструкція
+                </div>
+
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <div class="step-text">
+                            Поставте велику каструлю з водою на вогонь. Додайте сіль і доведіть до кипіння.
+                        </div>
+                        <div class="step-time">
+                            <i class="fas fa-clock"></i>
+                            5 хвилин
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <div class="step-text">
+                            Наріжте бекон на невеликі кубики. Обсмажте на сковороді до золотистого кольору без додавання олії.
+                        </div>
+                        <div class="step-time">
+                            <i class="fas fa-clock"></i>
+                            5 хвилин
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <div class="step-text">
+                            У мисці змішайте яєчні жовтки з тертим пармезаном і чорним перцем до однорідної маси.
+                        </div>
+                        <div class="step-time">
+                            <i class="fas fa-clock"></i>
+                            2 хвилини
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <div class="step-text">
+                            Відваріть спагеті згідно інструкції на упаковці до стану al dente. Зберігайте 1 склянку води від варіння!
+                        </div>
+                        <div class="step-time">
+                            <i class="fas fa-clock"></i>
+                            8-10 хвилин
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <div class="step-text">
+                            Злийте воду зі спагеті і додайте пасту до сковороди з беконом. Зніміть з вогню.
+                        </div>
+                        <div class="step-time">
+                            <i class="fas fa-clock"></i>
+                            1 хвилина
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-number">6</div>
+                    <div class="step-content">
+                        <div class="step-text">
+                            Швидко вмішайте суміш з яєць і сиру в пасту. Додайте трохи води від варіння для кремової консистенції. 
+                            Подавайте негайно!
+                        </div>
+                        <div class="step-time">
+                            <i class="fas fa-clock"></i>
+                            2 хвилини
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tips -->
+            <div class="tips-section">
+                <div class="tips-title">
+                    <i class="fas fa-lightbulb"></i>
+                    Секретні поради від Макса
+                </div>
+                <div class="tip-text">
+                    💡 Використовуйте тільки жовтки (без білків) для справжньої карбонари!<br>
+                    💡 Важливо: додавайте яйця тільки ПІСЛЯ того, як зняли сковороду з вогню, інакше вони звернуться.<br>
+                    💡 Оля любить коли я додаю трохи більше чорного перцю 😊<br>
+                    💡 Подавайте з келихом білого вина і свічками - це наш ритуал! 🕯️
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

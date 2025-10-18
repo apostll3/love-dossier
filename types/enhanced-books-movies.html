@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Books & Movies Tracker - Watchlist Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --card-bg: #ffffff;
+            --card-border: rgba(99, 102, 241, 0.15);
+            --text-primary: #1a202c;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --primary: #667eea;
+            --primary-light: rgba(102, 126, 234, 0.1);
+            --accent: #764ba2;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --border-light: rgba(0,0,0,0.06);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 0.5rem;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .field-card {
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-left: 4px solid var(--primary);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .type-label {
+            display: inline-block;
+            background: rgba(102, 126, 234, 0.1);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--border-light);
+            border-radius: 10px;
+            background: white;
+            color: var(--text-secondary);
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab:hover, .tab.active {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-box {
+            padding: 1rem;
+            background: var(--primary-light);
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        /* Items Grid */
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .item-card {
+            background: white;
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .item-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+            border-color: var(--primary);
+        }
+
+        .item-card.completed {
+            border-left: 4px solid var(--success);
+        }
+
+        .item-poster {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            position: relative;
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            padding: 0.4rem 0.8rem;
+            background: rgba(16, 185, 129, 0.95);
+            color: white;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .status-badge.wishlist {
+            background: rgba(245, 158, 11, 0.95);
+        }
+
+        .item-content {
+            padding: 1.25rem;
+        }
+
+        .item-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+
+        .item-meta {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .item-rating {
+            display: flex;
+            gap: 0.25rem;
+            margin-bottom: 0.75rem;
+            color: #fbbf24;
+        }
+
+        .item-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .tag {
+            padding: 0.25rem 0.6rem;
+            background: var(--primary-light);
+            color: var(--primary);
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .item-review {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            line-height: 1.6;
+            font-style: italic;
+            border-left: 3px solid var(--primary-light);
+            padding-left: 0.75rem;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 0.6rem;
+            border: 2px solid var(--border-light);
+            border-radius: 8px;
+            background: white;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:hover {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .items-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 Books & Movies Tracker</h1>
+        <p class="subtitle">Wishlist • Reviews • Ratings • Recommendations<br><strong>Minimal Modern Style</strong></p>
+
+        <div class="field-card">
+            <div class="type-label">📚 BOOKS & MOVIES: Our Collection</div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active">🎬 Фільми</button>
+                <button class="tab">📚 Книги</button>
+                <button class="tab">📺 Серіали</button>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-value">48</div>
+                    <div class="stat-label">Переглянуто</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">Wishlist</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">4.3</div>
+                    <div class="stat-label">Середня оцінка</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">24</div>
+                    <div class="stat-label">Разом цього року</div>
+                </div>
+            </div>
+
+            <!-- Movies Grid -->
+            <div class="items-grid">
+                <!-- Movie 1 - Completed -->
+                <div class="item-card completed">
+                    <div class="item-poster">
+                        🎬
+                        <div class="status-badge">Переглянуто</div>
+                    </div>
+                    <div class="item-content">
+                        <div class="item-title">Inception (Початок)</div>
+                        <div class="item-meta">2010 • Sci-Fi, Thriller • 2h 28min</div>
+                        <div class="item-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="item-tags">
+                            <span class="tag">Mind-bending</span>
+                            <span class="tag">Must-watch</span>
+                        </div>
+                        <div class="item-review">
+                            "Неймовірно! Дивились тричі і кожен раз відкривали щось нове. Улюблений фільм!"
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Movie 2 - Wishlist -->
+                <div class="item-card">
+                    <div class="item-poster">
+                        🎬
+                        <div class="status-badge wishlist">Wishlist</div>
+                    </div>
+                    <div class="item-content">
+                        <div class="item-title">Oppenheimer</div>
+                        <div class="item-meta">2023 • Biography, Drama • 3h</div>
+                        <div class="item-rating">
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </div>
+                        <div class="item-tags">
+                            <span class="tag">Оскар 2024</span>
+                            <span class="tag">IMAX</span>
+                        </div>
+                        <div class="item-actions">
+                            <button class="action-btn">✓ Переглянули</button>
+                            <button class="action-btn">⭐ Оцінити</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Movie 3 - Completed -->
+                <div class="item-card completed">
+                    <div class="item-poster">
+                        🎬
+                        <div class="status-badge">Переглянуто</div>
+                    </div>
+                    <div class="item-content">
+                        <div class="item-title">La La Land</div>
+                        <div class="item-meta">2016 • Musical, Romance • 2h 8min</div>
+                        <div class="item-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <div class="item-tags">
+                            <span class="tag">Musical</span>
+                            <span class="tag">Romance</span>
+                        </div>
+                        <div class="item-review">
+                            "Музика, танці, історія кохання... Плакали обоє в кінці 😢"
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Movie 4 - Wishlist -->
+                <div class="item-card">
+                    <div class="item-poster">
+                        🎬
+                        <div class="status-badge wishlist">Wishlist</div>
+                    </div>
+                    <div class="item-content">
+                        <div class="item-title">Past Lives</div>
+                        <div class="item-meta">2023 • Romance, Drama • 1h 46min</div>
+                        <div class="item-rating">
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </div>
+                        <div class="item-tags">
+                            <span class="tag">Romance</span>
+                            <span class="tag">Recommended</span>
+                        </div>
+                        <div class="item-actions">
+                            <button class="action-btn">✓ Переглянули</button>
+                            <button class="action-btn">⭐ Оцінити</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Movie 5 - Completed -->
+                <div class="item-card completed">
+                    <div class="item-poster">
+                        🎬
+                        <div class="status-badge">Переглянуто</div>
+                    </div>
+                    <div class="item-content">
+                        <div class="item-title">The Notebook</div>
+                        <div class="item-meta">2004 • Romance, Drama • 2h 3min</div>
+                        <div class="item-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="item-tags">
+                            <span class="tag">Classic</span>
+                            <span class="tag">Romance</span>
+                        </div>
+                        <div class="item-review">
+                            "Найромантичніший фільм ever! Дивились на першому побаченні вдома ❤️"
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Movie 6 - Wishlist -->
+                <div class="item-card">
+                    <div class="item-poster">
+                        🎬
+                        <div class="status-badge wishlist">Wishlist</div>
+                    </div>
+                    <div class="item-content">
+                        <div class="item-title">Barbie</div>
+                        <div class="item-meta">2023 • Comedy, Adventure • 1h 54min</div>
+                        <div class="item-rating">
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </div>
+                        <div class="item-tags">
+                            <span class="tag">Comedy</span>
+                            <span class="tag">Pink!</span>
+                        </div>
+                        <div class="item-actions">
+                            <button class="action-btn">✓ Переглянули</button>
+                            <button class="action-btn">⭐ Оцінити</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

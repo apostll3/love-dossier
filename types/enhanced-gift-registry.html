@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gift Registry - Wishlist Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --card-bg: #ffffff;
+            --card-border: rgba(99, 102, 241, 0.15);
+            --text-primary: #1a202c;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --primary: #667eea;
+            --primary-light: rgba(102, 126, 234, 0.1);
+            --accent: #764ba2;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --border-light: rgba(0,0,0,0.06);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container { max-width: 1100px; margin: 0 auto; }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 0.5rem;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .field-card {
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-left: 4px solid var(--primary);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 1.5rem;
+        }
+
+        .type-label {
+            display: inline-block;
+            background: rgba(102, 126, 234, 0.1);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Stats Overview */
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-box {
+            padding: 1.25rem;
+            background: linear-gradient(135deg, var(--primary-light), rgba(118, 75, 162, 0.05));
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            font-weight: 600;
+        }
+
+        /* Filter Tabs */
+        .filter-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            padding: 0.6rem 1.2rem;
+            border: 2px solid var(--border-light);
+            border-radius: 8px;
+            background: white;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-tab:hover, .filter-tab.active {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Gift List */
+        .gift-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .gift-item {
+            display: flex;
+            gap: 1.25rem;
+            padding: 1.25rem;
+            background: white;
+            border: 2px solid var(--border-light);
+            border-left: 4px solid var(--primary);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .gift-item:hover {
+            transform: translateX(6px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .gift-item.purchased {
+            border-left-color: var(--success);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.03), rgba(5, 150, 105, 0.01));
+            opacity: 0.7;
+        }
+
+        .gift-item.high-priority {
+            border-left-color: var(--danger);
+        }
+
+        .gift-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            flex-shrink: 0;
+        }
+
+        .gift-content {
+            flex: 1;
+        }
+
+        .gift-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+
+        .gift-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .gift-item.purchased .gift-title {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        .gift-price {
+            font-size: 1.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .gift-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 0.75rem;
+        }
+
+        .gift-meta {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .meta-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.3rem 0.7rem;
+            background: rgba(102, 126, 234, 0.1);
+            color: var(--primary);
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .meta-badge.priority-high {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        .meta-badge.purchased {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .meta-badge.occasion {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .gift-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--border-light);
+            border-radius: 8px;
+            background: white;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:hover {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+        .action-btn.success {
+            border-color: var(--success);
+            background: var(--success);
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .stats-overview { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎁 Gift Registry</h1>
+        <p class="subtitle">Wishlist • Price tracking • Priority levels • Occasion tags<br><strong>Minimal Modern Style</strong></p>
+
+        <div class="field-card">
+            <div class="type-label">🎁 GIFT REGISTRY: Birthday Wishlist</div>
+
+            <!-- Stats Overview -->
+            <div class="stats-overview">
+                <div class="stat-box">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">Подарунків</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">Куплено</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">$580</div>
+                    <div class="stat-label">Загальна вартість</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">45</div>
+                    <div class="stat-label">Днів до події</div>
+                </div>
+            </div>
+
+            <!-- Filter Tabs -->
+            <div class="filter-tabs">
+                <button class="filter-tab active">Всі</button>
+                <button class="filter-tab">Високий пріоритет</button>
+                <button class="filter-tab">Куплені</button>
+                <button class="filter-tab">За ціною</button>
+            </div>
+
+            <!-- Gift List -->
+            <div class="gift-list">
+                <!-- Gift 1 - High Priority -->
+                <div class="gift-item high-priority">
+                    <div class="gift-image">💻</div>
+                    <div class="gift-content">
+                        <div class="gift-header">
+                            <div class="gift-title">MacBook Air M2</div>
+                            <div class="gift-price">$1,299</div>
+                        </div>
+                        <div class="gift-description">
+                            Мрію про новий лептоп для роботи! Сріблястий колір, 13 дюймів, 256GB
+                        </div>
+                        <div class="gift-meta">
+                            <span class="meta-badge priority-high">
+                                <i class="fas fa-star"></i>
+                                High Priority
+                            </span>
+                            <span class="meta-badge occasion">
+                                <i class="fas fa-birthday-cake"></i>
+                                День народження
+                            </span>
+                            <span class="meta-badge">
+                                <i class="fas fa-store"></i>
+                                Apple Store
+                            </span>
+                        </div>
+                        <div class="gift-actions">
+                            <button class="action-btn">
+                                <i class="fas fa-external-link-alt"></i>
+                                Відкрити посилання
+                            </button>
+                            <button class="action-btn success">
+                                <i class="fas fa-check"></i>
+                                Позначити куплено
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gift 2 - Purchased -->
+                <div class="gift-item purchased">
+                    <div class="gift-image">🎧</div>
+                    <div class="gift-content">
+                        <div class="gift-header">
+                            <div class="gift-title">AirPods Pro 2</div>
+                            <div class="gift-price">$249</div>
+                        </div>
+                        <div class="gift-description">
+                            Бездротові навушники з шумоподавленням
+                        </div>
+                        <div class="gift-meta">
+                            <span class="meta-badge purchased">
+                                <i class="fas fa-check-circle"></i>
+                                Куплено 12.01.2025
+                            </span>
+                            <span class="meta-badge occasion">
+                                <i class="fas fa-birthday-cake"></i>
+                                День народження
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gift 3 - High Priority -->
+                <div class="gift-item high-priority">
+                    <div class="gift-image">👜</div>
+                    <div class="gift-content">
+                        <div class="gift-header">
+                            <div class="gift-title">Michael Kors сумка</div>
+                            <div class="gift-price">$350</div>
+                        </div>
+                        <div class="gift-description">
+                            Шкіряна сумка коричневого кольору з золотими деталями
+                        </div>
+                        <div class="gift-meta">
+                            <span class="meta-badge priority-high">
+                                <i class="fas fa-star"></i>
+                                High Priority
+                            </span>
+                            <span class="meta-badge">
+                                <i class="fas fa-store"></i>
+                                Michael Kors
+                            </span>
+                        </div>
+                        <div class="gift-actions">
+                            <button class="action-btn">
+                                <i class="fas fa-external-link-alt"></i>
+                                Відкрити посилання
+                            </button>
+                            <button class="action-btn success">
+                                <i class="fas fa-check"></i>
+                                Позначити куплено
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gift 4 - Purchased -->
+                <div class="gift-item purchased">
+                    <div class="gift-image">💄</div>
+                    <div class="gift-content">
+                        <div class="gift-header">
+                            <div class="gift-title">Dior парфуми J'adore</div>
+                            <div class="gift-price">$150</div>
+                        </div>
+                        <div class="gift-description">
+                            Улюблений аромат! 100ml
+                        </div>
+                        <div class="gift-meta">
+                            <span class="meta-badge purchased">
+                                <i class="fas fa-check-circle"></i>
+                                Куплено 10.01.2025
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gift 5 -->
+                <div class="gift-item">
+                    <div class="gift-image">📚</div>
+                    <div class="gift-content">
+                        <div class="gift-header">
+                            <div class="gift-title">Kindle Paperwhite</div>
+                            <div class="gift-price">$140</div>
+                        </div>
+                        <div class="gift-description">
+                            Електронна книга для читання перед сном
+                        </div>
+                        <div class="gift-meta">
+                            <span class="meta-badge">
+                                <i class="fas fa-star"></i>
+                                Medium Priority
+                            </span>
+                            <span class="meta-badge">
+                                <i class="fas fa-store"></i>
+                                Amazon
+                            </span>
+                        </div>
+                        <div class="gift-actions">
+                            <button class="action-btn">
+                                <i class="fas fa-external-link-alt"></i>
+                                Відкрити посилання
+                            </button>
+                            <button class="action-btn success">
+                                <i class="fas fa-check"></i>
+                                Позначити куплено
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

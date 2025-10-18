@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Email Manager - Contact Groups</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --card-bg: #ffffff;
+            --card-border: rgba(99, 102, 241, 0.15);
+            --text-primary: #1a202c;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --primary: #667eea;
+            --primary-light: rgba(102, 126, 234, 0.1);
+            --accent: #764ba2;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --border-light: rgba(0,0,0,0.06);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container { max-width: 1100px; margin: 0 auto; }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 0.5rem;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .field-card {
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-left: 4px solid var(--primary);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .type-label {
+            display: inline-block;
+            background: rgba(102, 126, 234, 0.1);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Email Input */
+        .email-input-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .email-input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border-light);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .email-input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .email-input.valid {
+            border-color: var(--success);
+        }
+
+        .email-input.invalid {
+            border-color: var(--danger);
+        }
+
+        .validate-btn {
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .validate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Validation Status */
+        .validation-status {
+            padding: 1rem;
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid var(--success);
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .validation-status.error {
+            background: rgba(239, 68, 68, 0.1);
+            border-left-color: var(--danger);
+        }
+
+        .status-icon {
+            font-size: 1.5rem;
+        }
+
+        .status-text {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Contact Groups */
+        .groups-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .group-card {
+            padding: 1.25rem;
+            background: white;
+            border: 2px solid var(--border-light);
+            border-left: 4px solid var(--primary);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .group-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .group-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .group-icon {
+            font-size: 1.8rem;
+        }
+
+        .group-count {
+            padding: 0.25rem 0.6rem;
+            background: var(--primary-light);
+            color: var(--primary);
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .group-title {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .group-description {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* Email List */
+        .email-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .email-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: white;
+            border: 2px solid var(--border-light);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .email-item:hover {
+            border-color: var(--primary);
+            transform: translateX(4px);
+        }
+
+        .email-avatar {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .email-content {
+            flex: 1;
+        }
+
+        .email-name {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .email-address {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .email-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border: 2px solid var(--border-light);
+            border-radius: 8px;
+            background: white;
+            color: var(--primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Templates */
+        .templates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .template-card {
+            padding: 1.25rem;
+            background: white;
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+        }
+
+        .template-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .template-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .template-title {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .template-preview {
+            padding: 1rem;
+            background: rgba(102, 126, 234, 0.02);
+            border-left: 3px solid var(--primary);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .template-btn {
+            width: 100%;
+            padding: 0.6rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .template-btn:hover {
+            background: var(--accent);
+        }
+
+        @media (max-width: 768px) {
+            .groups-grid { grid-template-columns: 1fr; }
+            .templates-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📧 Smart Email Manager</h1>
+        <p class="subtitle">Email validation • Contact groups • Templates • Quick compose<br><strong>Minimal Modern Style</strong></p>
+
+        <!-- Email Input & Validation -->
+        <div class="field-card">
+            <div class="type-label">📧 EMAIL: Add New Contact</div>
+
+            <div class="email-input-group">
+                <input type="email" class="email-input valid" placeholder="email@example.com" value="olya.love@gmail.com">
+                <button class="validate-btn">
+                    <i class="fas fa-check-circle"></i> Перевірити
+                </button>
+            </div>
+
+            <div class="validation-status">
+                <span class="status-icon">✅</span>
+                <span class="status-text">Email валідний і готовий до використання!</span>
+            </div>
+        </div>
+
+        <!-- Contact Groups -->
+        <div class="field-card">
+            <div class="type-label">👥 GROUPS: Contact Categories</div>
+
+            <div class="groups-grid">
+                <div class="group-card">
+                    <div class="group-header">
+                        <span class="group-icon">👨‍👩‍👧</span>
+                        <span class="group-count">8</span>
+                    </div>
+                    <div class="group-title">Сім'я</div>
+                    <div class="group-description">Наші близькі родичі</div>
+                </div>
+
+                <div class="group-card">
+                    <div class="group-header">
+                        <span class="group-icon">👫</span>
+                        <span class="group-count">15</span>
+                    </div>
+                    <div class="group-title">Друзі</div>
+                    <div class="group-description">Спільні друзі пари</div>
+                </div>
+
+                <div class="group-card">
+                    <div class="group-header">
+                        <span class="group-icon">💼</span>
+                        <span class="group-count">12</span>
+                    </div>
+                    <div class="group-title">Робота</div>
+                    <div class="group-description">Колеги та партнери</div>
+                </div>
+
+                <div class="group-card">
+                    <div class="group-header">
+                        <span class="group-icon">🚨</span>
+                        <span class="group-count">4</span>
+                    </div>
+                    <div class="group-title">Emergency</div>
+                    <div class="group-description">Екстрені контакти</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Family Contacts -->
+        <div class="field-card">
+            <div class="type-label">👨‍👩‍👧 FAMILY: Email Contacts</div>
+
+            <div class="email-list">
+                <div class="email-item">
+                    <div class="email-avatar">👩</div>
+                    <div class="email-content">
+                        <div class="email-name">Мама Олі - Тетяна</div>
+                        <div class="email-address">tetyana.ivanova@gmail.com</div>
+                    </div>
+                    <div class="email-actions">
+                        <button class="action-btn" title="Написати"><i class="fas fa-envelope"></i></button>
+                        <button class="action-btn" title="Копіювати"><i class="fas fa-copy"></i></button>
+                    </div>
+                </div>
+
+                <div class="email-item">
+                    <div class="email-avatar">👨</div>
+                    <div class="email-content">
+                        <div class="email-name">Тато Макса - Олександр</div>
+                        <div class="email-address">alex.koval@ukr.net</div>
+                    </div>
+                    <div class="email-actions">
+                        <button class="action-btn" title="Написати"><i class="fas fa-envelope"></i></button>
+                        <button class="action-btn" title="Копіювати"><i class="fas fa-copy"></i></button>
+                    </div>
+                </div>
+
+                <div class="email-item">
+                    <div class="email-avatar">👧</div>
+                    <div class="email-content">
+                        <div class="email-name">Сестра Олі - Анна</div>
+                        <div class="email-address">anna.design@gmail.com</div>
+                    </div>
+                    <div class="email-actions">
+                        <button class="action-btn" title="Написати"><i class="fas fa-envelope"></i></button>
+                        <button class="action-btn" title="Копіювати"><i class="fas fa-copy"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Email Templates -->
+        <div class="field-card">
+            <div class="type-label">💌 TEMPLATES: Love Letters & More</div>
+
+            <div class="templates-grid">
+                <div class="template-card">
+                    <div class="template-header">
+                        <div class="template-icon">❤️</div>
+                        <div class="template-title">Любовний лист</div>
+                    </div>
+                    <div class="template-preview">
+                        "Мій коханий/кохана, хочу сказати наскільки ти важливий/важлива для мене. Кожен день з тобою - це подарунок..."
+                    </div>
+                    <button class="template-btn">Використати шаблон</button>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-header">
+                        <div class="template-icon">🎂</div>
+                        <div class="template-title">Запрошення на подію</div>
+                    </div>
+                    <div class="template-preview">
+                        "Привіт! Ми раді запросити вас на наше святкування [подія]. Дата: [дата], Місце: [адреса]. Сподіваємось вас бачити!"
+                    </div>
+                    <button class="template-btn">Використати шаблон</button>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-header">
+                        <div class="template-icon">💍</div>
+                        <div class="template-title">Весільне запрошення</div>
+                    </div>
+                    <div class="template-preview">
+                        "Дорогі наші! З радістю запрошуємо вас розділити з нами найщасливіший день нашого життя - нашу весілля! 💕"
+                    </div>
+                    <button class="template-btn">Використати шаблон</button>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-header">
+                        <div class="template-icon">🙏</div>
+                        <div class="template-title">Подяка</div>
+                    </div>
+                    <div class="template-preview">
+                        "Дякуємо за [причина]! Ваша підтримка та турбота дуже багато для нас означає. З вдячністю, [імена]"
+                    </div>
+                    <button class="template-btn">Використати шаблон</button>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-header">
+                        <div class="template-icon">🎁</div>
+                        <div class="template-title">Нагадування про подарунок</div>
+                    </div>
+                    <div class="template-preview">
+                        "Привіт! Нагадуємо, що скоро [подія]. Ми створили wishlist для зручності. Посилання: [link]"
+                    </div>
+                    <button class="template-btn">Використати шаблон</button>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-header">
+                        <div class="template-icon">✈️</div>
+                        <div class="template-title">Оновлення з подорожі</div>
+                    </div>
+                    <div class="template-preview">
+                        "Вітання з [місто]! Подорож чудова, побачили вже [пам'ятки]. Скучаємо за всіма! Фото додаємо 📸"
+                    </div>
+                    <button class="template-btn">Використати шаблон</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

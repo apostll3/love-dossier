@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Gallery Pro - Photo Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --card-bg: #ffffff;
+            --card-border: rgba(99, 102, 241, 0.15);
+            --text-primary: #1a202c;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --primary: #667eea;
+            --primary-light: rgba(102, 126, 234, 0.1);
+            --accent: #764ba2;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --border-light: rgba(0,0,0,0.06);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 0.5rem;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .field-card {
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-left: 4px solid var(--primary);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 1.5rem;
+        }
+
+        .type-label {
+            display: inline-block;
+            background: rgba(102, 126, 234, 0.1);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Upload Zone */
+        .upload-zone {
+            padding: 3rem;
+            border: 3px dashed var(--border-light);
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.02), rgba(118, 75, 162, 0.01));
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+
+        .upload-zone:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .upload-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2.5rem;
+        }
+
+        .upload-text {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-hint {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* View Toggle */
+        .view-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .toggle-btn {
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--border-light);
+            border-radius: 8px;
+            background: white;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .toggle-btn:hover, .toggle-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .selection-info {
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        /* Image Grid */
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .image-item {
+            position: relative;
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .image-item:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .image-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+        }
+
+        .image-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0.1), rgba(0,0,0,0.6));
+            opacity: 0;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 1rem;
+        }
+
+        .image-item:hover .image-overlay {
+            opacity: 1;
+        }
+
+        .overlay-top {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .image-checkbox {
+            width: 24px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 1rem;
+        }
+
+        .overlay-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .overlay-btn {
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .overlay-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .overlay-bottom {
+            color: white;
+        }
+
+        .image-filename {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .image-size {
+            font-size: 0.75rem;
+            opacity: 0.9;
+        }
+
+        /* Bulk Actions */
+        .bulk-actions {
+            display: flex;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .bulk-btn {
+            padding: 0.6rem 1.2rem;
+            border: 2px solid var(--border-light);
+            border-radius: 8px;
+            background: white;
+            color: var(--text-secondary);
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .bulk-btn:hover {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+        .bulk-btn.danger:hover {
+            border-color: var(--danger);
+            background: var(--danger);
+        }
+
+        @media (max-width: 768px) {
+            .image-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🖼️ Image Gallery Pro</h1>
+        <p class="subtitle">Drag & drop • Multiple upload • Quick actions • Grid/List view<br><strong>Minimal Modern Style</strong></p>
+
+        <div class="field-card">
+            <div class="type-label">🖼️ IMAGE GALLERY: Our Memories</div>
+
+            <!-- Upload Zone -->
+            <div class="upload-zone">
+                <div class="upload-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <div class="upload-text">Перетягніть фото сюди або клікніть для вибору</div>
+                <div class="upload-hint">Підтримуються JPG, PNG, GIF до 10MB</div>
+            </div>
+
+            <!-- Bulk Actions -->
+            <div class="bulk-actions">
+                <button class="bulk-btn">
+                    <i class="fas fa-check-square"></i>
+                    Обрати всі
+                </button>
+                <button class="bulk-btn">
+                    <i class="fas fa-download"></i>
+                    Завантажити (3)
+                </button>
+                <button class="bulk-btn">
+                    <i class="fas fa-share-alt"></i>
+                    Поділитись
+                </button>
+                <button class="bulk-btn danger">
+                    <i class="fas fa-trash"></i>
+                    Видалити (3)
+                </button>
+            </div>
+
+            <!-- View Controls -->
+            <div class="view-controls">
+                <div class="selection-info">24 фотографії • 3 обрано</div>
+                <div class="view-toggle">
+                    <button class="toggle-btn active">
+                        <i class="fas fa-th"></i>
+                    </button>
+                    <button class="toggle-btn">
+                        <i class="fas fa-th-large"></i>
+                    </button>
+                    <button class="toggle-btn">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Image Grid -->
+            <div class="image-grid">
+                <!-- Image 1 -->
+                <div class="image-item">
+                    <div class="image-placeholder">📷</div>
+                    <div class="image-overlay">
+                        <div class="overlay-top">
+                            <div class="image-checkbox">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="overlay-actions">
+                                <div class="overlay-btn"><i class="fas fa-eye"></i></div>
+                                <div class="overlay-btn"><i class="fas fa-download"></i></div>
+                                <div class="overlay-btn"><i class="fas fa-trash"></i></div>
+                            </div>
+                        </div>
+                        <div class="overlay-bottom">
+                            <div class="image-filename">paris-trip-001.jpg</div>
+                            <div class="image-size">2.4 MB • 4032×3024</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Image 2 -->
+                <div class="image-item">
+                    <div class="image-placeholder">🎂</div>
+                    <div class="image-overlay">
+                        <div class="overlay-top">
+                            <div class="image-checkbox"></div>
+                            <div class="overlay-actions">
+                                <div class="overlay-btn"><i class="fas fa-eye"></i></div>
+                                <div class="overlay-btn"><i class="fas fa-download"></i></div>
+                                <div class="overlay-btn"><i class="fas fa-trash"></i></div>
+                            </div>
+                        </div>
+                        <div class="overlay-bottom">
+                            <div class="image-filename">birthday-2024.jpg</div>
+                            <div class="image-size">3.1 MB • 4032×3024</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Image 3 -->
+                <div class="image-item">
+                    <div class="image-placeholder">💑</div>
+                    <div class="image-overlay">
+                        <div class="overlay-top">
+                            <div class="image-checkbox">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="overlay-actions">
+                                <div class="overlay-btn"><i class="fas fa-eye"></i></div>
+                                <div class="overlay-btn"><i class="fas fa-download"></i></div>
+                                <div class="overlay-btn"><i class="fas fa-trash"></i></div>
+                            </div>
+                        </div>
+                        <div class="overlay-bottom">
+                            <div class="image-filename">first-date.jpg</div>
+                            <div class="image-size">1.8 MB • 3264×2448</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Image 4 -->
+                <div class="image-item">
+                    <div class="image-placeholder">✈️</div>
+                    <div class="image-overlay">
+                        <div class="overlay-top">
+                            <div class="image-checkbox"></div>
+                            <div class="overlay-actions">
+                                <div class="overlay-btn"><i class="fas fa-eye"></i></div>
+                                <div class="overlay-btn"><i class="fas fa-download"></i></div>
+                                <div class="overlay-btn"><i class="fas fa-trash"></i></div>
+                            </div>
+                        </div>
+                        <div class="overlay-bottom">
+                            <div class="image-filename">italy-vacation.jpg</div>
+                            <div class="image-size">2.9 MB • 4032×3024</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Image 5 -->
+                <div class="image-item">
+                    <div class="image-placeholder">🏠</div>
+                    <div class="image-overlay">
+                        <div class="overlay-top">
+                            <div class="image-checkbox">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="overlay-actions">
+                                <div class="overlay-btn"><i class="fas fa-eye"></i></div>
+                                <div class="overlay-btn"><i class="fas fa-download"></i></div>
+                                <div class="overlay-btn"><i class="fas fa-trash"></i></div>
+                            </div>
+                        </div>
+                        <div class="overlay-bottom">
+                            <div class="image-filename">new-apartment.jpg</div>
+                            <div class="image-size">2.2 MB • 3264×2448</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Image 6 -->
+                <div class="image-item">
+                    <div class="image-placeholder">💍</div>
+                    <div class="image-overlay">
+                        <div class="overlay-top">
+                            <div class="image-checkbox"></div>
+                            <div class="overlay-actions">
+                                <div class="overlay-btn"><i class="fas fa-eye"></i></div>
+                                <div class="overlay-btn"><i class="fas fa-download"></i></div>
+                                <div class="overlay-btn"><i class="fas fa-trash"></i></div>
+                            </div>
+                        </div>
+                        <div class="overlay-bottom">
+                            <div class="image-filename">engagement-ring.jpg</div>
+                            <div class="image-size">1.5 MB • 2448×3264</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

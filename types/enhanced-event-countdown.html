@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Countdown - Gift Ideas & Budget</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --card-bg: #ffffff;
+            --card-border: rgba(99, 102, 241, 0.15);
+            --text-primary: #1a202c;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --primary: #667eea;
+            --primary-light: rgba(102, 126, 234, 0.1);
+            --accent: #764ba2;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --border-light: rgba(0,0,0,0.06);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 0.5rem;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(550px, 1fr));
+            gap: 2rem;
+        }
+
+        .field-card {
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-left: 4px solid var(--primary);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .field-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            border-color: var(--primary);
+        }
+
+        .floating-actions {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            z-index: 10;
+        }
+
+        .action-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            border: none;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            color: var(--primary);
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            opacity: 0;
+            transform: scale(0.3) rotate(180deg);
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        .field-card:hover .action-btn {
+            opacity: 1;
+            transform: scale(1) rotate(0deg);
+        }
+
+        .action-btn:nth-child(1) { transition-delay: 0.05s; }
+        .action-btn:nth-child(2) { transition-delay: 0.1s; }
+        .action-btn:nth-child(3) { transition-delay: 0.15s; }
+
+        .action-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.15) rotate(-5deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .action-btn.btn-danger:hover {
+            background: var(--danger);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .icon-wrapper {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            flex-shrink: 0;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .icon-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+
+        .field-card:hover .icon-wrapper::before {
+            transform: translateX(100%);
+        }
+
+        .field-card:hover .icon-wrapper {
+            transform: rotate(10deg) scale(1.1);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+        }
+
+        .title-section { flex: 1; }
+
+        .field-label {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.4rem;
+        }
+
+        .badges-inline {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .badge {
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-importance {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            color: white;
+        }
+
+        .badge-type {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        /* Event Countdown Styles */
+        .countdown-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* Countdown Circle */
+        .countdown-display {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, var(--primary-light), rgba(118, 75, 162, 0.05));
+            border-radius: 12px;
+        }
+
+        .countdown-circle {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            position: relative;
+            border: 6px solid transparent;
+            background-clip: padding-box;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .countdown-circle::before {
+            content: '';
+            position: absolute;
+            inset: -6px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            z-index: -1;
+        }
+
+        .countdown-number {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+
+        .countdown-label {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        /* Multiple Events */
+        .events-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .event-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: white;
+            border: 2px solid var(--border-light);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .event-item:hover {
+            border-color: var(--primary);
+            transform: translateX(4px);
+        }
+
+        .event-icon {
+            font-size: 2rem;
+        }
+
+        .event-info {
+            flex: 1;
+        }
+
+        .event-name {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .event-date {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .event-countdown-mini {
+            text-align: right;
+        }
+
+        .mini-days {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .mini-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        /* Gift Ideas Section */
+        .gift-ideas {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .section-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 3px;
+            height: 14px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 2px;
+        }
+
+        .gift-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: rgba(102, 126, 234, 0.02);
+            border-radius: 8px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .gift-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-light);
+            border-radius: 4px;
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-top: 0.2rem;
+        }
+
+        .gift-text {
+            flex: 1;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .gift-price {
+            font-weight: 700;
+            color: var(--primary);
+            white-space: nowrap;
+        }
+
+        /* Budget Tracker */
+        .budget-tracker {
+            padding: 1.25rem;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.05));
+            border-radius: 12px;
+            border-left: 4px solid var(--success);
+        }
+
+        .budget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .budget-label {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .budget-amount {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--success);
+        }
+
+        .budget-progress {
+            height: 10px;
+            background: rgba(16, 185, 129, 0.2);
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 0.75rem;
+        }
+
+        .budget-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), #34d399);
+            border-radius: 20px;
+            transition: width 0.5s ease;
+        }
+
+        .budget-details {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Planning Notes */
+        .planning-notes {
+            padding: 1rem;
+            background: rgba(245, 158, 11, 0.1);
+            border-radius: 10px;
+            border-left: 3px solid var(--warning);
+        }
+
+        .notes-title {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .notes-text {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .type-label {
+            display: inline-block;
+            background: rgba(102, 126, 234, 0.1);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .cards-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎂 Event Countdown - Plan & Track</h1>
+        <p class="subtitle">
+            Gift ideas list • Budget tracker • Planning notes • Smart reminders • Multiple events<br>
+            <strong>Minimal Modern Style</strong>
+        </p>
+
+        <div class="cards-grid">
+            <!-- Example 1: Birthday with Gift Ideas -->
+            <div>
+                <div class="type-label">🎂 EVENT COUNTDOWN: Birthday Planning</div>
+                <div class="field-card">
+                    <div class="floating-actions">
+                        <button class="action-btn"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn"><i class="fas fa-cog"></i></button>
+                        <button class="action-btn btn-danger"><i class="fas fa-trash"></i></button>
+                    </div>
+
+                    <div class="card-header">
+                        <div class="icon-wrapper">
+                            <i class="fas fa-birthday-cake"></i>
+                        </div>
+                        <div class="title-section">
+                            <div class="field-label">День народження Олі 🎉</div>
+                            <div class="badges-inline">
+                                <span class="badge badge-importance">High</span>
+                                <span class="badge badge-type">Countdown</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="countdown-container">
+                        <!-- Countdown Display -->
+                        <div class="countdown-display">
+                            <div class="countdown-circle">
+                                <div class="countdown-number">47</div>
+                                <div class="countdown-label">днів до</div>
+                            </div>
+                        </div>
+
+                        <!-- Gift Ideas -->
+                        <div class="gift-ideas">
+                            <div class="section-title">🎁 Ідеї подарунків</div>
+                            <div class="gift-item">
+                                <input type="checkbox" class="gift-checkbox">
+                                <span class="gift-text">AirPods Pro 2 покоління</span>
+                                <span class="gift-price">$249</span>
+                            </div>
+                            <div class="gift-item">
+                                <input type="checkbox" class="gift-checkbox" checked>
+                                <span class="gift-text">Dior J'adore парфуми</span>
+                                <span class="gift-price">$150</span>
+                            </div>
+                            <div class="gift-item">
+                                <input type="checkbox" class="gift-checkbox">
+                                <span class="gift-text">Шкіряна сумка Michael Kors</span>
+                                <span class="gift-price">$350</span>
+                            </div>
+                            <div class="gift-item">
+                                <input type="checkbox" class="gift-checkbox" checked>
+                                <span class="gift-text">Набір косметики MAC</span>
+                                <span class="gift-price">$180</span>
+                            </div>
+                            <div class="gift-item">
+                                <input type="checkbox" class="gift-checkbox">
+                                <span class="gift-text">Ресторан + квіти + торт</span>
+                                <span class="gift-price">$200</span>
+                            </div>
+                        </div>
+
+                        <!-- Budget Tracker -->
+                        <div class="budget-tracker">
+                            <div class="budget-header">
+                                <span class="budget-label">💰 Бюджет на подарунки</span>
+                                <span class="budget-amount">$330 / $500</span>
+                            </div>
+                            <div class="budget-progress">
+                                <div class="budget-fill" style="width: 66%"></div>
+                            </div>
+                            <div class="budget-details">
+                                <span>Витрачено: $330</span>
+                                <span>Залишилось: $170</span>
+                            </div>
+                        </div>
+
+                        <!-- Planning Notes -->
+                        <div class="planning-notes">
+                            <div class="notes-title">
+                                <i class="fas fa-sticky-note"></i>
+                                Нотатки для планування
+                            </div>
+                            <div class="notes-text">
+                                • Забронювати столик в "Італійському дворику" за 2 тижні<br>
+                                • Замовити торт "Червоний оксамит" за тиждень<br>
+                                • Купити головний подарунок до 10 березня<br>
+                                • Підготувати романтичний плейлист<br>
+                                • Запросити найближчих друзів
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Example 2: Multiple Events on One Card -->
+            <div>
+                <div class="type-label">🎂 EVENT COUNTDOWN: Upcoming Events</div>
+                <div class="field-card">
+                    <div class="floating-actions">
+                        <button class="action-btn"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn"><i class="fas fa-cog"></i></button>
+                        <button class="action-btn btn-danger"><i class="fas fa-trash"></i></button>
+                    </div>
+
+                    <div class="card-header">
+                        <div class="icon-wrapper">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="title-section">
+                            <div class="field-label">Важливі події</div>
+                            <div class="badges-inline">
+                                <span class="badge badge-importance">High</span>
+                                <span class="badge badge-type">Multi-Event</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="countdown-container">
+                        <!-- Multiple Events List -->
+                        <div class="events-list">
+                            <div class="event-item">
+                                <span class="event-icon">🎂</span>
+                                <div class="event-info">
+                                    <div class="event-name">День народження</div>
+                                    <div class="event-date">15 Березня 2025</div>
+                                </div>
+                                <div class="event-countdown-mini">
+                                    <div class="mini-days">47</div>
+                                    <div class="mini-label">днів</div>
+                                </div>
+                            </div>
+
+                            <div class="event-item">
+                                <span class="event-icon">💑</span>
+                                <div class="event-info">
+                                    <div class="event-name">Річниця відносин (5 років)</div>
+                                    <div class="event-date">14 Лютого 2025</div>
+                                </div>
+                                <div class="event-countdown-mini">
+                                    <div class="mini-days">18</div>
+                                    <div class="mini-label">днів</div>
+                                </div>
+                            </div>
+
+                            <div class="event-item">
+                                <span class="event-icon">❤️</span>
+                                <div class="event-info">
+                                    <div class="event-name">Перше побачення</div>
+                                    <div class="event-date">1 Лютого 2025</div>
+                                </div>
+                                <div class="event-countdown-mini">
+                                    <div class="mini-days">5</div>
+                                    <div class="mini-label">днів</div>
+                                </div>
+                            </div>
+
+                            <div class="event-item">
+                                <span class="event-icon">🎉</span>
+                                <div class="event-info">
+                                    <div class="event-name">Новий Рік разом</div>
+                                    <div class="event-date">31 Грудня 2025</div>
+                                </div>
+                                <div class="event-countdown-mini">
+                                    <div class="mini-days">334</div>
+                                    <div class="mini-label">днів</div>
+                                </div>
+                            </div>
+
+                            <div class="event-item">
+                                <span class="event-icon">✈️</span>
+                                <div class="event-info">
+                                    <div class="event-name">Подорож до Італії</div>
+                                    <div class="event-date">1 Червня 2025</div>
+                                </div>
+                                <div class="event-countdown-mini">
+                                    <div class="mini-days">125</div>
+                                    <div class="mini-label">днів</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Smart Reminders -->
+                        <div style="padding: 1rem; background: rgba(102, 126, 234, 0.05); border-radius: 10px;">
+                            <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 0.75rem; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="fas fa-bell"></i>
+                                Smart Reminders
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem; color: var(--text-secondary);">
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                                    <span>30 днів до: Почати планування ✓</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <i class="fas fa-exclamation-circle" style="color: var(--warning);"></i>
+                                    <span>7 днів до: Купити подарунки!</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <i class="fas fa-clock" style="color: var(--text-muted);"></i>
+                                    <span>1 день до: Фінальні приготування</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Budget Overview -->
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; padding: 1rem; background: linear-gradient(135deg, var(--primary-light), rgba(118, 75, 162, 0.05)); border-radius: 10px;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">5</div>
+                                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Подій</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg, var(--success), #34d399); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">$1.5k</div>
+                                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Бюджет</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg, var(--warning), #d97706); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">18</div>
+                                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Найближча</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
