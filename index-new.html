@@ -168,7 +168,7 @@
         
         .search-box input {
             width: 100%;
-            padding: 0.5rem 1rem 0.5rem 2.25rem;
+            padding: 0.5rem 2.5rem 0.5rem 2.25rem;
             border: 1px solid var(--border);
             border-radius: var(--radius-sm);
             font-size: 0.9rem;
@@ -190,6 +190,51 @@
             transform: translateY(-50%);
             color: var(--text-secondary);
             font-size: 0.875rem;
+        }
+        
+        .search-clear {
+            position: absolute;
+            right: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--radius-sm);
+            transition: all 0.2s;
+        }
+        
+        .search-clear:hover {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .toolbar-filters {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .filter-select {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--bg);
+            color: var(--text);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+        }
+        
+        .filter-select:hover {
+            border-color: var(--primary);
         }
         
         .toolbar-center {
@@ -383,6 +428,159 @@
         
         .footer p {
             margin: 0.25rem 0;
+        }
+        
+        /* Empty State & No Results */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .empty-state-icon {
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.5;
+        }
+        
+        .empty-state-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: var(--text);
+        }
+        
+        .empty-state-description {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        
+        .empty-state-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .empty-state-action:hover {
+            opacity: 0.9;
+            box-shadow: var(--shadow-md);
+        }
+        
+        /* Skeleton Loader */
+        .skeleton-card {
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            height: 250px;
+        }
+        
+        .skeleton {
+            background: linear-gradient(90deg, var(--border) 25%, var(--bg) 50%, var(--border) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: var(--radius-sm);
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        .skeleton-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+        }
+        
+        .skeleton-title {
+            height: 20px;
+            width: 70%;
+            margin: 0 auto 0.5rem;
+        }
+        
+        .skeleton-description {
+            height: 14px;
+            width: 90%;
+            margin: 0 auto 0.25rem;
+        }
+        
+        .skeleton-footer {
+            height: 14px;
+            width: 40%;
+            margin: 1.5rem auto 0;
+        }
+        
+        /* Notification Toast */
+        .notification-toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--card-bg);
+            border: 2px solid var(--primary);
+            border-radius: var(--radius);
+            padding: 1rem 1.5rem;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            max-width: 400px;
+            z-index: 10001;
+            animation: slideInRight 0.3s ease;
+        }
+        
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .notification-icon {
+            font-size: 1.5rem;
+        }
+        
+        .notification-content {
+            flex: 1;
+        }
+        
+        .notification-title {
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .notification-message {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+        
+        .notification-close {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0.25rem;
+            font-size: 1.25rem;
+        }
+        
+        .notification-close:hover {
+            color: var(--text);
         }
         
         /* Responsive - compact mode */
@@ -920,8 +1118,19 @@
                 max-width: 100%;
             }
             
+            .toolbar-filters {
+                order: 2;
+                width: 100%;
+                flex-wrap: wrap;
+            }
+            
+            .filter-select {
+                flex: 1;
+                min-width: 140px;
+            }
+            
             .toolbar-center {
-                order: 3;
+                order: 4;
                 width: 100%;
                 justify-content: space-between;
                 gap: 0.5rem;
@@ -942,12 +1151,27 @@
             }
             
             .toolbar-actions {
-                order: 2;
+                order: 3;
             }
             
             #installBtn {
-                order: 4;
+                order: 5;
                 width: 100%;
+            }
+            
+            .notification-toast {
+                bottom: 1rem;
+                right: 1rem;
+                left: 1rem;
+                max-width: 100%;
+            }
+            
+            .empty-state {
+                padding: 3rem 1.5rem;
+            }
+            
+            .empty-state-icon {
+                font-size: 4rem;
             }
             
             .welcome-icon {
@@ -1150,6 +1374,25 @@
         <div class="search-box">
             <i class="fas fa-search"></i>
             <input type="text" id="searchInput" placeholder="Search types..." data-i18n-placeholder="search">
+            <button class="search-clear" id="searchClear" style="display: none;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="toolbar-filters">
+            <select id="filterType" class="filter-select">
+                <option value="all">All Types</option>
+                <option value="priority">Priority Only</option>
+                <option value="enhanced">Enhanced Only</option>
+                <option value="filled">Filled Only</option>
+                <option value="empty">Empty Only</option>
+            </select>
+            <select id="sortBy" class="filter-select">
+                <option value="default">Default Order</option>
+                <option value="name">Sort by Name</option>
+                <option value="records">Sort by Records</option>
+                <option value="lastUsed">Last Used</option>
+            </select>
         </div>
         
         <div class="toolbar-center">
@@ -1286,6 +1529,21 @@
                     </button>
                 </div>
 
+                <!-- Export/Import Data -->
+                <div class="setting-group">
+                    <label class="setting-label">Backup & Restore</label>
+                    <div class="setting-description">Export or import all your data</div>
+                    <div style="display: flex; gap: 0.75rem;">
+                        <button class="btn btn-primary" onclick="exportAllData()">
+                            <i class="fas fa-download"></i> Export Data
+                        </button>
+                        <button class="btn btn-primary" onclick="importDataPrompt()">
+                            <i class="fas fa-upload"></i> Import Data
+                        </button>
+                    </div>
+                    <input type="file" id="importFileInput" accept=".json" style="display: none;" onchange="importDataFile(event)">
+                </div>
+                
                 <!-- Clear All Data -->
                 <div class="setting-group">
                     <label class="setting-label" style="color: var(--danger);">Danger Zone</label>
@@ -1430,8 +1688,13 @@
                 setTimeout(() => {
                     mainApp.classList.add('show');
                     
-                    // Initialize app (existing init function)
-                    init();
+                    // Show skeleton loader first
+                    showSkeletonLoader();
+                    
+                    // Initialize app after delay (smooth loading feel)
+                    setTimeout(() => {
+                        init();
+                    }, 300);
                 }, 50);
             },
             
@@ -1612,6 +1875,19 @@
             return ordered;
         }
         
+        function showSkeletonLoader() {
+            const grid = document.getElementById('typesGrid');
+            grid.innerHTML = Array(12).fill(0).map(() => `
+                <div class="skeleton-card">
+                    <div class="skeleton skeleton-icon"></div>
+                    <div class="skeleton skeleton-title"></div>
+                    <div class="skeleton skeleton-description"></div>
+                    <div class="skeleton skeleton-description"></div>
+                    <div class="skeleton skeleton-footer"></div>
+                </div>
+            `).join('');
+        }
+        
         function renderTypesGrid(types = null) {
             const typesToRender = types || getOrderedTypes();
             const grid = document.getElementById('typesGrid');
@@ -1642,21 +1918,145 @@
             window.open(path, '_blank');
         }
         
-        // 4. ПОШУК
+        // 4. ПОШУК з debounce + фільтрами
+        let searchDebounce = null;
+        let currentFilter = 'all';
+        let currentSort = 'default';
+        
         function setupSearch() {
             const searchInput = document.getElementById('searchInput');
+            const searchClear = document.getElementById('searchClear');
+            const filterType = document.getElementById('filterType');
+            const sortBy = document.getElementById('sortBy');
             
+            // Search with debounce (performance)
             searchInput.addEventListener('input', (e) => {
-                const query = e.target.value.toLowerCase();
+                const query = e.target.value.trim();
                 
-                const filtered = TYPES_LIST.filter(type => 
-                    type.title.toLowerCase().includes(query) ||
-                    type.description.toLowerCase().includes(query)
-                );
+                // Show/hide clear button
+                searchClear.style.display = query ? 'block' : 'none';
                 
-                renderTypesGrid(filtered);
+                // Debounce search (300ms)
+                clearTimeout(searchDebounce);
+                searchDebounce = setTimeout(() => {
+                    applyFiltersAndSearch();
+                }, 300);
+            });
+            
+            // Clear button
+            searchClear.addEventListener('click', () => {
+                searchInput.value = '';
+                searchClear.style.display = 'none';
+                applyFiltersAndSearch();
+            });
+            
+            // Filter change
+            filterType.addEventListener('change', (e) => {
+                currentFilter = e.target.value;
+                applyFiltersAndSearch();
+            });
+            
+            // Sort change
+            sortBy.addEventListener('change', (e) => {
+                currentSort = e.target.value;
+                applyFiltersAndSearch();
             });
         }
+        
+        function applyFiltersAndSearch() {
+            const searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
+            
+            // 1. Search filter
+            let filtered = TYPES_LIST.filter(type => 
+                type.title.toLowerCase().includes(searchQuery) ||
+                type.description.toLowerCase().includes(searchQuery)
+            );
+            
+            // 2. Type filter
+            if (currentFilter === 'priority') {
+                filtered = filtered.filter(type => type.priority);
+            } else if (currentFilter === 'enhanced') {
+                filtered = filtered.filter(type => !type.priority);
+            } else if (currentFilter === 'filled') {
+                filtered = filtered.filter(type => hasData(type.id));
+            } else if (currentFilter === 'empty') {
+                filtered = filtered.filter(type => !hasData(type.id));
+            }
+            
+            // 3. Sort
+            if (currentSort === 'name') {
+                filtered.sort((a, b) => a.title.localeCompare(b.title));
+            } else if (currentSort === 'records') {
+                filtered.sort((a, b) => getRecordCount(b.id) - getRecordCount(a.id));
+            } else if (currentSort === 'lastUsed') {
+                filtered.sort((a, b) => {
+                    const lastA = getLastUsed(a.id);
+                    const lastB = getLastUsed(b.id);
+                    return lastB - lastA;
+                });
+            }
+            
+            // 4. Render
+            if (filtered.length === 0) {
+                showEmptyState(searchQuery);
+            } else {
+                renderTypesGrid(filtered);
+            }
+        }
+        
+        function hasData(typeId) {
+            const storageKey = `loveDossier_${typeId.replace(/-/g, '_')}`;
+            const data = localStorage.getItem(storageKey);
+            return data && JSON.parse(data).length > 0;
+        }
+        
+        function getRecordCount(typeId) {
+            const storageKey = `loveDossier_${typeId.replace(/-/g, '_')}`;
+            const data = localStorage.getItem(storageKey);
+            if (!data) return 0;
+            try {
+                const parsed = JSON.parse(data);
+                return Array.isArray(parsed) ? parsed.length : 0;
+            } catch {
+                return 0;
+            }
+        }
+        
+        function getLastUsed(typeId) {
+            const key = `lastUsed_${typeId}`;
+            return parseInt(localStorage.getItem(key) || '0');
+        }
+        
+        function showEmptyState(query) {
+            const grid = document.getElementById('typesGrid');
+            const message = query 
+                ? `No results found for "${query}"`
+                : 'No types match your filters';
+            
+            grid.innerHTML = `
+                <div class="empty-state" style="grid-column: 1/-1;">
+                    <div class="empty-state-icon">🔍</div>
+                    <h3 class="empty-state-title">${message}</h3>
+                    <p class="empty-state-description">
+                        Try adjusting your search or filters
+                    </p>
+                    <button class="empty-state-action" onclick="resetFilters()">
+                        <i class="fas fa-undo"></i>
+                        Reset Filters
+                    </button>
+                </div>
+            `;
+        }
+        
+        window.resetFilters = function() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchClear').style.display = 'none';
+            document.getElementById('filterType').value = 'all';
+            document.getElementById('sortBy').value = 'default';
+            currentFilter = 'all';
+            currentSort = 'default';
+            renderTypesGrid();
+        };
         
         // 5. СТАТИСТИКА
         function updateStats() {
@@ -1847,6 +2247,134 @@
             }
         };
         
+        // 15. EXPORT/IMPORT DATA
+        window.exportAllData = function() {
+            const exportData = {
+                version: '3.0.0',
+                exportDate: new Date().toISOString(),
+                data: {}
+            };
+            
+            // Collect all data from localStorage
+            for (let key in localStorage) {
+                if (localStorage.hasOwnProperty(key)) {
+                    exportData.data[key] = localStorage[key];
+                }
+            }
+            
+            // Create JSON file
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            // Download
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `love-dossier-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            // Update last backup timestamp
+            localStorage.setItem('lastBackup', Date.now().toString());
+            
+            showNotification('✅ Success', 'Data exported successfully!', 'success');
+        };
+        
+        window.importDataPrompt = function() {
+            document.getElementById('importFileInput').click();
+        };
+        
+        window.importDataFile = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importData = JSON.parse(e.target.result);
+                    
+                    if (!importData.version || !importData.data) {
+                        throw new Error('Invalid file format');
+                    }
+                    
+                    if (confirm('⚠️ This will replace ALL current data! Continue?')) {
+                        // Clear current data
+                        localStorage.clear();
+                        
+                        // Import new data
+                        for (let key in importData.data) {
+                            localStorage.setItem(key, importData.data[key]);
+                        }
+                        
+                        showNotification('✅ Success', 'Data imported successfully!', 'success');
+                        setTimeout(() => location.reload(), 1500);
+                    }
+                } catch (error) {
+                    showNotification('❌ Error', 'Invalid backup file', 'error');
+                }
+            };
+            reader.readAsText(file);
+        };
+        
+        // 16. NOTIFICATIONS
+        function showNotification(title, message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = 'notification-toast';
+            notification.innerHTML = `
+                <div class="notification-icon">${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</div>
+                <div class="notification-content">
+                    <div class="notification-title">${title}</div>
+                    <div class="notification-message">${message}</div>
+                </div>
+                <button class="notification-close" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 300);
+            }, 5000);
+        }
+        
+        // 17. CHECK FOR REMINDERS
+        function checkReminders() {
+            const lastVisit = localStorage.getItem('lastVisit');
+            const now = Date.now();
+            const daysSinceVisit = lastVisit ? (now - parseInt(lastVisit)) / (1000 * 60 * 60 * 24) : 0;
+            
+            // Backup reminder every 30 days
+            const lastBackup = localStorage.getItem('lastBackup');
+            const daysSinceBackup = lastBackup ? (now - parseInt(lastBackup)) / (1000 * 60 * 60 * 24) : 999;
+            
+            if (daysSinceBackup > 30) {
+                setTimeout(() => {
+                    showNotification(
+                        '💾 Backup Reminder',
+                        'It\'s been a while! Consider backing up your data.',
+                        'info'
+                    );
+                }, 3000);
+            }
+            
+            // Welcome back message
+            if (daysSinceVisit > 7) {
+                setTimeout(() => {
+                    showNotification(
+                        '👋 Welcome back!',
+                        'It\'s been a while. Check what\'s new!',
+                        'info'
+                    );
+                }, 2000);
+            }
+            
+            // Update last visit
+            localStorage.setItem('lastVisit', now.toString());
+        }
+        
         // 11. DRAG & DROP
         let draggedElement = null;
         
@@ -1939,7 +2467,7 @@
             });
         }
         
-        // 14. ІНІЦІАЛІЗАЦІЯ
+        // 18. ІНІЦІАЛІЗАЦІЯ
         function init() {
             // Load saved language
             currentLang = localStorage.getItem('language') || 'en';
@@ -1952,6 +2480,7 @@
             setupLanguageSelect();
             updateStats();
             updateUIText();
+            checkReminders();
             
             // Event listeners
             document.getElementById('settingsBtn').addEventListener('click', openSettings);
