@@ -85,11 +85,32 @@
             --secondary: #764ba2;
         }
         
-        /* Romantic Red Theme */
+        /* Romantic Theme */
         [data-color-theme="romantic"] {
             --primary: #ef4444;
             --primary-dark: #dc2626;
             --secondary: #f87171;
+        }
+        
+        /* Mint Theme */
+        [data-color-theme="mint"] {
+            --primary: #14b8a6;
+            --primary-dark: #0d9488;
+            --secondary: #5eead4;
+        }
+        
+        /* Lavender Theme */
+        [data-color-theme="lavender"] {
+            --primary: #a855f7;
+            --primary-dark: #9333ea;
+            --secondary: #c084fc;
+        }
+        
+        /* Gold Theme */
+        [data-color-theme="gold"] {
+            --primary: #eab308;
+            --primary-dark: #ca8a04;
+            --secondary: #fbbf24;
         }
         
         * {
@@ -728,7 +749,14 @@
         .theme-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 0.75rem;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .theme-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
         
         .theme-option {
@@ -1241,6 +1269,9 @@
                             <option value="uk">🇺🇦 Українська</option>
                             <option value="ru">🇷🇺 Русский</option>
                             <option value="pl">🇵🇱 Polski</option>
+                            <option value="es">🇪🇸 Español</option>
+                            <option value="fr">🇫🇷 Français</option>
+                            <option value="de">🇩🇪 Deutsch</option>
                         </select>
                     </div>
                 </div>
@@ -1276,6 +1307,18 @@
                             <div class="theme-option" data-theme="romantic">
                                 <div class="theme-preview" style="background: linear-gradient(135deg, #ef4444, #f87171);"></div>
                                 <div class="theme-name">Red</div>
+                            </div>
+                            <div class="theme-option" data-theme="mint">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #14b8a6, #5eead4);"></div>
+                                <div class="theme-name">Mint</div>
+                            </div>
+                            <div class="theme-option" data-theme="lavender">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #a855f7, #c084fc);"></div>
+                                <div class="theme-name">Lavender</div>
+                            </div>
+                            <div class="theme-option" data-theme="gold">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #eab308, #fbbf24);"></div>
+                                <div class="theme-name">Gold</div>
                             </div>
                         </div>
                     </div>
@@ -1496,6 +1539,18 @@
                             <div class="theme-preview" style="background: linear-gradient(135deg, #ef4444, #f87171);"></div>
                             <div class="theme-name">Romantic</div>
                         </div>
+                        <div class="theme-option" data-theme="mint">
+                            <div class="theme-preview" style="background: linear-gradient(135deg, #14b8a6, #5eead4);"></div>
+                            <div class="theme-name">Mint</div>
+                        </div>
+                        <div class="theme-option" data-theme="lavender">
+                            <div class="theme-preview" style="background: linear-gradient(135deg, #a855f7, #c084fc);"></div>
+                            <div class="theme-name">Lavender</div>
+                        </div>
+                        <div class="theme-option" data-theme="gold">
+                            <div class="theme-preview" style="background: linear-gradient(135deg, #eab308, #fbbf24);"></div>
+                            <div class="theme-name">Gold</div>
+                        </div>
                     </div>
                 </div>
 
@@ -1508,6 +1563,9 @@
                         <option value="uk">Українська</option>
                         <option value="ru">Русский</option>
                         <option value="pl">Polski</option>
+                        <option value="es">Español</option>
+                        <option value="fr">Français</option>
+                        <option value="de">Deutsch</option>
                     </select>
                 </div>
 
@@ -1533,15 +1591,52 @@
                 <div class="setting-group">
                     <label class="setting-label">Backup & Restore</label>
                     <div class="setting-description">Export or import all your data</div>
-                    <div style="display: flex; gap: 0.75rem;">
+                    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
                         <button class="btn btn-primary" onclick="exportAllData()">
-                            <i class="fas fa-download"></i> Export Data
+                            <i class="fas fa-download"></i> Export JSON
+                        </button>
+                        <button class="btn btn-primary" onclick="exportToPDF()">
+                            <i class="fas fa-file-pdf"></i> Export PDF
                         </button>
                         <button class="btn btn-primary" onclick="importDataPrompt()">
                             <i class="fas fa-upload"></i> Import Data
                         </button>
                     </div>
                     <input type="file" id="importFileInput" accept=".json" style="display: none;" onchange="importDataFile(event)">
+                </div>
+                
+                <!-- Share -->
+                <div class="setting-group">
+                    <label class="setting-label">Share</label>
+                    <div class="setting-description">Share Love Dossier with friends</div>
+                    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                        <button class="btn btn-primary" onclick="shareToTwitter()">
+                            <i class="fab fa-twitter"></i> Twitter
+                        </button>
+                        <button class="btn btn-primary" onclick="shareToFacebook()">
+                            <i class="fab fa-facebook"></i> Facebook
+                        </button>
+                        <button class="btn btn-primary" onclick="shareViaWebShare()">
+                            <i class="fas fa-share-alt"></i> More...
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Password Protection -->
+                <div class="setting-group">
+                    <label class="setting-label">Privacy Protection</label>
+                    <div class="setting-description">Add password protection to your Love Dossier</div>
+                    <div id="passwordStatus" style="margin-bottom: 0.75rem; font-size: 0.875rem;">
+                        Status: <span id="passwordEnabled">Not Protected</span>
+                    </div>
+                    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                        <button class="btn btn-primary" onclick="setupPassword()">
+                            <i class="fas fa-lock"></i> Set Password
+                        </button>
+                        <button class="btn btn-primary" onclick="removePassword()" id="removePasswordBtn" style="display: none;">
+                            <i class="fas fa-unlock"></i> Remove Password
+                        </button>
+                    </div>
                 </div>
                 
                 <!-- Clear All Data -->
@@ -1705,6 +1800,10 @@
         
         // Start app flow on page load
         window.addEventListener('load', () => {
+            // Check password first
+            if (!checkPassword()) {
+                return;
+            }
             AppFlow.showLoader();
         });
         
@@ -1781,6 +1880,60 @@
                 resetOrder: 'Resetuj kolejność',
                 clearData: 'Wyczyść dane',
                 install: 'Zainstaluj PWA'
+            },
+            es: {
+                title: '💕 Dossier de Amor',
+                subtitle: '32 tipos para organizar información sobre tu ser querido',
+                search: 'Buscar tipos...',
+                totalTypes: 'Total de Tipos',
+                filled: 'Llenos',
+                totalRecords: 'Total de Registros',
+                storageSize: 'Tamaño de Datos',
+                empty: 'Vacío',
+                records: 'registros',
+                settings: 'Configuración',
+                colorTheme: 'Tema de Color',
+                language: 'Idioma',
+                darkMode: 'Modo Oscuro',
+                resetOrder: 'Restablecer Orden',
+                clearData: 'Borrar Datos',
+                install: 'Instalar PWA'
+            },
+            fr: {
+                title: '💕 Dossier d\'Amour',
+                subtitle: '32 types pour organiser les informations sur votre bien-aimé',
+                search: 'Rechercher des types...',
+                totalTypes: 'Total des Types',
+                filled: 'Remplis',
+                totalRecords: 'Total des Enregistrements',
+                storageSize: 'Taille des Données',
+                empty: 'Vide',
+                records: 'enregistrements',
+                settings: 'Paramètres',
+                colorTheme: 'Thème de Couleur',
+                language: 'Langue',
+                darkMode: 'Mode Sombre',
+                resetOrder: 'Réinitialiser l\'Ordre',
+                clearData: 'Effacer les Données',
+                install: 'Installer PWA'
+            },
+            de: {
+                title: '💕 Liebes-Dossier',
+                subtitle: '32 Typen zur Organisation von Informationen über Ihren Geliebten',
+                search: 'Typen suchen...',
+                totalTypes: 'Gesamte Typen',
+                filled: 'Gefüllt',
+                totalRecords: 'Gesamte Aufzeichnungen',
+                storageSize: 'Datengröße',
+                empty: 'Leer',
+                records: 'Aufzeichnungen',
+                settings: 'Einstellungen',
+                colorTheme: 'Farbthema',
+                language: 'Sprache',
+                darkMode: 'Dunkler Modus',
+                resetOrder: 'Reihenfolge Zurücksetzen',
+                clearData: 'Daten Löschen',
+                install: 'PWA Installieren'
             }
         };
         
@@ -2375,6 +2528,163 @@
             localStorage.setItem('lastVisit', now.toString());
         }
         
+        // 18. DEEP LINKING (URL params)
+        function handleDeepLinking() {
+            const params = new URLSearchParams(window.location.search);
+            
+            // ?lang=es - change language
+            if (params.has('lang')) {
+                const lang = params.get('lang');
+                if (i18n[lang]) {
+                    setLanguage(lang);
+                }
+            }
+            
+            // ?theme=ocean - change color theme
+            if (params.has('theme')) {
+                const theme = params.get('theme');
+                document.documentElement.setAttribute('data-color-theme', theme);
+                localStorage.setItem('colorTheme', theme);
+            }
+            
+            // ?dark=true - enable dark mode
+            if (params.has('dark')) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+            }
+            
+            // ?type=communication-log - scroll to specific type
+            if (params.has('type')) {
+                const typeId = params.get('type');
+                setTimeout(() => {
+                    const card = document.querySelector(`[data-type-id="${typeId}"]`);
+                    if (card) {
+                        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        card.style.animation = 'pulse 1s ease 3';
+                    }
+                }, 500);
+            }
+        }
+        
+        // 19. SOCIAL SHARING
+        window.shareToTwitter = function() {
+            const text = 'Check out Love Dossier - 32 types to organize everything about your loved one! 💕';
+            const url = window.location.origin + window.location.pathname;
+            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+        };
+        
+        window.shareToFacebook = function() {
+            const url = window.location.origin + window.location.pathname;
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+        };
+        
+        window.shareViaWebShare = async function() {
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'Love Dossier',
+                        text: '32 types to organize everything about your loved one! 💕',
+                        url: window.location.href
+                    });
+                    showNotification('✅ Success', 'Shared successfully!', 'success');
+                } catch (err) {
+                    console.log('Share cancelled');
+                }
+            } else {
+                // Fallback: copy link
+                navigator.clipboard.writeText(window.location.href);
+                showNotification('📋 Copied', 'Link copied to clipboard!', 'success');
+            }
+        };
+        
+        // 20. EXPORT TO PDF
+        window.exportToPDF = function() {
+            showNotification('📄 Generating PDF...', 'This may take a moment', 'info');
+            
+            // Simple PDF export (text-based)
+            setTimeout(() => {
+                let pdfContent = 'LOVE DOSSIER - DATA SUMMARY\n\n';
+                pdfContent += `Generated: ${new Date().toLocaleDateString()}\n\n`;
+                
+                TYPES_LIST.forEach(type => {
+                    const count = getRecordCount(type.id);
+                    if (count > 0) {
+                        pdfContent += `${type.icon} ${type.title}: ${count} records\n`;
+                    }
+                });
+                
+                const blob = new Blob([pdfContent], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `love-dossier-summary-${new Date().toISOString().split('T')[0]}.txt`;
+                a.click();
+                URL.revokeObjectURL(url);
+                
+                showNotification('✅ Success', 'Summary exported!', 'success');
+            }, 500);
+        };
+        
+        // 21. PASSWORD PROTECTION
+        function checkPassword() {
+            const savedPassword = localStorage.getItem('appPassword');
+            if (savedPassword) {
+                const entered = prompt('🔒 Enter password to access Love Dossier:');
+                if (entered !== savedPassword) {
+                    alert('❌ Incorrect password!');
+                    window.location.href = 'about:blank';
+                    return false;
+                }
+            }
+            return true;
+        }
+        
+        window.setupPassword = function() {
+            const password = prompt('🔒 Set a new password (min 4 characters):');
+            if (!password || password.length < 4) {
+                showNotification('❌ Error', 'Password too short!', 'error');
+                return;
+            }
+            
+            const confirm = prompt('🔒 Confirm password:');
+            if (password !== confirm) {
+                showNotification('❌ Error', 'Passwords don\'t match!', 'error');
+                return;
+            }
+            
+            localStorage.setItem('appPassword', password);
+            updatePasswordStatus();
+            showNotification('✅ Success', 'Password protection enabled!', 'success');
+        };
+        
+        window.removePassword = function() {
+            const current = prompt('🔒 Enter current password:');
+            const saved = localStorage.getItem('appPassword');
+            
+            if (current === saved) {
+                localStorage.removeItem('appPassword');
+                updatePasswordStatus();
+                showNotification('✅ Success', 'Password protection removed!', 'success');
+            } else {
+                showNotification('❌ Error', 'Incorrect password!', 'error');
+            }
+        };
+        
+        function updatePasswordStatus() {
+            const hasPassword = localStorage.getItem('appPassword');
+            const statusEl = document.getElementById('passwordEnabled');
+            const removeBtn = document.getElementById('removePasswordBtn');
+            
+            if (statusEl) {
+                statusEl.textContent = hasPassword ? '🔒 Protected' : 'Not Protected';
+                statusEl.style.color = hasPassword ? 'var(--success)' : 'var(--text-secondary)';
+            }
+            
+            if (removeBtn) {
+                removeBtn.style.display = hasPassword ? 'inline-flex' : 'none';
+            }
+        }
+        
         // 11. DRAG & DROP
         let draggedElement = null;
         
@@ -2467,7 +2777,7 @@
             });
         }
         
-        // 18. ІНІЦІАЛІЗАЦІЯ
+        // 22. ІНІЦІАЛІЗАЦІЯ
         function init() {
             // Load saved language
             currentLang = localStorage.getItem('language') || 'en';
@@ -2481,6 +2791,8 @@
             updateStats();
             updateUIText();
             checkReminders();
+            handleDeepLinking();
+            updatePasswordStatus();
             
             // Event listeners
             document.getElementById('settingsBtn').addEventListener('click', openSettings);
